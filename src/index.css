@@ -21,3 +21,14 @@ html {
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-poppins);
 }
+
+/* Hide scrollbar on the fullscreen chat sidebar on ?chat=true */
+#capsy-fullscreen-chat-workspace .chat-left-panel {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+#capsy-fullscreen-chat-workspace .chat-left-panel::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}

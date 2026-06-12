@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import LucideIcon from './LucideIcon';
+import logoIcon from '../assets/images/logo-capsy-icon.png';
 
 interface Message {
   role: 'user' | 'model';
@@ -181,11 +182,11 @@ export default function Chatbot({ onOpenBooking, isFullScreen = false }: Chatbot
     return (
       <div className="flex flex-col md:flex-row h-screen w-screen bg-gray-50 text-brand-dark overflow-hidden font-sans select-none" id="capsy-fullscreen-chat-workspace">
         {/* Left Side Panel - Information & Aesthetics */}
-        <div className="hidden lg:flex flex-col lg:w-1/3 xl:w-1/4 bg-brand-dark text-white p-8 border-r border-white/10 shrink-0 select-text overflow-y-auto">
+        <div className="hidden lg:flex flex-col lg:w-1/3 xl:w-1/4 bg-brand-dark text-white p-8 border-r border-white/10 shrink-0 select-text overflow-y-auto chat-left-panel">
           {/* Logo & Info */}
           <div className="flex items-center gap-3 mb-8">
             <div className="w-10 h-10 rounded-full bg-brand-green/20 border border-brand-green/30 flex items-center justify-center text-brand-green">
-              <LucideIcon name="Bot" className="w-5 h-5 text-brand-green animate-pulse" />
+              <img src={logoIcon} alt="CAPSY" className="w-7 h-7 rounded-full object-cover" />
             </div>
             <div>
               <h1 className="text-lg font-black tracking-wider text-white font-poppins">CAPSY SERVICES</h1>
@@ -266,7 +267,6 @@ export default function Chatbot({ onOpenBooking, isFullScreen = false }: Chatbot
           {/* Top Bar for Chat */}
           <div className="bg-brand-dark px-6 py-4 flex items-center justify-between border-b border-white/10 shrink-0">
             <div className="flex items-center gap-3.5">
-              {/* Back to main on mobile devices button */}
               <a
                 href="/"
                 className="lg:hidden p-2 rounded-xl bg-white/5 text-white/80 hover:text-white hover:bg-white/10 transition-colors"
@@ -276,19 +276,18 @@ export default function Chatbot({ onOpenBooking, isFullScreen = false }: Chatbot
               </a>
               
               <div className="w-10 h-10 rounded-full bg-brand-green/20 border border-brand-green/30 flex items-center justify-center text-brand-green relative shrink-0">
-                <LucideIcon name="Bot" className="w-5 h-5 text-brand-green animate-pulse" />
-                <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full border border-brand-dark animate-pulse" />
+                <img src={logoIcon} alt="CAPSY" className="w-7 h-7 rounded-full object-cover" />
+                <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full border border-brand-dark" />
               </div>
               <div>
                 <h2 className="text-sm sm:text-base font-bold text-white tracking-wide flex items-center gap-1.5 font-poppins">
                   CAPSY Assistant IA
-                  <LucideIcon name="Sparkles" className="w-3.5 h-3.5 text-brand-green animate-pulse" />
+                  <LucideIcon name="Sparkles" className="w-3.5 h-3.5 text-brand-green" />
                 </h2>
                 <p className="text-[10px] sm:text-xs text-white/60">Discussions, orientation & évaluation du stress en RDC</p>
               </div>
             </div>
 
-            {/* Top Bar Right Actions */}
             <div className="flex items-center gap-2">
               <button
                 onClick={() => {
@@ -311,9 +310,8 @@ export default function Chatbot({ onOpenBooking, isFullScreen = false }: Chatbot
             </div>
           </div>
 
-          {/* Emergency support bar for Mobile only */}
           <div className="lg:hidden bg-red-500/10 border-b border-red-500/20 px-4 py-2.5 flex items-center justify-between shrink-0">
-            <span className="text-[11px] font-black text-red-600 flex items-center gap-1.5 animate-pulse uppercase">
+            <span className="text-[11px] font-black text-red-600 flex items-center gap-1.5 uppercase">
               <span className="w-1.5 h-1.5 bg-red-600 rounded-full shrink-0" />
               Urgence Psycho :
             </span>
@@ -322,7 +320,6 @@ export default function Chatbot({ onOpenBooking, isFullScreen = false }: Chatbot
             </a>
           </div>
 
-          {/* Central message feed */}
           <div className="flex-1 overflow-y-auto p-4 md:p-8 space-y-6 select-text chat-feed-viewport" id="chatbot-messages-feed" style={{ scrollBehavior: 'smooth' }}>
             <div className="max-w-3xl mx-auto space-y-6">
               {messages.map((msg, i) => {
@@ -330,9 +327,8 @@ export default function Chatbot({ onOpenBooking, isFullScreen = false }: Chatbot
                 return (
                   <div key={i} className={`flex ${isModel ? 'justify-start' : 'justify-end'}`}>
                     <div className={`flex gap-3 max-w-[85%] ${isModel ? '' : 'flex-row-reverse'}`}>
-                      {/* Avatar */}
                       <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${isModel ? 'bg-brand-green/10 text-brand-green border border-brand-green/20' : 'bg-brand-blue/10 text-brand-blue border border-brand-blue/20'}`}>
-                        {isModel ? <LucideIcon name="Bot" className="w-4 h-4" /> : <LucideIcon name="User" className="w-4 h-4" />}
+                        {isModel ? <img src={logoIcon} alt="CAPSY" className="w-6 h-6 rounded-full object-cover" /> : <LucideIcon name="User" className="w-4 h-4" />}
                       </div>
 
                       <div className="flex flex-col space-y-1">
@@ -345,7 +341,6 @@ export default function Chatbot({ onOpenBooking, isFullScreen = false }: Chatbot
                         >
                           {renderMessageContent(msg.text, !isModel)}
 
-                          {/* Suggested Action in full screen is beautifully rendered */}
                           {isModel && msg.suggestedServiceId && (
                             <div className="mt-4 pt-3 border-t border-brand-gray/10 flex flex-col items-stretch">
                               <p className="text-[11px] text-brand-gray-text font-bold mb-2.5 flex items-center gap-1.5">
@@ -362,7 +357,7 @@ export default function Chatbot({ onOpenBooking, isFullScreen = false }: Chatbot
                             </div>
                           )}
                         </div>
-                        <span className={`text-[10px] text-brand-gray-text font-mono px-1 ${!isModel && 'self-end'}`}>
+                        <span className="text-[10px] text-brand-gray-text font-mono px-1">
                           {isModel ? 'CAPSY' : 'Vous'}
                         </span>
                       </div>
@@ -375,7 +370,7 @@ export default function Chatbot({ onOpenBooking, isFullScreen = false }: Chatbot
                 <div className="flex justify-start">
                   <div className="flex gap-3">
                     <div className="w-8 h-8 rounded-full bg-brand-green/10 text-brand-green border border-brand-green/20 flex items-center justify-center shrink-0">
-                      <LucideIcon name="Bot" className="w-4 h-4" />
+                      <img src={logoIcon} alt="CAPSY" className="w-5 h-5 rounded-full object-cover" />
                     </div>
                     <div className="flex flex-col space-y-1">
                       <div className="bg-gray-50 border border-gray-150 rounded-2xl rounded-tl-none px-5 py-4 flex items-center space-x-2 shadow-sm">
@@ -392,7 +387,6 @@ export default function Chatbot({ onOpenBooking, isFullScreen = false }: Chatbot
             </div>
           </div>
 
-          {/* Quick interactive action triggers */}
           <div className="py-3 bg-gray-50/50 border-t border-gray-100 shrink-0">
             <div className="max-w-3xl mx-auto px-4 flex flex-nowrap md:flex-wrap gap-2 overflow-x-auto md:overflow-x-visible scrollbar-none">
               <button
@@ -416,15 +410,14 @@ export default function Chatbot({ onOpenBooking, isFullScreen = false }: Chatbot
             </div>
           </div>
 
-          {/* Spacious input form container */}
           <div className="bg-white border-t border-gray-150 p-4 shrink-0 shadow-[0_-4px_12px_rgba(0,0,0,0.02)]">
-            <div className="max-w-3xl mx-auto pb-6 pt-1.5">
+            <div className="max-w-3xl mx-auto pb-6 pt-1.5 relative">
               <form
                 onSubmit={(e) => {
                   e.preventDefault();
                   handleSendMessage(inputVal);
                 }}
-                className="flex items-center gap-3"
+                className="relative"
               >
                 <input
                   type="text"
@@ -432,12 +425,12 @@ export default function Chatbot({ onOpenBooking, isFullScreen = false }: Chatbot
                   onChange={(e) => setInputVal(e.target.value)}
                   placeholder="Posez vos questions ou décrivez votre état d'esprit ici..."
                   disabled={isLoading}
-                  className="flex-1 text-sm md:text-base bg-gray-50 border border-gray-200 focus:border-brand-green focus:bg-white px-5 py-3.5 rounded-2xl outline-none transition-all placeholder:text-gray-400 text-gray-800"
+                  className="w-full text-base md:text-lg bg-gray-50 border border-gray-200 focus:border-brand-green focus:bg-white px-6 py-4 rounded-full outline-none transition-all placeholder:text-gray-400 text-gray-800 pr-20"
                 />
                 <button
                   type="submit"
                   disabled={!inputVal.trim() || isLoading}
-                  className="w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-brand-green text-white hover:bg-brand-green-dark flex items-center justify-center transition-all disabled:opacity-40 disabled:hover:bg-brand-green cursor-pointer shrink-0 shadow-md hover:scale-105 active:scale-95"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-brand-green text-white flex items-center justify-center transition-all disabled:opacity-40 cursor-pointer shadow-md hover:scale-105 active:scale-95"
                   aria-label="Envoyer"
                 >
                   <LucideIcon name="Send" className="w-5 h-5" />
@@ -455,7 +448,6 @@ export default function Chatbot({ onOpenBooking, isFullScreen = false }: Chatbot
 
   return (
     <div className="fixed bottom-6 right-6 z-50 font-sans" id="capsy-chatbot-container">
-      {/* Floating Action Trigger Button */}
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
@@ -475,23 +467,21 @@ export default function Chatbot({ onOpenBooking, isFullScreen = false }: Chatbot
         </button>
       )}
 
-      {/* Dynamic Chat Window Interface */}
       {isOpen && (
         <div
-          className="flex flex-col w-[360px] sm:w-[400px] h-[550px] max-h-[85vh] rounded-2xl bg-white border border-gray-150 shadow-2xl overflow-hidden transition-all duration-300 transform scale-100 origin-bottom-right"
+          className="flex flex-col w-90 sm:w-100 h-137.5 max-h-[85vh] rounded-2xl bg-white border border-gray-150 shadow-2xl overflow-hidden transition-all duration-300 transform scale-100 origin-bottom-right"
           id="chatbot-window"
         >
-          {/* Header Banner */}
           <div className="bg-brand-dark px-5 py-4 flex items-center justify-between border-b border-white/10">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-brand-green/20 border border-brand-green/30 flex items-center justify-center text-brand-green shrink-0 relative">
-                <LucideIcon name="Bot" className="w-5 h-5 text-brand-green" />
-                <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full border border-brand-dark animate-pulse" />
+                <img src={logoIcon} alt="CAPSY" className="w-7 h-7 rounded-full object-cover" />
+                <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full border border-brand-dark" />
               </div>
               <div>
                 <h4 className="text-sm font-bold text-white tracking-wide flex items-center gap-1.5">
                   CAPSY Assistant IA
-                  <LucideIcon name="Sparkles" className="w-3.5 h-3.5 text-brand-green animate-pulse" />
+                  <LucideIcon name="Sparkles" className="w-3.5 h-3.5 text-brand-green" />
                 </h4>
                 <p className="text-[10px] text-white/60">Écoute active & orientation en RDC</p>
               </div>
@@ -518,7 +508,6 @@ export default function Chatbot({ onOpenBooking, isFullScreen = false }: Chatbot
             </div>
           </div>
 
-          {/* Messages Feed */}
           <div className="flex-1 overflow-y-auto p-4 bg-gray-50/50 space-y-4" id="chatbot-messages-feed">
             {messages.map((msg, i) => {
               const isModel = msg.role === 'model';
@@ -533,7 +522,6 @@ export default function Chatbot({ onOpenBooking, isFullScreen = false }: Chatbot
                   >
                     {renderMessageContent(msg.text, !isModel)}
 
-                    {/* Agentic custom call-to-action button */}
                     {isModel && msg.suggestedServiceId && (
                       <div className="mt-3.5 pt-2.5 border-t border-brand-gray/10 flex flex-col items-stretch">
                         <p className="text-[10px] text-brand-gray-text font-semibold mb-2 flex items-center gap-1.5">
@@ -575,7 +563,6 @@ export default function Chatbot({ onOpenBooking, isFullScreen = false }: Chatbot
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Quick interactive action triggers */}
           <div className="px-3 py-2 bg-white flex flex-nowrap gap-1.5 overflow-x-auto scrollbar-none border-t border-gray-100">
             <button
               onClick={() => handleSuggestClick("📋 Évaluer mon niveau de stress")}
@@ -597,30 +584,31 @@ export default function Chatbot({ onOpenBooking, isFullScreen = false }: Chatbot
             </button>
           </div>
 
-          {/* Chat input form container */}
           <form
             onSubmit={(e) => {
               e.preventDefault();
               handleSendMessage(inputVal);
             }}
-            className="px-4.5 pt-3.5 pb-6 bg-white border-t border-gray-150 flex items-center gap-2.5 shadow-[0_-4px_12px_rgba(0,0,0,0.02)]"
+            className="px-4.5 pt-3.5 pb-6 bg-white border-t border-gray-150 shadow-[0_-4px_12px_rgba(0,0,0,0.02)]"
           >
-            <input
-              type="text"
-              value={inputVal}
-              onChange={(e) => setInputVal(e.target.value)}
-              placeholder="Écrivez votre message..."
-              disabled={isLoading}
-              className="flex-1 text-sm bg-gray-50 border border-gray-200 focus:border-brand-green focus:bg-white px-4 py-2.5 rounded-xl outline-none transition-all placeholder:text-gray-400 text-gray-800"
-            />
-            <button
-              type="submit"
-              disabled={!inputVal.trim() || isLoading}
-              className="w-10 h-10 rounded-xl bg-brand-green text-white hover:bg-brand-green-dark flex items-center justify-center transition-all disabled:opacity-40 disabled:hover:bg-brand-green cursor-pointer shrink-0 shadow-sm hover:scale-105 active:scale-95"
-              aria-label="Envoyer"
-            >
-              <LucideIcon name="Send" className="w-4 h-4" />
-            </button>
+            <div className="max-w-3xl mx-auto relative">
+              <input
+                type="text"
+                value={inputVal}
+                onChange={(e) => setInputVal(e.target.value)}
+                placeholder="Écrivez votre message..."
+                disabled={isLoading}
+                className="w-full text-sm md:text-base bg-gray-50 border border-gray-200 focus:border-brand-green focus:bg-white px-4 py-3.5 rounded-xl outline-none transition-all placeholder:text-gray-400 text-gray-800 pr-14"
+              />
+              <button
+                type="submit"
+                disabled={!inputVal.trim() || isLoading}
+                className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-brand-green text-white hover:bg-brand-green-dark flex items-center justify-center transition-all disabled:opacity-40 cursor-pointer shadow-sm hover:scale-105 active:scale-95"
+                aria-label="Envoyer"
+              >
+                <LucideIcon name="Send" className="w-4 h-4" />
+              </button>
+            </div>
           </form>
         </div>
       )}
