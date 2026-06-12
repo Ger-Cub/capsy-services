@@ -1,0 +1,192 @@
+import React, { useEffect, useState } from 'react';
+import { Appointment } from '../types';
+import LucideIcon from './LucideIcon';
+
+interface AppointmentsManagerProps {
+  onOpenBooking: () => void;
+  onRefreshCounter: () => void;
+}
+
+export default function AppointmentsManager({
+  onOpenBooking,
+  onRefreshCounter,
+}: AppointmentsManagerProps) {
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
+
+  const loadAppointments = () => {
+    try {
+      const saved = localStorage.getItem('capsy_appointments');
+      if (saved) {
+        setAppointments(JSON.parse(saved));
+      } else {
+        setAppointments([]);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  useEffect(() => {
+    loadAppointments();
+
+    // Listen to changes (e.g., if booked via modal)
+    const handleStorageChange = () => {
+      loadAppointments();
+    };
+    window.addEventListener('storage', handleStorageChange);
+    // Custom event trigger when modal saves
+    window.addEventListener('appointments-updated', handleStorageChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('appointments-updated', handleStorageChange);
+    };
+  }, []);
+
+  const handleCancelAppointment = (id: string) => {
+    if (window.confirm('Voulez-vous vraiment annuler cette demande de consultation ?')) {
+      const saved = localStorage.getItem('capsy_appointments');
+      if (saved) {
+        const list: Appointment[] = JSON.parse(saved);
+        const updated = list.filter((app) => app.id !== id);
+        localStorage.setItem('capsy_appointments', JSON.stringify(updated));
+        setAppointments(updated);
+        onRefreshCounter();
+        // Trigger global listener
+        window.dispatchEvent(new Event('appointments-updated'));
+      }
+    }
+  };
+
+  if (appointments.length === 0) {
+    return null; // Return empty, will render a placeholder if explicitly navigated
+  }
+
+  return (
+    <section className="py-20 bg-white" id="mes-rendezvous">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        {/* Title Alignment */}
+        <div className="text-center max-w-2xl mx-auto mb-12">
+          <div className="inline-flex p-2 bg-brand-blue/10 rounded-full text-brand-blue mb-2.5">
+            <LucideIcon name="Clock" className="h-6 w-6 text-brand-green" />
+          </div>
+          <h2 className="text-3xl font-poppins font-black text-brand-blue tracking-tight">
+            Vos Demandes de Consultation
+          </h2>
+          <p className="text-sm text-brand-gray-text mt-2 leading-relaxed">
+            Consultez, suivez et gérez l'état de vos demandes de rendez-vous enregistrées localement sur votre appareil.
+          </p>
+        </div>
+
+        {/* List of active requests */}
+        <div className="space-y-4" id="appointments-tracking-list">
+          {appointments.map((app) => (
+            <div
+              key={app.id}
+              className="bg-white rounded-2xl border-2 border-slate-100 hover:border-slate-200 p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 shadow-sm transition-all relative overflow-hidden"
+            >
+              {/* Highlight left vertical bar */}
+              <div className="absolute top-0 bottom-0 left-0 w-1.5 bg-brand-blue" />
+
+              <div className="space-y-3.5 flex-1 pl-2">
+                
+                {/* ID & Date Header */}
+                <div className="flex flex-wrap items-center gap-2.5">
+                  <span className="font-mono text-xs font-bold text-brand-blue bg-brand-blue/10 px-2.5 py-1 rounded-md">
+                    {app.id}
+                  </span>
+                  
+                  <span className="text-[10px] bg-amber-50 text-amber-700 border border-amber-200 px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">
+                    En attente d'appel
+                  </span>
+
+                  <span className="text-xs text-brand-gray-text font-semibold">
+                    Créé {new Date(app.createdAt).toLocaleDateString('fr-FR', {
+                      day: 'numeric',
+                      month: 'short',
+                      year: 'numeric',
+                    })}
+                  </span>
+                </div>
+
+                {/* Details breakdown */}
+                <div>
+                  <h4 className="text-base font-poppins font-bold text-brand-dark">
+                    {app.serviceTitle}
+                  </h4>
+                  <p className="text-xs text-brand-gray-text font-sans font-medium mt-1">
+                    Praticien : <span className="text-brand-dark font-semibold">{app.preferredTherapist}</span>
+                  </p>
+                </div>
+
+                {/* Date & Time breakdown block */}
+                <div className="flex flex-wrap gap-4 text-xs font-semibold font-sans mt-2.5 text-brand-dark py-2 px-3 bg-brand-gray-light rounded-xl">
+                  <div className="flex items-center gap-1.5">
+                    <LucideIcon name="Calendar" className="h-4 w-4 text-brand-green" />
+                    <span>
+                      {new Date(app.date).toLocaleDateString('fr-FR', {
+                        weekday: 'short',
+                        day: 'numeric',
+                        month: 'long',
+                      })}
+                    </span>
+                  </div>
+                  <div className="h-4 w-[1px] bg-gray-300 hidden sm:block" />
+                  <div className="flex items-center gap-1.5">
+                    <LucideIcon name="Clock" className="h-4 w-4 text-brand-green" />
+                    <span className="font-mono">{app.timeSlot}</span>
+                  </div>
+                </div>
+
+                {/* Patient metadata summary */}
+                <div className="text-xs font-sans text-brand-gray-text space-y-0.5 border-t border-gray-100 pt-2.5">
+                  <p>Coordonnées : <span className="font-semibold text-brand-dark bg-slate-50 px-1.5 py-0.5 rounded-sm">{app.clientName}</span> ({app.clientPhone})</p>
+                  {app.clientNotes && app.clientNotes !== 'Aucun détail supplémentaire' && (
+                    <p className="line-clamp-1 italic text-[11px] mt-1">Note : "{app.clientNotes}"</p>
+                  )}
+                </div>
+
+              </div>
+
+              {/* Action columns: Contact with WA link or Cancel booking */}
+              <div className="flex flex-row sm:flex-col gap-2 w-full sm:w-auto self-stretch sm:self-center justify-end shrink-0 pt-4 sm:pt-0 border-t sm:border-t-0 border-gray-100">
+                
+                {/* Direct Whatsapp shortcut reminder */}
+                <a
+                  href={`https://wa.me/243971234567?text=Bonjour%20Capsy%20Services%2C%20je%20viens%20de%20soumettre%20une%20demande%20de%20rendez-vous%20sur%20votre%20site.%20Mon%20N%C2%B0%20de%20suivi%20est%20${app.id}.%20Merci!`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-1 sm:flex-none py-2 px-3.5 bg-[#25D366] hover:bg-[#20ba56] text-white font-bold font-poppins text-xs rounded-xl flex items-center justify-center gap-1.5 transition-all shadow-xs"
+                >
+                  <LucideIcon name="MessageSquareShare" className="h-4 w-4" />
+                  <span>Notifier</span>
+                </a>
+
+                <button
+                  type="button"
+                  onClick={() => handleCancelAppointment(app.id)}
+                  className="flex-1 sm:flex-none py-2 px-3.5 hover:bg-rose-50 text-rose-600 border border-rose-200 hover:border-rose-300 font-bold font-poppins text-xs rounded-xl transition-colors cursor-pointer flex items-center justify-center gap-1.5"
+                >
+                  <LucideIcon name="X" className="h-3.5 w-3.5" />
+                  <span>Annuler</span>
+                </button>
+
+              </div>
+
+            </div>
+          ))}
+        </div>
+
+        {/* Bottom banner details */}
+        <div className="bg-brand-gray-light p-4 rounded-xl border border-gray-150 flex gap-3 text-xs text-brand-gray-text leading-relaxed mt-10">
+          <LucideIcon name="Info" className="h-5 w-5 text-brand-blue shrink-0 mt-0.5" />
+          <p>
+            Ces demandes sont conservées localement dans votre navigateur Web. Nos agents cliniques utilisent ce suivi local pour retrouver vos fiches lors de votre première prise de contact téléphonique ou physique en RDC.
+          </p>
+        </div>
+
+      </div>
+    </section>
+  );
+}

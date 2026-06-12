@@ -1,0 +1,6 @@
+{
+  "name": "Capsy Services",
+  "description": "Portail web et landing page de Capsy Services - Accompagnement psychologique et bien-être psychosocial en République Démocratique du Congo.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
