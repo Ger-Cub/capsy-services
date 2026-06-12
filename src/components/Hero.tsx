@@ -1,5 +1,6 @@
 import React from 'react';
 import LucideIcon from './LucideIcon';
+import therapistImage from '../assets/images/capsy_consultation_1781254897566.jpg';
 
 interface HeroProps {
   onOpenBooking: () => void;
@@ -7,8 +8,7 @@ interface HeroProps {
 }
 
 export default function Hero({ onOpenBooking, onOpenStressTest }: HeroProps) {
-  // Path to our master generated photo
-  const therapistImage = '/src/assets/images/capsy_consultation_1781254897566.jpg';
+  // Image imported above so Vite includes it in production builds
 
   return (
     <section className="relative overflow-hidden pt-28 pb-16 lg:pt-36 lg:pb-24 bg-gradient-to-br from-white via-white to-blue-50/20" id="hero-section">
