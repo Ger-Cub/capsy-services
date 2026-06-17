@@ -2,6 +2,9 @@ import { GoogleGenAI } from "@google/genai";
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
+    const start = Date.now();
+    console.log(`[${new Date().toISOString()}] Received API request`);
+
     if (req.method !== 'POST') {
         return res.status(405).json({ error: 'Method not allowed' });
     }
@@ -23,6 +26,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         }
 
         if (!apiKey) {
+            console.error("Missing GEMINI_API_KEY");
             return res.status(500).json({
                 error: "La clé API Gemini n'est pas configurée. Veuillez l'ajouter dans les variables d'environnement Vercel."
             });
@@ -73,8 +77,15 @@ Si vous parlez d\'un service spécifique que l\'utilisateur pourrait apprécier 
 - [SUGGEST_BOOKING:supervision] (pour la supervision)
 Ne l\'ajoutez que si la conversation s\'oriente clairement vers la réservation ou vers un besoin lié à ce domaine précis.`;
 
-        const response = await ai.models.generateContent({
-            model: "gemini-3.5-flash",
+        console.log("Streaming content with gemini-3.5-flash...");
+
+        // Set headers for SSE
+        res.setHeader('Content-Type', 'text/event-stream');
+        res.setHeader('Cache-Control', 'no-cache');
+        res.setHeader('Connection', 'keep-alive');
+
+        const responseStream = await ai.models.generateContentStream({
+            model: "gemini-2.5-flash",
             contents: contents,
             config: {
                 systemInstruction: sysInstruction,
@@ -82,11 +93,26 @@ Ne l\'ajoutez que si la conversation s\'oriente clairement vers la réservation 
             }
         });
 
-        const replyText = response.text || "Je m'excuse, je n'ai pas pu générer une réponse. Pouvez-vous reformuler ?";
-        return res.json({ text: replyText });
+        for await (const chunk of responseStream) {
+            if (chunk.text) {
+                res.write(`data: ${JSON.stringify({ text: chunk.text })}\n\n`);
+            }
+        }
+
+        const duration = Date.now() - start;
+        console.log(`[${new Date().toISOString()}] API stream complete in ${duration}ms`);
+        res.write("data: [DONE]\n\n");
+        res.end();
 
     } catch (error: any) {
-        console.error("Gemini API error:", error);
-        return res.status(500).json({ error: error.message || "Erreur de communication avec l'IA" });
+        const duration = Date.now() - start;
+        console.error(`[${new Date().toISOString()}] API error after ${duration}ms:`, error);
+        if (!res.headersSent) {
+            return res.status(500).json({ error: error.message || "Erreur de communication avec l'IA" });
+        } else {
+            res.write(`data: ${JSON.stringify({ error: error.message || "Erreur de flux" })}\n\n`);
+            res.end();
+            return;
+        }
     }
 }

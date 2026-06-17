@@ -22,6 +22,9 @@ const ai = new GoogleGenAI({
 
 // Chat API route
 app.post("/api/chat", async (req: express.Request, res: express.Response) => {
+  const start = Date.now();
+  console.log(`[${new Date().toISOString()}] Received chat request`);
+
   try {
     const { message, history } = req.body;
     if (!message) {
@@ -29,6 +32,7 @@ app.post("/api/chat", async (req: express.Request, res: express.Response) => {
     }
 
     if (!apiKey) {
+      console.error("Missing GEMINI_API_KEY");
       return res.status(500).json({
         error: "La clé API Gemini n'est pas configurée. Veuillez l'ajouter dans les variables d'environnement."
       });
@@ -79,8 +83,15 @@ Si vous parlez d\'un service spécifique que l\'utilisateur pourrait apprécier 
 - [SUGGEST_BOOKING:supervision] (pour la supervision)
 Ne l\'ajoutez que si la conversation s\'oriente clairement vers la réservation ou vers un besoin lié à ce domaine précis.`;
 
-    const response = await ai.models.generateContent({
-      model: "gemini-3.5-flash",
+    console.log("Streaming content with gemini-3.5-flash...");
+
+    // Set headers for SSE (Server-Sent Events)
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
+
+    const responseStream = await ai.models.generateContentStream({
+      model: "gemini-2.5-flash",
       contents: contents,
       config: {
         systemInstruction: sysInstruction,
@@ -88,14 +99,30 @@ Ne l\'ajoutez que si la conversation s\'oriente clairement vers la réservation 
       }
     });
 
-    const replyText = response.text || "Je m'excuse, je n'ai pas pu générer une réponse. Pouvez-vous reformuler ?";
-    res.json({ text: replyText });
+    for await (const chunk of responseStream) {
+      if (chunk.text) {
+        res.write(`data: ${JSON.stringify({ text: chunk.text })}\n\n`);
+      }
+    }
+
+    const duration = Date.now() - start;
+    console.log(`[${new Date().toISOString()}] Stream complete in ${duration}ms`);
+    res.write("data: [DONE]\n\n");
+    res.end();
 
   } catch (error: any) {
-    console.error("Gemini API error:", error);
-    res.status(500).json({ error: error.message || "Erreur de communication avec l'IA" });
+    const duration = Date.now() - start;
+    console.error(`[${new Date().toISOString()}] Gemini API error after ${duration}ms:`, error);
+    // If headers haven't been sent yet, send a normal error. Otherwise, send an error event.
+    if (!res.headersSent) {
+      res.status(500).json({ error: error.message || "Erreur de communication avec l'IA" });
+    } else {
+      res.write(`data: ${JSON.stringify({ error: error.message || "Erreur de flux" })}\n\n`);
+      res.end();
+    }
   }
 });
+
 
 // Serve static files or use Vite dev server
 if (process.env.NODE_ENV !== "production") {

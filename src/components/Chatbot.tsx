@@ -102,22 +102,83 @@ export default function Chatbot({ onOpenBooking, isFullScreen = false }: Chatbot
         throw new Error("Impossible de joindre le service de discussion.");
       }
 
-      const data = await res.json();
-      
-      const { cleanText, serviceId } = parseMessageText(data.text || '');
+      // Read the stream
+      const reader = res.body?.getReader();
+      const decoder = new TextDecoder();
+      let streamText = "";
+      let modelMessageAdded = false;
 
-      setMessages(prev => [...prev, {
-        role: 'model',
-        text: cleanText,
-        suggestedServiceId: serviceId
-      }]);
+      if (!reader) throw new Error("Flux non disponible");
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        const chunk = decoder.decode(value, { stream: true });
+        // Process SSE lines
+        const lines = chunk.split('\n');
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            const dataStr = line.slice(6).trim();
+            if (dataStr === '[DONE]') continue;
+
+            try {
+              const data = JSON.parse(dataStr);
+              if (data.text) {
+                streamText += data.text;
+
+                // Update the last message in state
+                if (!modelMessageAdded) {
+                  setMessages(prev => [...prev, {
+                    role: 'model',
+                    text: streamText
+                  }]);
+                  modelMessageAdded = true;
+                } else {
+                  setMessages(prev => {
+                    const newMsgs = [...prev];
+                    newMsgs[newMsgs.length - 1] = {
+                      ...newMsgs[newMsgs.length - 1],
+                      text: streamText
+                    };
+                    return newMsgs;
+                  });
+                }
+              } else if (data.error) {
+                throw new Error(data.error);
+              }
+            } catch (e) {
+              // Ignore partial JSON or other parsing errors during stream
+            }
+          }
+        }
+      }
+
+      // Final pass to check for service suggestions
+      const { cleanText, serviceId } = parseMessageText(streamText);
+      setMessages(prev => {
+        const newMsgs = [...prev];
+        newMsgs[newMsgs.length - 1] = {
+          ...newMsgs[newMsgs.length - 1],
+          text: cleanText,
+          suggestedServiceId: serviceId
+        };
+        return newMsgs;
+      });
 
     } catch (err: any) {
       console.error("Chatbot response error:", err);
-      setMessages(prev => [...prev, {
-        role: 'model',
-        text: "Désolé, j'encours des difficultés de réseau en ce moment. Vous pouvez toujours nous appeler ou écrire directement au +243 997 707 312 📞."
-      }]);
+      // If we already added a model message but it failed mid-stream
+      setMessages(prev => {
+        const last = prev[prev.length - 1];
+        if (last && last.role === 'model' && !last.isWelcome) {
+          return prev; // keep what we have
+        }
+        return [...prev, {
+          role: 'model',
+          text: "Désolé, j'encours des difficultés de réseau en ce moment. Vous pouvez toujours nous appeler ou écrire directement au +243 997 707 312 📞."
+        }];
+      });
     } finally {
       setIsLoading(false);
     }
@@ -132,7 +193,7 @@ export default function Chatbot({ onOpenBooking, isFullScreen = false }: Chatbot
     const paragraphs = text.split('\n');
     return paragraphs.map((p, idx) => {
       if (!p.trim()) return <div key={idx} className="h-2" />;
-      
+
       // Parse **bold** phrases safely
       const parts = [];
       let lastIndex = 0;
@@ -144,8 +205,8 @@ export default function Chatbot({ onOpenBooking, isFullScreen = false }: Chatbot
           parts.push(p.substring(lastIndex, match.index));
         }
         parts.push(
-          <strong 
-            key={match.index} 
+          <strong
+            key={match.index}
             className={`font-bold ${isUser ? 'text-white underline decoration-white/30' : 'text-brand-dark'}`}
           >
             {match[1]}
@@ -230,7 +291,7 @@ export default function Chatbot({ onOpenBooking, isFullScreen = false }: Chatbot
               <LucideIcon name="Users" className="w-3.5 h-3.5 text-brand-green" />
               Nos Cliniciens Référents
             </h3>
-            
+
             <div className="space-y-3">
               {clinicians.map((c, i) => (
                 <div key={i} className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-white/5 transition-all">
@@ -274,7 +335,7 @@ export default function Chatbot({ onOpenBooking, isFullScreen = false }: Chatbot
               >
                 <LucideIcon name="ChevronLeft" className="w-5 h-5" />
               </a>
-              
+
               <div className="w-10 h-10 rounded-full bg-brand-green/20 border border-brand-green/30 flex items-center justify-center text-brand-green relative shrink-0">
                 <img src={logoIcon} alt="CAPSY" className="w-7 h-7 rounded-full object-cover" />
                 <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full border border-brand-dark" />
@@ -333,11 +394,10 @@ export default function Chatbot({ onOpenBooking, isFullScreen = false }: Chatbot
 
                       <div className="flex flex-col space-y-1">
                         <div
-                          className={`rounded-2xl px-5 py-4 text-sm md:text-base leading-relaxed shadow-sm ${
-                            isModel
-                              ? 'bg-gray-50 border border-gray-150 text-gray-800 rounded-tl-none font-normal'
-                              : 'bg-brand-blue text-white rounded-tr-none font-medium'
-                          }`}
+                          className={`rounded-2xl px-5 py-4 text-sm md:text-base leading-relaxed shadow-sm ${isModel
+                            ? 'bg-gray-50 border border-gray-150 text-gray-800 rounded-tl-none font-normal'
+                            : 'bg-brand-blue text-white rounded-tr-none font-medium'
+                            }`}
                         >
                           {renderMessageContent(msg.text, !isModel)}
 
@@ -481,10 +541,10 @@ export default function Chatbot({ onOpenBooking, isFullScreen = false }: Chatbot
                   CAPSY Assistant IA
                   <LucideIcon name="Sparkles" className="w-3.5 h-3.5 text-brand-green" />
                 </h4>
-                <p className="text-[10px] text-white/60">Écoute active & orientation en RDC</p>
+                <p className="text-[10px] text-white/60">Écoute active & orientation</p>
               </div>
             </div>
-            
+
             <div className="flex items-center gap-1">
               <a
                 href="?chat=true"
@@ -512,11 +572,10 @@ export default function Chatbot({ onOpenBooking, isFullScreen = false }: Chatbot
               return (
                 <div key={i} className={`flex flex-col ${isModel ? 'items-start' : 'items-end'} space-y-1`}>
                   <div
-                    className={`max-w-[85%] rounded-2xl px-4 py-3 text-sm shadow-sm ${
-                      isModel
-                        ? 'bg-white border border-gray-150 text-gray-800 rounded-tl-none'
-                        : 'bg-brand-blue text-white rounded-tr-none font-medium'
-                    }`}
+                    className={`max-w-[85%] rounded-2xl px-4 py-3 text-sm shadow-sm ${isModel
+                      ? 'bg-white border border-gray-150 text-gray-800 rounded-tl-none'
+                      : 'bg-brand-blue text-white rounded-tr-none font-medium'
+                      }`}
                   >
                     {renderMessageContent(msg.text, !isModel)}
 
@@ -539,7 +598,7 @@ export default function Chatbot({ onOpenBooking, isFullScreen = false }: Chatbot
                       </div>
                     )}
                   </div>
-                  
+
                   <span className="text-[9px] text-brand-gray-text px-1 font-mono">
                     {isModel ? 'CAPSY' : 'Vous'}
                   </span>
@@ -557,7 +616,7 @@ export default function Chatbot({ onOpenBooking, isFullScreen = false }: Chatbot
                 <span className="text-[9px] text-brand-gray-text px-1 font-mono">CAPSY écrit...</span>
               </div>
             )}
-            
+
             <div ref={messagesEndRef} />
           </div>
 
