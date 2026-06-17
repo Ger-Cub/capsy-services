@@ -6,50 +6,45 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-async function startServer() {
-  const app = express();
-  const PORT = 3000;
+const app = express();
+app.use(express.json());
 
-  app.use(express.json());
-
-  // Initialize Gemini
-  const apiKey = process.env.GEMINI_API_KEY;
-  const ai = new GoogleGenAI({
-    apiKey: apiKey || "",
-    httpOptions: {
-      headers: {
-        'User-Agent': 'aistudio-build',
-      }
+// Initialize Gemini
+const apiKey = process.env.GEMINI_API_KEY;
+const ai = new GoogleGenAI({
+  apiKey: apiKey || "",
+  httpOptions: {
+    headers: {
+      'User-Agent': 'aistudio-build',
     }
-  });
+  }
+});
 
-  // Chat API route
-  app.post("/api/chat", async (req, res) => {
-    try {
-      const { message, history } = req.body;
-      if (!message) {
-        return res.status(400).json({ error: "Message is required" });
-      }
+// Chat API route
+app.post("/api/chat", async (req: express.Request, res: express.Response) => {
+  try {
+    const { message, history } = req.body;
+    if (!message) {
+      return res.status(400).json({ error: "Message is required" });
+    }
 
-      if (!apiKey) {
-        return res.status(500).json({ 
-          error: "La clé API Gemini n'est pas configurée dans les variables d'environnement. Veuillez l'ajouter dans la section Settings > Secrets." 
-        });
-      }
-
-      // Convert history to Gemini compatible parts
-      const contents = (history || []).map((h: any) => ({
-        role: h.role === "user" ? "user" : "model",
-        parts: [{ text: h.text }]
-      }));
-
-      // Add actual new message
-      contents.push({
-        role: "user",
-        parts: [{ text: message }]
+    if (!apiKey) {
+      return res.status(500).json({
+        error: "La clé API Gemini n'est pas configurée. Veuillez l'ajouter dans les variables d'environnement."
       });
+    }
 
-      const sysInstruction = `Vous êtes CAPSY, un assistant virtuel et conseiller en santé mentale intelligent et empathique créé par CAPSY Services en RDC (à Goma et Kinshasa). Votre but est d'accompagner de manière chaleureuse, bienveillante et confidentielle l'utilisateur dans son parcours de bien-être mental.
+    const contents = (history || []).map((h: any) => ({
+      role: h.role === "user" ? "user" : "model",
+      parts: [{ text: h.text }]
+    }));
+
+    contents.push({
+      role: "user",
+      parts: [{ text: message }]
+    });
+
+    const sysInstruction = `Vous êtes CAPSY, un assistant virtuel et conseiller en santé mentale intelligent et empathique créé par CAPSY Services en RDC (à Goma et Kinshasa). Votre but est d'accompagner de manière chaleureuse, bienveillante et confidentielle l'utilisateur dans son parcours de bien-être mental.
 
 Rôles principaux :
 1. INFORMER : Répondez aux questions sur la santé mentale et sur nos services d\'accompagnement. Nos principaux services de CAPSY Services sont :
@@ -84,42 +79,48 @@ Si vous parlez d\'un service spécifique que l\'utilisateur pourrait apprécier 
 - [SUGGEST_BOOKING:supervision] (pour la supervision)
 Ne l\'ajoutez que si la conversation s\'oriente clairement vers la réservation ou vers un besoin lié à ce domaine précis.`;
 
-      const response = await ai.models.generateContent({
-        model: "gemini-3.5-flash",
-        contents: contents,
-        config: {
-          systemInstruction: sysInstruction,
-          temperature: 0.7,
-        }
-      });
+    const response = await ai.models.generateContent({
+      model: "gemini-1.5-flash",
+      contents: contents,
+      config: {
+        systemInstruction: sysInstruction,
+        temperature: 0.7,
+      }
+    });
 
-      const replyText = response.text || "Je m'excuse, je n'ai pas pu générer une réponse. Pouvez-vous reformuler ?";
-      res.json({ text: replyText });
+    const replyText = response.text || "Je m'excuse, je n'ai pas pu générer une réponse. Pouvez-vous reformuler ?";
+    res.json({ text: replyText });
 
-    } catch (error: any) {
-      console.error("Gemini API error:", error);
-      res.status(500).json({ error: error.message || "Erreur de communication avec l'IA" });
-    }
-  });
+  } catch (error: any) {
+    console.error("Gemini API error:", error);
+    res.status(500).json({ error: error.message || "Erreur de communication avec l'IA" });
+  }
+});
 
-  // Serve static files or use Vite dev server
-  if (process.env.NODE_ENV !== "production") {
+// Serve static files or use Vite dev server
+if (process.env.NODE_ENV !== "production") {
+  (async () => {
+    const { createServer: createViteServer } = await import("vite");
     const vite = await createViteServer({
       server: { middlewareMode: true },
       appType: "spa",
     });
     app.use(vite.middlewares);
-  } else {
-    const distPath = path.join(process.cwd(), 'dist');
-    app.use(express.static(distPath));
-    app.get('*', (req, res) => {
-      res.sendFile(path.join(distPath, 'index.html'));
-    });
-  }
+  })();
+} else {
+  const distPath = path.join(process.cwd(), 'dist');
+  app.use(express.static(distPath));
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(distPath, 'index.html'));
+  });
+}
 
+const PORT = Number(process.env.PORT) || 3000;
+if (process.env.NODE_ENV !== "production") {
   app.listen(PORT, "0.0.0.0", () => {
     console.log(`Server running on http://localhost:${PORT}`);
   });
 }
 
-startServer();
+export default app;
+

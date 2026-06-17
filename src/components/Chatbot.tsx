@@ -387,7 +387,7 @@ export default function Chatbot({ onOpenBooking, isFullScreen = false }: Chatbot
             </div>
           </div>
 
-          <div className="py-3 bg-gray-50/50 border-t border-gray-100 shrink-0">
+          <div className="py-2 bg-gray-50/50 border-t border-gray-100 shrink-0">
             <div className="max-w-3xl mx-auto px-4 flex flex-nowrap md:flex-wrap gap-2 overflow-x-auto md:overflow-x-visible scrollbar-none">
               <button
                 onClick={() => handleSuggestClick("📋 Évaluer mon niveau de stress")}
@@ -410,37 +410,35 @@ export default function Chatbot({ onOpenBooking, isFullScreen = false }: Chatbot
             </div>
           </div>
 
-          <div className="bg-white border-t border-gray-150 p-4 shrink-0 shadow-[0_-4px_12px_rgba(0,0,0,0.02)]">
-            <div className="max-w-3xl mx-auto pb-6 pt-1.5 relative">
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  handleSendMessage(inputVal);
-                }}
-                className="relative"
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleSendMessage(inputVal);
+            }}
+            className="px-4.5 pt-2 pb-3 bg-white border-t border-gray-150 shadow-[0_-4px_12px_rgba(0,0,0,0.02)]"
+          >
+            <div className="max-w-3xl mx-auto relative">
+              <input
+                type="text"
+                value={inputVal}
+                onChange={(e) => setInputVal(e.target.value)}
+                placeholder="Écrivez votre message..."
+                disabled={isLoading}
+                className="w-full text-sm md:text-base bg-gray-50 border border-gray-200 focus:border-brand-green focus:bg-white px-5 py-3.5 rounded-full outline-none transition-all placeholder:text-gray-400 text-gray-800 pr-15"
+              />
+              <button
+                type="submit"
+                disabled={!inputVal.trim() || isLoading}
+                className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-brand-green text-white hover:bg-brand-green-dark flex items-center justify-center transition-all disabled:opacity-40 cursor-pointer shadow-sm hover:scale-105 active:scale-95"
+                aria-label="Envoyer"
               >
-                <input
-                  type="text"
-                  value={inputVal}
-                  onChange={(e) => setInputVal(e.target.value)}
-                  placeholder="Posez vos questions ou décrivez votre état d'esprit ici..."
-                  disabled={isLoading}
-                  className="w-full text-base md:text-lg bg-gray-50 border border-gray-200 focus:border-brand-green focus:bg-white px-6 py-4 rounded-full outline-none transition-all placeholder:text-gray-400 text-gray-800 pr-20"
-                />
-                <button
-                  type="submit"
-                  disabled={!inputVal.trim() || isLoading}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-brand-green text-white flex items-center justify-center transition-all disabled:opacity-40 cursor-pointer shadow-md hover:scale-105 active:scale-95"
-                  aria-label="Envoyer"
-                >
-                  <LucideIcon name="Send" className="w-5 h-5" />
-                </button>
-              </form>
-              <p className="text-[10px] text-brand-gray-text/80 text-center mt-3 tracking-wide">
-                🔒 Vos conversations avec l'IA sont entièrement confidentielles et temporaires.
-              </p>
+                <LucideIcon name="Send" className="w-4 h-4" />
+              </button>
             </div>
-          </div>
+            <p className="text-[10px] text-brand-gray-text/80 text-center mt-1 tracking-wide">
+              🔒 Vos conversations avec l'IA sont entièrement confidentielles et temporaires.
+            </p>
+          </form>
         </div>
       </div>
     );
@@ -589,7 +587,7 @@ export default function Chatbot({ onOpenBooking, isFullScreen = false }: Chatbot
               e.preventDefault();
               handleSendMessage(inputVal);
             }}
-            className="px-4.5 pt-3.5 pb-6 bg-white border-t border-gray-150 shadow-[0_-4px_12px_rgba(0,0,0,0.02)]"
+            className="px-4.5 pt-3.5 pb-4 bg-white border-t border-gray-150 shadow-[0_-4px_12px_rgba(0,0,0,0.02)]"
           >
             <div className="max-w-3xl mx-auto relative">
               <input
@@ -598,17 +596,20 @@ export default function Chatbot({ onOpenBooking, isFullScreen = false }: Chatbot
                 onChange={(e) => setInputVal(e.target.value)}
                 placeholder="Écrivez votre message..."
                 disabled={isLoading}
-                className="w-full text-sm md:text-base bg-gray-50 border border-gray-200 focus:border-brand-green focus:bg-white px-4 py-3.5 rounded-xl outline-none transition-all placeholder:text-gray-400 text-gray-800 pr-14"
+                className="w-full text-sm md:text-base bg-gray-50 border border-gray-200 focus:border-brand-green focus:bg-white px-5 py-4 rounded-full outline-none transition-all placeholder:text-gray-400 text-gray-800 pr-16"
               />
               <button
                 type="submit"
                 disabled={!inputVal.trim() || isLoading}
-                className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-brand-green text-white hover:bg-brand-green-dark flex items-center justify-center transition-all disabled:opacity-40 cursor-pointer shadow-sm hover:scale-105 active:scale-95"
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-brand-green text-white hover:bg-brand-green-dark flex items-center justify-center transition-all disabled:opacity-40 cursor-pointer shadow-sm hover:scale-105 active:scale-95"
                 aria-label="Envoyer"
               >
                 <LucideIcon name="Send" className="w-4 h-4" />
               </button>
             </div>
+            <p className="text-[10px] text-brand-gray-text/80 text-center mt-1 tracking-wide">
+              🔒 Vos conversations avec l'IA sont entièrement confidentielles et temporaires.
+            </p>
           </form>
         </div>
       )}
