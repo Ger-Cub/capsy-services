@@ -25,6 +25,7 @@ export default function Chatbot({ onOpenBooking, isFullScreen = false }: Chatbot
   ]);
   const [inputVal, setInputVal] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isStreaming, setIsStreaming] = useState(false);
   const [unreadCount, setUnreadCount] = useState(1);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -79,6 +80,7 @@ export default function Chatbot({ onOpenBooking, isFullScreen = false }: Chatbot
     setMessages(prev => [...prev, newUserMsg]);
     setInputVal('');
     setIsLoading(true);
+    setIsStreaming(false);
 
     try {
       // Filter out system welcome markers or empty strings before sending to API
@@ -105,57 +107,76 @@ export default function Chatbot({ onOpenBooking, isFullScreen = false }: Chatbot
       // Read the stream
       const reader = res.body?.getReader();
       const decoder = new TextDecoder();
-      let streamText = "";
+      let fullStreamText = "";
+      let displayedText = "";
       let modelMessageAdded = false;
+      let isStreamFinished = false;
 
       if (!reader) throw new Error("Flux non disponible");
 
+      // Shared update function for smooth typing
+      const processDisplayedText = async () => {
+        while (!isStreamFinished || displayedText.length < fullStreamText.length) {
+          if (displayedText.length < fullStreamText.length) {
+            // Add a chunk of characters (e.g., 2-4) for smoothness without being too slow
+            const charsToAdd = fullStreamText.length - displayedText.length > 10 ? 5 : 2;
+            displayedText += fullStreamText.slice(displayedText.length, displayedText.length + charsToAdd);
+
+            setMessages(prev => {
+              const newMsgs = [...prev];
+              if (!modelMessageAdded) {
+                newMsgs.push({ role: 'model', text: displayedText });
+                modelMessageAdded = true;
+                setIsStreaming(true);
+              } else {
+                newMsgs[newMsgs.length - 1] = {
+                  ...newMsgs[newMsgs.length - 1],
+                  text: displayedText
+                };
+              }
+              return newMsgs;
+            });
+            // Delay between each character group to create the typing effect
+            await new Promise(resolve => setTimeout(resolve, 15));
+          } else {
+            // Briefly wait for more data to arrive in fullStreamText
+            await new Promise(resolve => setTimeout(resolve, 30));
+          }
+        }
+      };
+
+      // Start the typing effect loop in parallel
+      const typingPromise = processDisplayedText();
+
+      // Read from the network stream
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
 
         const chunk = decoder.decode(value, { stream: true });
-        // Process SSE lines
         const lines = chunk.split('\n');
         for (const line of lines) {
           if (line.startsWith('data: ')) {
             const dataStr = line.slice(6).trim();
             if (dataStr === '[DONE]') continue;
-
             try {
               const data = JSON.parse(dataStr);
               if (data.text) {
-                streamText += data.text;
-
-                // Update the last message in state
-                if (!modelMessageAdded) {
-                  setMessages(prev => [...prev, {
-                    role: 'model',
-                    text: streamText
-                  }]);
-                  modelMessageAdded = true;
-                } else {
-                  setMessages(prev => {
-                    const newMsgs = [...prev];
-                    newMsgs[newMsgs.length - 1] = {
-                      ...newMsgs[newMsgs.length - 1],
-                      text: streamText
-                    };
-                    return newMsgs;
-                  });
-                }
+                fullStreamText += data.text;
+                // fullStreamText is updated, processDisplayedText loop will pick it up
               } else if (data.error) {
                 throw new Error(data.error);
               }
-            } catch (e) {
-              // Ignore partial JSON or other parsing errors during stream
-            }
+            } catch (e) { }
           }
         }
       }
 
-      // Final pass to check for service suggestions
-      const { cleanText, serviceId } = parseMessageText(streamText);
+      isStreamFinished = true;
+      await typingPromise; // Wait for typing to finish showing everything
+
+      // Final pass to check for service suggestions and clean up
+      const { cleanText, serviceId } = parseMessageText(fullStreamText);
       setMessages(prev => {
         const newMsgs = [...prev];
         newMsgs[newMsgs.length - 1] = {
@@ -181,6 +202,7 @@ export default function Chatbot({ onOpenBooking, isFullScreen = false }: Chatbot
       });
     } finally {
       setIsLoading(false);
+      setIsStreaming(false);
     }
   };
 
@@ -426,7 +448,7 @@ export default function Chatbot({ onOpenBooking, isFullScreen = false }: Chatbot
                 );
               })}
 
-              {isLoading && (
+              {isLoading && !isStreaming && (
                 <div className="flex justify-start">
                   <div className="flex gap-3">
                     <div className="w-8 h-8 rounded-full bg-brand-green/10 text-brand-green border border-brand-green/20 flex items-center justify-center shrink-0">
@@ -606,7 +628,7 @@ export default function Chatbot({ onOpenBooking, isFullScreen = false }: Chatbot
               );
             })}
 
-            {isLoading && (
+            {isLoading && !isStreaming && (
               <div className="flex flex-col items-start space-y-1">
                 <div className="bg-white border border-gray-150 rounded-2xl rounded-tl-none px-4 py-3 flex items-center space-x-1.5 shadow-sm">
                   <span className="w-2 h-2 bg-brand-green rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
