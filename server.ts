@@ -80,7 +80,7 @@ Si vous parlez d\'un service spécifique que l\'utilisateur pourrait apprécier 
 Ne l\'ajoutez que si la conversation s\'oriente clairement vers la réservation ou vers un besoin lié à ce domaine précis.`;
 
     const response = await ai.models.generateContent({
-      model: "gemini-1.5-flash",
+      model: "gemini-3.5-flash",
       contents: contents,
       config: {
         systemInstruction: sysInstruction,
