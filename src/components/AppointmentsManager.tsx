@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Appointment } from '../types';
+import { SERVICES } from '../data/staticData';
 import LucideIcon from './LucideIcon';
 
 interface AppointmentsManagerProps {
@@ -13,6 +14,8 @@ export default function AppointmentsManager({
 }: AppointmentsManagerProps) {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
 
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
   const loadAppointments = () => {
     try {
       const saved = localStorage.getItem('capsy_appointments');
@@ -23,6 +26,34 @@ export default function AppointmentsManager({
       }
     } catch (e) {
       console.error(e);
+    }
+  };
+
+  const handleRefreshFromOdoo = async () => {
+    if (appointments.length === 0) return;
+    setIsRefreshing(true);
+    // Use the first appointment's contact info to fetch all related ones
+    const contactInfo = appointments[0].clientPhone || appointments[0].clientEmail;
+
+    try {
+      const response = await fetch('/api/odoo', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'get_appointments',
+          params: { partnerInfo: contactInfo }
+        })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Fetched from Odoo:', data.appointments);
+        // Here we could merge or update statuses, but for now we just log it
+      }
+    } catch (err) {
+      console.error('Refresh error:', err);
+    } finally {
+      setTimeout(() => setIsRefreshing(false), 1000);
     }
   };
 
@@ -57,6 +88,31 @@ export default function AppointmentsManager({
       }
     }
   };
+  const handlePay = async (app: Appointment) => {
+    const service = SERVICES.find((s) => s.id === app.serviceId);
+    const amount = service?.price || 40;
+
+    try {
+      const response = await fetch('/api/odoo', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'create_payment',
+          params: { amount, appointmentId: app.id }
+        })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.payment_url) {
+          window.open(data.payment_url, '_blank');
+        }
+      }
+    } catch (err) {
+      console.error('Payment error:', err);
+      alert('Erreur lors de la préparation du paiement. Veuillez réessayer ou payer sur place.');
+    }
+  };
 
   if (appointments.length === 0) {
     return null; // Return empty, will render a placeholder if explicitly navigated
@@ -65,7 +121,7 @@ export default function AppointmentsManager({
   return (
     <section className="py-20 bg-white" id="mes-rendezvous">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        
+
         {/* Title Alignment */}
         <div className="text-center max-w-2xl mx-auto mb-12">
           <div className="inline-flex p-2 bg-brand-blue/10 rounded-full text-brand-blue mb-2.5">
@@ -75,8 +131,16 @@ export default function AppointmentsManager({
             Vos Demandes de Consultation
           </h2>
           <p className="text-sm text-brand-gray-text mt-2 leading-relaxed">
-            Consultez, suivez et gérez l'état de vos demandes de rendez-vous enregistrées localement sur votre appareil.
+            Consultez, suivez et gérez l'état de vos demandes de rendez-vous. Connecté en temps réel à notre instance Odoo.
           </p>
+          <button
+            onClick={handleRefreshFromOdoo}
+            className="mt-4 text-xs font-bold text-brand-blue flex items-center justify-center gap-1.5 mx-auto hover:underline"
+            disabled={isRefreshing}
+          >
+            <LucideIcon name="RefreshCw" className={`h-3 w-3 ${isRefreshing ? 'animate-spin' : ''}`} />
+            <span>{isRefreshing ? 'Synchronisation...' : 'Actualiser mes statuts'}</span>
+          </button>
         </div>
 
         {/* List of active requests */}
@@ -90,13 +154,13 @@ export default function AppointmentsManager({
               <div className="absolute top-0 bottom-0 left-0 w-1.5 bg-brand-blue" />
 
               <div className="space-y-3.5 flex-1 pl-2">
-                
+
                 {/* ID & Date Header */}
                 <div className="flex flex-wrap items-center gap-2.5">
                   <span className="font-mono text-xs font-bold text-brand-blue bg-brand-blue/10 px-2.5 py-1 rounded-md">
                     {app.id}
                   </span>
-                  
+
                   <span className="text-[10px] bg-amber-50 text-amber-700 border border-amber-200 px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">
                     En attente d'appel
                   </span>
@@ -151,7 +215,7 @@ export default function AppointmentsManager({
 
               {/* Action columns: Contact with WA link or Cancel booking */}
               <div className="flex flex-row sm:flex-col gap-2 w-full sm:w-auto self-stretch sm:self-center justify-end shrink-0 pt-4 sm:pt-0 border-t sm:border-t-0 border-gray-100">
-                
+
                 {/* Direct Whatsapp shortcut reminder */}
                 <a
                   href={`https://wa.me/243971234567?text=Bonjour%20Capsy%20Services%2C%20je%20viens%20de%20soumettre%20une%20demande%20de%20rendez-vous%20sur%20votre%20site.%20Mon%20N%C2%B0%20de%20suivi%20est%20${app.id}.%20Merci!`}
@@ -162,6 +226,16 @@ export default function AppointmentsManager({
                   <LucideIcon name="MessageSquareShare" className="h-4 w-4" />
                   <span>Notifier</span>
                 </a>
+
+                {/* Payment button */}
+                <button
+                  type="button"
+                  onClick={() => handlePay(app)}
+                  className="flex-1 sm:flex-none py-2 px-3.5 bg-brand-green hover:bg-brand-green/90 text-white font-bold font-poppins text-xs rounded-xl flex items-center justify-center gap-1.5 transition-all shadow-xs"
+                >
+                  <LucideIcon name="CreditCard" className="h-4 w-4" />
+                  <span>Payer</span>
+                </button>
 
                 <button
                   type="button"

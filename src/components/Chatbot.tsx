@@ -16,13 +16,26 @@ interface ChatbotProps {
 
 export default function Chatbot({ onOpenBooking, isFullScreen = false }: ChatbotProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      role: 'model',
-      text: "Bonjour ! Je suis **CAPSY**, votre conseiller virtuel d'écoute et d'orientation 💚.\n\nJe suis là pour vous accompagner de manière confidentielle et sans jugement. Vous pouvez :\n- Réaliser un **test interactif de votre niveau de stress** 📊.\n- Vous informer sur nos **services de psychothérapie et nos tarifs** 💼.\n- Faciliter la **prise de rendez-vous** avec un de nos cliniciens 📅.\n\nComment puis-je vous aider aujourd'hui ?",
-      isWelcome: true
+  const [messages, setMessages] = useState<Message[]>(() => {
+    try {
+      const saved = localStorage.getItem('capsy_chat_history');
+      return saved ? JSON.parse(saved) : [
+        {
+          role: 'model',
+          text: "Bonjour ! Je suis **CAPSY**, votre conseiller virtuel d'écoute et d'orientation 💚.\n\nJe suis là pour vous accompagner de manière confidentielle et sans jugement. Vous pouvez :\n- Réaliser un **test interactif de votre niveau de stress** 📊.\n- Vous informer sur nos **services de psychothérapie et nos tarifs** 💼.\n- Faciliter la **prise de rendez-vous** avec un de nos cliniciens 📅.\n\nComment puis-je vous aider aujourd'hui ?",
+          isWelcome: true
+        }
+      ];
+    } catch (e) {
+      return [
+        {
+          role: 'model',
+          text: "Bonjour ! Je suis **CAPSY**, votre conseiller virtuel d'écoute et d'orientation 💚.\n\nJe suis là pour vous accompagner de manière confidentielle et sans jugement. Vous pouvez :\n- Réaliser un **test interactif de votre niveau de stress** 📊.\n- Vous informer sur nos **services de psychothérapie et nos tarifs** 💼.\n- Faciliter la **prise de rendez-vous** avec un de nos cliniciens 📅.\n\nComment puis-je vous aider aujourd'hui ?",
+          isWelcome: true
+        }
+      ];
     }
-  ]);
+  });
   const [inputVal, setInputVal] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isStreaming, setIsStreaming] = useState(false);
@@ -49,6 +62,11 @@ export default function Chatbot({ onOpenBooking, isFullScreen = false }: Chatbot
       setTimeout(scrollToBottom, 50);
     }
   }, [isOpen, isFullScreen, messages]);
+
+  // Persist messages to localStorage
+  useEffect(() => {
+    localStorage.setItem('capsy_chat_history', JSON.stringify(messages));
+  }, [messages]);
 
   useEffect(() => {
     if (messages.length > 1) {
@@ -375,13 +393,15 @@ export default function Chatbot({ onOpenBooking, isFullScreen = false }: Chatbot
               <button
                 onClick={() => {
                   if (confirm("Voulez-vous réinitialiser cette discussion ?")) {
-                    setMessages([
+                    const initialMsg: Message[] = [
                       {
                         role: 'model',
                         text: "Bonjour ! Je suis **CAPSY**, votre conseiller virtuel d'écoute et d'orientation 💚.\n\nJe suis là pour vous accompagner de manière confidentielle et sans jugement. Vous pouvez :\n- Réaliser un **test interactif de votre niveau de stress** 📊.\n- Vous informer sur nos **services de psychothérapie et nos tarifs** 💼.\n- Faciliter la **prise de rendez-vous** avec un de nos cliniciens 📅.\n\nComment puis-je vous aider aujourd'hui ?",
                         isWelcome: true
                       }
-                    ]);
+                    ];
+                    setMessages(initialMsg);
+                    localStorage.setItem('capsy_chat_history', JSON.stringify(initialMsg));
                   }
                 }}
                 className="px-3.5 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 active:scale-95 text-xs text-white/95 font-bold transition-all border border-white/10 cursor-pointer flex items-center gap-1.5"

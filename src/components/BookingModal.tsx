@@ -38,6 +38,8 @@ export default function BookingModal({
   const [clientPhoneType, setClientPhoneType] = useState('Orange'); // DRC commonly has multiple networks: Vodacom, Orange, Airtel
   const [clientNotes, setClientNotes] = useState('');
   const [createdAppointment, setCreatedAppointment] = useState<Appointment | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const matchedService = SERVICES.find((s) => s.id === serviceId);
 
@@ -92,11 +94,14 @@ export default function BookingModal({
     setStep((prev) => Math.max(1, prev - 1));
   };
 
-  const handleFormSubmit = (e: React.FormEvent) => {
+  const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!clientName || !clientPhone) {
       return;
     }
+
+    setIsSubmitting(true);
+    setSubmitError(null);
 
     const appointmentId = `CAPS-${Date.now().toString().slice(-4)}-${Math.floor(1000 + Math.random() * 9000)}`;
 
@@ -115,17 +120,41 @@ export default function BookingModal({
       createdAt: new Date().toISOString(),
     };
 
-    // Save to localStorage
-    const saved = localStorage.getItem('capsy_appointments');
-    const appointmentsList = saved ? JSON.parse(saved) : [];
-    appointmentsList.unshift(newAppointment);
-    localStorage.setItem('capsy_appointments', JSON.stringify(appointmentsList));
+    try {
+      // Try to save to Odoo
+      const response = await fetch('/api/odoo', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'create_appointment',
+          params: { appointment: newAppointment }
+        })
+      });
 
-    setCreatedAppointment(newAppointment);
-    setStep(4);
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.warn('Odoo sync failed, saving locally only:', errorData.error);
+        // We don't throw here to allow local fallback if Odoo is not yet configured
+      } else {
+        const data = await response.json();
+        console.log('Successfully synced with Odoo, ID:', data.id);
+      }
+    } catch (err) {
+      console.warn('Odoo sync error, saving locally only:', err);
+    } finally {
+      // Always save to localStorage as a fallback
+      const saved = localStorage.getItem('capsy_appointments');
+      const appointmentsList = saved ? JSON.parse(saved) : [];
+      appointmentsList.unshift(newAppointment);
+      localStorage.setItem('capsy_appointments', JSON.stringify(appointmentsList));
 
-    if (onBookingSuccess) {
-      onBookingSuccess(newAppointment);
+      setCreatedAppointment(newAppointment);
+      setIsSubmitting(false);
+      setStep(4);
+
+      if (onBookingSuccess) {
+        onBookingSuccess(newAppointment);
+      }
     }
   };
 
@@ -228,11 +257,10 @@ export default function BookingModal({
                         key={s.id}
                         type="button"
                         onClick={() => handleServiceSelect(s.id)}
-                        className={`p-4 rounded-xl border-2 text-left transition-all hover:bg-neutral-50 flex flex-col justify-between h-full ${
-                          serviceId === s.id
+                        className={`p-4 rounded-xl border-2 text-left transition-all hover:bg-neutral-50 flex flex-col justify-between h-full ${serviceId === s.id
                             ? 'border-brand-green bg-green-50/20 shadow-sm'
                             : 'border-gray-200'
-                        }`}
+                          }`}
                       >
                         <div className="flex items-center gap-3 mb-2">
                           <div className={`p-2 rounded-lg ${serviceId === s.id ? 'bg-brand-green text-white' : 'bg-brand-gray-light text-brand-blue'}`}>
@@ -280,11 +308,10 @@ export default function BookingModal({
                       <button
                         type="button"
                         onClick={() => setFormat('presentiel')}
-                        className={`p-3 rounded-xl border-2 flex items-center justify-center gap-2 transition-all ${
-                          format === 'presentiel'
+                        className={`p-3 rounded-xl border-2 flex items-center justify-center gap-2 transition-all ${format === 'presentiel'
                             ? 'border-brand-blue bg-blue-50/10 text-brand-blue font-semibold'
                             : 'border-gray-200 text-brand-gray-text hover:bg-neutral-50'
-                        }`}
+                          }`}
                       >
                         <LucideIcon name="MapPin" className="h-4 w-4" />
                         <span>Présentiel (Goma)</span>
@@ -292,11 +319,10 @@ export default function BookingModal({
                       <button
                         type="button"
                         onClick={() => setFormat('en_ligne')}
-                        className={`p-3 rounded-xl border-2 flex items-center justify-center gap-2 transition-all ${
-                          format === 'en_ligne'
+                        className={`p-3 rounded-xl border-2 flex items-center justify-center gap-2 transition-all ${format === 'en_ligne'
                             ? 'border-brand-blue bg-blue-50/10 text-brand-blue font-semibold'
                             : 'border-gray-200 text-brand-gray-text hover:bg-neutral-50'
-                        }`}
+                          }`}
                       >
                         <LucideIcon name="Globe" className="h-4 w-4" />
                         <span>Séance en Ligne</span>
@@ -334,11 +360,10 @@ export default function BookingModal({
                           key={slot}
                           type="button"
                           onClick={() => setTimeSlot(slot)}
-                          className={`p-3 rounded-xl border-2 text-center text-xs font-semibold font-mono transition-all ${
-                            timeSlot === slot
+                          className={`p-3 rounded-xl border-2 text-center text-xs font-semibold font-mono transition-all ${timeSlot === slot
                               ? 'border-brand-green bg-green-50/20 text-brand-green shadow-xs'
                               : 'border-gray-200 text-brand-gray-text hover:border-gray-300'
-                          }`}
+                            }`}
                         >
                           {slot}
                         </button>
@@ -363,11 +388,10 @@ export default function BookingModal({
                           key={therapist.label}
                           type="button"
                           onClick={() => setPreferredTherapist(therapist.label)}
-                          className={`p-3 rounded-xl border-2 text-left transition-all ${
-                            preferredTherapist === therapist.label
+                          className={`p-3 rounded-xl border-2 text-left transition-all ${preferredTherapist === therapist.label
                               ? 'border-brand-blue bg-blue-50/10 text-brand-blue font-semibold'
                               : 'border-gray-250 text-brand-gray-text hover:border-gray-300'
-                          }`}
+                            }`}
                         >
                           <p className="text-[11px] font-poppins font-bold leading-tight">{therapist.label}</p>
                           <p className="text-[9px] text-brand-gray-text mt-0.5">{therapist.desc}</p>
@@ -425,11 +449,10 @@ export default function BookingModal({
                               key={net}
                               type="button"
                               onClick={() => setClientPhoneType(net)}
-                              className={`text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full border transition-all ${
-                                clientPhoneType === net
+                              className={`text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full border transition-all ${clientPhoneType === net
                                   ? 'bg-brand-blue/10 border-brand-blue text-brand-blue'
                                   : 'border-transparent text-brand-gray-text bg-brand-gray-light hover:bg-neutral-200'
-                              }`}
+                                }`}
                             >
                               {net}
                             </button>
@@ -580,9 +603,8 @@ export default function BookingModal({
                   type="button"
                   onClick={handlePrevStep}
                   disabled={step === 1}
-                  className={`py-2 px-4 rounded-xl text-xs font-bold font-poppins flex items-center gap-2 transition-all ${
-                    step === 1 ? 'opacity-30 cursor-not-allowed text-brand-gray-text' : 'text-brand-blue hover:bg-neutral-200'
-                  }`}
+                  className={`py-2 px-4 rounded-xl text-xs font-bold font-poppins flex items-center gap-2 transition-all ${step === 1 ? 'opacity-30 cursor-not-allowed text-brand-gray-text' : 'text-brand-blue hover:bg-neutral-200'
+                    }`}
                 >
                   <LucideIcon name="ChevronDown" className="h-4 w-4 rotate-90" />
                   <span>Retour</span>
@@ -593,9 +615,8 @@ export default function BookingModal({
                     type="button"
                     onClick={handleNextStep}
                     disabled={!timeSlot}
-                    className={`py-2.5 px-6 rounded-xl font-poppins font-bold text-sm flex items-center gap-2 transition-all shadow-md text-white ${
-                      !timeSlot ? 'bg-gray-400 cursor-not-allowed' : 'bg-brand-blue hover:bg-brand-blue/90'
-                    }`}
+                    className={`py-2.5 px-6 rounded-xl font-poppins font-bold text-sm flex items-center gap-2 transition-all shadow-md text-white ${!timeSlot ? 'bg-gray-400 cursor-not-allowed' : 'bg-brand-blue hover:bg-brand-blue/90'
+                      }`}
                   >
                     <span>Continuer</span>
                     <LucideIcon name="ChevronDown" className="h-4 w-4 -rotate-90" />
@@ -604,14 +625,22 @@ export default function BookingModal({
                   <button
                     type="button"
                     onClick={handleFormSubmit}
-                    disabled={!clientName || !clientPhone}
-                    className={`py-2.5 px-6 rounded-xl font-poppins font-bold text-sm flex items-center gap-2 transition-all shadow-md text-white ${
-                      !clientName || !clientPhone ? 'bg-gray-400 cursor-not-allowed' : 'bg-brand-green hover:bg-brand-green/95'
-                    }`}
+                    disabled={!clientName || !clientPhone || isSubmitting}
+                    className={`py-2.5 px-6 rounded-xl font-poppins font-bold text-sm flex items-center gap-2 transition-all shadow-md text-white ${!clientName || !clientPhone || isSubmitting ? 'bg-gray-400 cursor-not-allowed' : 'bg-brand-green hover:bg-brand-green/95'
+                      }`}
                     id="submit-appointment-btn"
                   >
-                    <LucideIcon name="Check" className="h-4 w-4" />
-                    <span>Confirmer le RDV</span>
+                    {isSubmitting ? (
+                      <>
+                        <LucideIcon name="Loader2" className="h-4 w-4 animate-spin" />
+                        <span>Transmission...</span>
+                      </>
+                    ) : (
+                      <>
+                        <LucideIcon name="Check" className="h-4 w-4" />
+                        <span>Confirmer le RDV</span>
+                      </>
+                    )}
                   </button>
                 ) : (
                   <div /> // Placeholder for step 1 which goes forward automatically upon click

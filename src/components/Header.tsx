@@ -6,12 +6,18 @@ interface HeaderProps {
   onOpenBooking: () => void;
   activeAppointmentsCount: number;
   onViewAppointments: () => void;
+  user?: any;
+  onLogin: () => void;
+  onLogout: () => void;
 }
 
 export default function Header({
   onOpenBooking,
   activeAppointmentsCount,
   onViewAppointments,
+  user,
+  onLogin,
+  onLogout,
 }: HeaderProps) {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -38,16 +44,15 @@ export default function Header({
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
-        scrolled
-          ? 'bg-white shadow-md py-2.5 border-b border-gray-150'
-          : 'bg-white/95 sm:bg-transparent py-4'
-      }`}
+      className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${scrolled
+        ? 'bg-white shadow-md py-2.5 border-b border-gray-150'
+        : 'bg-white/95 sm:bg-transparent py-4'
+        }`}
       id="main-header"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between">
-          
+
           {/* Logo element */}
           <a href="#" className="flex items-center">
             <Logo size="md" showSubtitle={true} variant="color" />
@@ -81,6 +86,31 @@ export default function Header({
               </button>
             )}
 
+            {user ? (
+              <div className="flex items-center gap-3 bg-brand-gray-light px-3 py-1.5 rounded-xl border border-gray-200">
+                <div className="h-8 w-8 rounded-full bg-brand-blue text-white flex items-center justify-center font-bold text-sm">
+                  {user.name.charAt(0)}
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-[10px] font-bold text-brand-dark leading-tight">{user.name}</span>
+                  <button
+                    onClick={onLogout}
+                    className="text-[9px] text-rose-500 font-bold hover:underline text-left"
+                  >
+                    Déconnexion
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <button
+                onClick={onLogin}
+                className="py-2 px-4 text-brand-blue hover:bg-brand-blue/5 rounded-xl text-xs font-bold font-poppins transition-all flex items-center gap-2"
+              >
+                <LucideIcon name="User" className="h-4 w-4" />
+                <span>Connexion</span>
+              </button>
+            )}
+
             {/* Clear, highly conspicuous main CTA matching brand Vert Bien-être */}
             <button
               onClick={onOpenBooking}
@@ -88,7 +118,7 @@ export default function Header({
               id="header-cta-booking-btn"
             >
               <LucideIcon name="Calendar" className="h-4 w-4" />
-              <span>Prendre un rendez-vous</span>
+              <span>Rendez-vous</span>
             </button>
           </div>
 
@@ -120,9 +150,8 @@ export default function Header({
 
       {/* Mobile Drawer Menu */}
       <div
-        className={`lg:hidden transition-all duration-300 overflow-hidden bg-white border-b border-gray-150 ${
-          mobileMenuOpen ? 'max-h-[420px] opacity-100 shadow-lg' : 'max-h-0 opacity-0 pointer-events-none'
-        }`}
+        className={`lg:hidden transition-all duration-300 overflow-hidden bg-white border-b border-gray-150 ${mobileMenuOpen ? 'max-h-[420px] opacity-100 shadow-lg' : 'max-h-0 opacity-0 pointer-events-none'
+          }`}
         id="mobile-menu-drawer"
       >
         <div className="px-4 py-4 space-y-3">
@@ -136,7 +165,7 @@ export default function Header({
               {link.name}
             </a>
           ))}
-          
+
           <div className="pt-3 border-t border-gray-100 flex flex-col gap-2">
             <button
               onClick={() => {
@@ -149,7 +178,7 @@ export default function Header({
               <LucideIcon name="Calendar" className="h-4.5 w-4.5" />
               <span>Prendre un rendez-vous</span>
             </button>
-            
+
             {activeAppointmentsCount > 0 && (
               <button
                 onClick={() => {

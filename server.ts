@@ -1,10 +1,12 @@
+import dotenv from "dotenv";
+dotenv.config();
+
 import express from "express";
 import path from "path";
 import { createServer as createViteServer } from "vite";
 import { GoogleGenAI } from "@google/genai";
-import dotenv from "dotenv";
-
-dotenv.config();
+import odooHandler from "./api/odoo";
+import authHandler from "./api/auth";
 
 const app = express();
 app.use(express.json());
@@ -123,6 +125,16 @@ Ne l\'ajoutez que si la conversation s\'oriente clairement vers la réservation 
   }
 });
 
+
+// Odoo API route
+app.post("/api/odoo", async (req, res) => {
+  return odooHandler(req as any, res as any);
+});
+
+// Auth API route
+app.post("/api/auth", async (req, res) => {
+  return authHandler(req as any, res as any);
+});
 
 // Serve static files or use Vite dev server
 if (process.env.NODE_ENV !== "production") {

@@ -10,11 +10,14 @@ import ContactSection from './components/ContactSection';
 import Footer from './components/Footer';
 import BookingModal from './components/BookingModal';
 import Chatbot from './components/Chatbot';
+import LoginModal from './components/LoginModal';
 
 export default function App() {
   const [bookingOpen, setBookingOpen] = useState(false);
   const [initialServiceId, setInitialServiceId] = useState('');
   const [appointmentsCount, setAppointmentsCount] = useState(0);
+  const [user, setUser] = useState<any>(null);
+  const [loginOpen, setLoginOpen] = useState(false);
 
   const refreshAppointmentsCount = () => {
     try {
@@ -43,16 +46,26 @@ export default function App() {
       window.history.replaceState({}, document.title, newUrl);
     }
 
+    // Check for saved user
+    const savedUser = localStorage.getItem('capsy_user');
+    if (savedUser) {
+      setUser(JSON.parse(savedUser));
+    }
+
     // Listen to changes (e.g. booked/cancelled)
     const handleStorageChange = () => {
       refreshAppointmentsCount();
+      const updatedUser = localStorage.getItem('capsy_user');
+      setUser(updatedUser ? JSON.parse(updatedUser) : null);
     };
     window.addEventListener('storage', handleStorageChange);
     window.addEventListener('appointments-updated', handleStorageChange);
+    window.addEventListener('auth-changed', handleStorageChange);
 
     return () => {
       window.removeEventListener('storage', handleStorageChange);
       window.removeEventListener('appointments-updated', handleStorageChange);
+      window.removeEventListener('auth-changed', handleStorageChange);
     };
   }, []);
 
@@ -75,7 +88,13 @@ export default function App() {
     }
   };
 
-  const isFullScreenChat = typeof window !== 'undefined' && 
+  const handleLogout = () => {
+    localStorage.removeItem('capsy_user');
+    setUser(null);
+    window.dispatchEvent(new Event('auth-changed'));
+  };
+
+  const isFullScreenChat = typeof window !== 'undefined' &&
     (window.location.search.includes('chat=true') || window.location.pathname === '/chat');
 
   if (isFullScreenChat) {
@@ -88,17 +107,20 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-white text-brand-dark flex flex-col font-sans selection:bg-brand-green/20 selection:text-brand-dark" id="capsy-landing-root">
-      
+
       {/* Upper Navigation Header */}
       <Header
         onOpenBooking={() => handleOpenBooking('')}
         activeAppointmentsCount={appointmentsCount}
         onViewAppointments={handleViewAppointments}
+        user={user}
+        onLogin={() => setLoginOpen(true)}
+        onLogout={handleLogout}
       />
 
       {/* Main Container */}
       <main className="flex-grow">
-        
+
         {/* Hero Section Banner */}
         <Hero
           onOpenBooking={() => handleOpenBooking('')}
@@ -163,6 +185,13 @@ export default function App() {
 
       {/* Floating conversational assistant */}
       <Chatbot onOpenBooking={handleOpenBooking} />
+
+      {/* Login Modal */}
+      <LoginModal
+        isOpen={loginOpen}
+        onClose={() => setLoginOpen(false)}
+        onLoginSuccess={(u) => setUser(u)}
+      />
 
     </div>
   );
