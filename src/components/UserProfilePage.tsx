@@ -97,7 +97,11 @@ export default function UserProfilePage({ user, onClose, onLogout }: UserProfile
                         {/* Actions */}
                         <div className="px-8 mt-8 mb-8 flex flex-col sm:flex-row gap-3">
                             <a
-                                href={`${process.env.ODOO_URL}/my/account`}
+                                href="#"
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    alert("Lien vers le portail Odoo bientôt disponible.");
+                                }}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="flex-1 py-3 px-4 border-2 border-brand-blue text-brand-blue hover:bg-brand-blue/5 rounded-xl font-bold font-poppins text-sm flex items-center justify-center gap-2 transition-colors"
