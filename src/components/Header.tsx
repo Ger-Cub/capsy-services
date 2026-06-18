@@ -48,6 +48,7 @@ export default function Header({
     : '?';
 
   const navLinks = [
+    { name: 'Accueil', href: '#' },
     { name: 'Services', href: '#services' },
     { name: 'Notre Identité', href: '#identite' },
     { name: 'Auto-Évaluation', href: '#stress-test' },
@@ -267,7 +268,7 @@ export default function Header({
       </div>
 
       <div
-        className={`lg:hidden transition-all duration-300 overflow-hidden bg-white border-b border-gray-150 ${mobileMenuOpen ? 'max-h-[420px] opacity-100 shadow-lg' : 'max-h-0 opacity-0 pointer-events-none'
+        className={`lg:hidden transition-all duration-300 overflow-hidden bg-white border-b border-gray-150 ${mobileMenuOpen ? 'max-h-[500px] opacity-100 shadow-lg' : 'max-h-0 opacity-0 pointer-events-none'
           }`}
         id="mobile-menu-drawer"
       >
