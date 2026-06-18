@@ -52,14 +52,14 @@ export default function UserProfilePage({ user, onClose, onLogout }: UserProfile
                             <LucideIcon name="X" className="h-4 w-4" />
                         </button>
 
-                        {/* Top section: avatar + background */}
-                        <div className="relative bg-gradient-to-br from-brand-blue to-brand-blue/70 pt-12 pb-16 flex flex-col items-center">
+                        {/* Top section: Reduced banner height */}
+                        <div className="relative bg-gradient-to-br from-brand-blue to-brand-blue/70 pt-8 pb-10 flex flex-col items-center">
                             {/* Decorative circles */}
                             <div className="absolute top-0 right-0 h-40 w-40 rounded-full bg-white/5 -translate-y-1/2 translate-x-1/4" />
                             <div className="absolute bottom-0 left-0 h-24 w-24 rounded-full bg-white/5 translate-y-1/2 -translate-x-1/4" />
 
-                            {/* Avatar */}
-                            <div className="relative z-10 h-24 w-24 rounded-full border-4 border-white shadow-xl overflow-hidden bg-white flex items-center justify-center">
+                            {/* Avatar straddling the line */}
+                            <div className="relative z-10 h-24 w-24 rounded-full border-4 border-white shadow-xl overflow-hidden bg-white flex items-center justify-center -mb-12">
                                 {user?.avatar ? (
                                     <img
                                         src={user.avatar}
@@ -75,19 +75,19 @@ export default function UserProfilePage({ user, onClose, onLogout }: UserProfile
                             </div>
                         </div>
 
-                        {/* Name + email (overflows out of the blue band) */}
-                        <div className="px-8 -mt-6 text-center">
-                            <div className="bg-white rounded-2xl shadow-md px-6 py-4 border border-gray-100">
-                                <h2 className="text-xl font-poppins font-black text-brand-dark">{user?.name}</h2>
-                                <p className="text-sm text-brand-gray-text mt-0.5">{user?.email}</p>
-                                <span className="mt-2 inline-block text-[10px] font-bold uppercase tracking-widest bg-brand-blue/10 text-brand-blue px-3 py-1 rounded-full">
+                        {/* Name + email section with more margin */}
+                        <div className="px-8 mt-14 text-center">
+                            <div className="bg-white rounded-2xl shadow-sm px-6 py-5 border border-gray-100 ring-1 ring-gray-200/50">
+                                <h2 className="text-xl font-poppins font-black text-brand-dark leading-tight">{user?.name}</h2>
+                                <p className="text-sm text-brand-gray-text mt-1">{user?.email}</p>
+                                <span className="mt-3 inline-block text-[10px] font-bold uppercase tracking-widest bg-brand-blue/10 text-brand-blue px-3 py-1.5 rounded-full">
                                     Client Odoo
                                 </span>
                             </div>
                         </div>
 
                         {/* Info Cards */}
-                        <div className="px-8 mt-5 grid grid-cols-2 gap-3">
+                        <div className="px-8 mt-6 grid grid-cols-2 gap-3">
                             <InfoCard icon="User" label="Identifiant" value={user?.login || user?.email} />
                             <InfoCard icon="Hash" label="ID Partenaire" value={user?.partner_id ? `#${user.partner_id}` : '—'} />
                             <InfoCard icon="Globe" label="Langue" value={user?.lang || 'Non définie'} />
@@ -95,10 +95,11 @@ export default function UserProfilePage({ user, onClose, onLogout }: UserProfile
                         </div>
 
                         {/* Actions */}
-                        <div className="px-8 mt-6 mb-8 flex flex-col sm:flex-row gap-3">
+                        <div className="px-8 mt-8 mb-8 flex flex-col sm:flex-row gap-3">
                             <a
-                                href="#"
-                                onClick={(e) => e.preventDefault()}
+                                href={`${process.env.ODOO_URL}/my/account`}
+                                target="_blank"
+                                rel="noopener noreferrer"
                                 className="flex-1 py-3 px-4 border-2 border-brand-blue text-brand-blue hover:bg-brand-blue/5 rounded-xl font-bold font-poppins text-sm flex items-center justify-center gap-2 transition-colors"
                             >
                                 <LucideIcon name="ExternalLink" className="h-4 w-4" />
