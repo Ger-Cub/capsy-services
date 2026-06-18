@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Logo from './Logo';
 import LucideIcon from './LucideIcon';
+import { motion, AnimatePresence } from 'motion/react';
 
 interface HeaderProps {
   onOpenBooking: () => void;
@@ -9,6 +10,7 @@ interface HeaderProps {
   user?: any;
   onLogin: () => void;
   onLogout: () => void;
+  onViewProfile: () => void;
 }
 
 export default function Header({
@@ -18,21 +20,33 @@ export default function Header({
   user,
   onLogin,
   onLogout,
+  onViewProfile,
 }: HeaderProps) {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [toastOpen, setToastOpen] = useState(false);
+  const toastRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 30) {
-        setScrolled(true);
-      } else {
-        setScrolled(false);
-      }
-    };
+    const handleScroll = () => setScrolled(window.scrollY > 30);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  // Close toast when clicking outside
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      if (toastRef.current && !toastRef.current.contains(e.target as Node)) {
+        setToastOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, []);
+
+  const initials = user?.name
+    ? user.name.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase()
+    : '?';
 
   const navLinks = [
     { name: 'Services', href: '#services' },
@@ -42,18 +56,28 @@ export default function Header({
     { name: 'Contact', href: '#contact' },
   ];
 
+  const Avatar = ({ size = 'sm' }: { size?: 'sm' | 'md' }) => {
+    const dim = size === 'sm' ? 'h-9 w-9 text-sm' : 'h-11 w-11 text-base';
+    return (
+      <div className={`${dim} rounded-full bg-brand-blue text-white font-black font-poppins flex items-center justify-center overflow-hidden ring-2 ring-brand-blue/30 cursor-pointer transition-all hover:ring-brand-blue/60`}>
+        {user?.avatar
+          ? <img src={user.avatar} alt={user.name} className="w-full h-full object-cover" />
+          : <span>{initials}</span>
+        }
+      </div>
+    );
+  };
+
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${scrolled
-        ? 'bg-white shadow-md py-2.5 border-b border-gray-150'
-        : 'bg-white/95 sm:bg-transparent py-4'
+      className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${scrolled ? 'bg-white shadow-md py-2.5 border-b border-gray-150' : 'bg-white/95 sm:bg-transparent py-4'
         }`}
       id="main-header"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between">
 
-          {/* Logo element */}
+          {/* Logo */}
           <a href="#" className="flex items-center">
             <Logo size="md" showSubtitle={true} variant="color" />
           </a>
@@ -72,13 +96,12 @@ export default function Header({
             ))}
           </nav>
 
-          {/* Header Action Buttons */}
+          {/* Desktop Actions */}
           <div className="hidden lg:flex items-center gap-3">
-            {activeAppointmentsCount > 0 && (
+            {activeAppointmentsCount > 0 && !user && (
               <button
                 onClick={onViewAppointments}
                 className="py-2 px-3 bg-brand-blue/10 hover:bg-brand-blue/15 text-brand-blue rounded-xl text-xs font-semibold font-poppins flex items-center gap-1.5 transition-all"
-                title="Gérer mes rendez-vous"
                 id="my-appointments-header-btn"
               >
                 <LucideIcon name="Clock" className="h-4 w-4" />
@@ -86,20 +109,67 @@ export default function Header({
               </button>
             )}
 
+            {/* Avatar Toast or Login Button */}
             {user ? (
-              <div className="flex items-center gap-3 bg-brand-gray-light px-3 py-1.5 rounded-xl border border-gray-200">
-                <div className="h-8 w-8 rounded-full bg-brand-blue text-white flex items-center justify-center font-bold text-sm">
-                  {user.name.charAt(0)}
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-[10px] font-bold text-brand-dark leading-tight">{user.name}</span>
-                  <button
-                    onClick={onLogout}
-                    className="text-[9px] text-rose-500 font-bold hover:underline text-left"
-                  >
-                    Déconnexion
-                  </button>
-                </div>
+              <div className="relative" ref={toastRef}>
+                <button onClick={() => setToastOpen(!toastOpen)} aria-label="Mon profil">
+                  <Avatar />
+                </button>
+
+                <AnimatePresence>
+                  {toastOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.95, y: -8 }}
+                      animate={{ opacity: 1, scale: 1, y: 0 }}
+                      exit={{ opacity: 0, scale: 0.95, y: -8 }}
+                      className="absolute top-12 right-0 w-72 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden z-50"
+                    >
+                      {/* Toast header */}
+                      <div className="p-5 bg-gradient-to-br from-brand-blue/5 to-brand-blue/10 flex items-center gap-4 border-b border-gray-100">
+                        <div className="h-12 w-12 rounded-full bg-brand-blue text-white font-black font-poppins flex items-center justify-center overflow-hidden shrink-0 ring-2 ring-brand-blue/30">
+                          {user.avatar
+                            ? <img src={user.avatar} alt={user.name} className="w-full h-full object-cover" />
+                            : <span className="text-base">{initials}</span>
+                          }
+                        </div>
+                        <div className="min-w-0">
+                          <p className="font-bold font-poppins text-brand-dark truncate">{user.name}</p>
+                          <p className="text-xs text-brand-gray-text truncate">{user.email}</p>
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-brand-blue">Client Odoo</span>
+                        </div>
+                      </div>
+
+                      {/* Toast actions */}
+                      <div className="p-2">
+                        <button
+                          onClick={() => { setToastOpen(false); onViewAppointments(); }}
+                          className="w-full px-4 py-2.5 text-sm text-brand-dark hover:bg-brand-gray-light rounded-xl flex items-center gap-3 transition-colors"
+                        >
+                          <LucideIcon name="Calendar" className="h-4 w-4 text-brand-blue" />
+                          <span className="font-medium">Mes rendez-vous</span>
+                          {activeAppointmentsCount > 0 && (
+                            <span className="ml-auto text-xs bg-brand-blue text-white px-1.5 py-0.5 rounded-full">{activeAppointmentsCount}</span>
+                          )}
+                        </button>
+                        <button
+                          onClick={() => { setToastOpen(false); onViewProfile(); }}
+                          className="w-full px-4 py-2.5 text-sm text-brand-dark hover:bg-brand-gray-light rounded-xl flex items-center gap-3 transition-colors"
+                        >
+                          <LucideIcon name="UserCircle" className="h-4 w-4 text-brand-blue" />
+                          <span className="font-medium">Mon profil</span>
+                        </button>
+                        <div className="my-1 border-t border-gray-100" />
+                        <button
+                          onClick={() => { setToastOpen(false); onLogout(); }}
+                          className="w-full px-4 py-2.5 text-sm text-rose-500 hover:bg-rose-50 rounded-xl flex items-center gap-3 transition-colors"
+                        >
+                          <LucideIcon name="LogOut" className="h-4 w-4" />
+                          <span className="font-medium">Se déconnecter</span>
+                        </button>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
             ) : (
               <button
@@ -111,7 +181,7 @@ export default function Header({
               </button>
             )}
 
-            {/* Clear, highly conspicuous main CTA matching brand Vert Bien-être */}
+            {/* CTA */}
             <button
               onClick={onOpenBooking}
               className="py-2.5 px-5 bg-brand-green hover:bg-brand-green/95 text-white rounded-xl text-sm font-bold font-poppins flex items-center gap-2 transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5 cursor-pointer"
@@ -124,17 +194,45 @@ export default function Header({
 
           {/* Mobile Right Controls */}
           <div className="flex items-center gap-2 lg:hidden">
-            {activeAppointmentsCount > 0 && (
-              <button
-                onClick={onViewAppointments}
-                className="p-2 bg-brand-blue/10 text-brand-blue rounded-xl flex items-center justify-center transition-all"
-                aria-label="Accéder à mes rendez-vous"
-              >
-                <LucideIcon name="Clock" className="h-4 w-4" />
+            {user ? (
+              <button onClick={() => setToastOpen(!toastOpen)} className="relative" ref={toastRef as any}>
+                <Avatar />
+                {/* Mobile mini toast */}
+                <AnimatePresence>
+                  {toastOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.95, y: -8 }}
+                      animate={{ opacity: 1, scale: 1, y: 0 }}
+                      exit={{ opacity: 0, scale: 0.95, y: -8 }}
+                      className="absolute top-12 right-0 w-64 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden z-50"
+                    >
+                      <div className="p-4 bg-gradient-to-br from-brand-blue/5 to-brand-blue/10 border-b border-gray-100">
+                        <p className="font-bold font-poppins text-brand-dark text-sm">{user.name}</p>
+                        <p className="text-xs text-brand-gray-text">{user.email}</p>
+                      </div>
+                      <div className="p-2">
+                        <button onClick={() => { setToastOpen(false); onViewProfile(); }}
+                          className="w-full px-3 py-2 text-sm text-brand-dark hover:bg-brand-gray-light rounded-xl flex items-center gap-2">
+                          <LucideIcon name="UserCircle" className="h-4 w-4 text-brand-blue" />Mon profil
+                        </button>
+                        <button onClick={() => { setToastOpen(false); onLogout(); }}
+                          className="w-full px-3 py-2 text-sm text-rose-500 hover:bg-rose-50 rounded-xl flex items-center gap-2">
+                          <LucideIcon name="LogOut" className="h-4 w-4" />Déconnexion
+                        </button>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </button>
+            ) : (
+              activeAppointmentsCount > 0 && (
+                <button onClick={onViewAppointments}
+                  className="p-2 bg-brand-blue/10 text-brand-blue rounded-xl">
+                  <LucideIcon name="Clock" className="h-4 w-4" />
+                </button>
+              )
             )}
 
-            {/* Mobile Menu Toggle button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="p-2 text-brand-dark hover:bg-brand-gray-light rounded-xl transition-colors"
@@ -148,7 +246,7 @@ export default function Header({
         </div>
       </div>
 
-      {/* Mobile Drawer Menu */}
+      {/* Mobile Drawer */}
       <div
         className={`lg:hidden transition-all duration-300 overflow-hidden bg-white border-b border-gray-150 ${mobileMenuOpen ? 'max-h-[420px] opacity-100 shadow-lg' : 'max-h-0 opacity-0 pointer-events-none'
           }`}
@@ -165,30 +263,22 @@ export default function Header({
               {link.name}
             </a>
           ))}
-
           <div className="pt-3 border-t border-gray-100 flex flex-col gap-2">
             <button
-              onClick={() => {
-                setMobileMenuOpen(false);
-                onOpenBooking();
-              }}
+              onClick={() => { setMobileMenuOpen(false); onOpenBooking(); }}
               className="w-full py-3 bg-brand-green hover:bg-brand-green/95 text-white font-bold font-poppins rounded-xl text-center text-sm flex items-center justify-center gap-2 transition-all shadow-md cursor-pointer"
               id="mobile-drawer-cta-booking-btn"
             >
-              <LucideIcon name="Calendar" className="h-4.5 w-4.5" />
+              <LucideIcon name="Calendar" className="h-4 w-4" />
               <span>Prendre un rendez-vous</span>
             </button>
-
-            {activeAppointmentsCount > 0 && (
+            {!user && (
               <button
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  onViewAppointments();
-                }}
-                className="w-full py-2.5 bg-brand-gray-light text-brand-blue hover:bg-brand-blue/10 font-semibold font-poppins rounded-xl text-center text-xs flex items-center justify-center gap-2 transition-all"
+                onClick={() => { setMobileMenuOpen(false); onLogin(); }}
+                className="w-full py-2.5 bg-brand-blue/5 text-brand-blue font-semibold font-poppins rounded-xl text-center text-sm flex items-center justify-center gap-2"
               >
-                <LucideIcon name="Clock" className="h-4 w-4" />
-                <span>Consulter mes {activeAppointmentsCount} demandes de RDV</span>
+                <LucideIcon name="User" className="h-4 w-4" />
+                <span>Se connecter</span>
               </button>
             )}
           </div>

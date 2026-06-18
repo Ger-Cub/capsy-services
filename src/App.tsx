@@ -11,6 +11,7 @@ import Footer from './components/Footer';
 import BookingModal from './components/BookingModal';
 import Chatbot from './components/Chatbot';
 import LoginModal from './components/LoginModal';
+import UserProfilePage from './components/UserProfilePage';
 
 export default function App() {
   const [bookingOpen, setBookingOpen] = useState(false);
@@ -18,6 +19,7 @@ export default function App() {
   const [appointmentsCount, setAppointmentsCount] = useState(0);
   const [user, setUser] = useState<any>(null);
   const [loginOpen, setLoginOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
 
   const refreshAppointmentsCount = () => {
     try {
@@ -116,6 +118,7 @@ export default function App() {
         user={user}
         onLogin={() => setLoginOpen(true)}
         onLogout={handleLogout}
+        onViewProfile={() => setProfileOpen(true)}
       />
 
       {/* Main Container */}
@@ -154,6 +157,7 @@ export default function App() {
         <AppointmentsManager
           onOpenBooking={() => handleOpenBooking('')}
           onRefreshCounter={refreshAppointmentsCount}
+          user={user}
         />
 
         {/* Collapsible Accordion FAQs */}
@@ -192,6 +196,15 @@ export default function App() {
         onClose={() => setLoginOpen(false)}
         onLoginSuccess={(u) => setUser(u)}
       />
+
+      {/* User Profile Modal */}
+      {user && profileOpen && (
+        <UserProfilePage
+          user={user}
+          onClose={() => setProfileOpen(false)}
+          onLogout={handleLogout}
+        />
+      )}
 
     </div>
   );
