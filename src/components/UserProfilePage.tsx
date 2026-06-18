@@ -42,59 +42,75 @@ export default function UserProfilePage({ user, onClose, onLogout }: UserProfile
                         animate={{ scale: 1, opacity: 1, y: 0 }}
                         exit={{ scale: 0.95, opacity: 0, y: 30 }}
                         transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                        className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl overflow-hidden z-10"
+                        className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl overflow-hidden z-10"
                     >
-                        {/* Header Banner */}
-                        <div className="h-32 bg-gradient-to-br from-brand-blue to-brand-blue/60 relative">
-                            <button onClick={handleClose}
-                                className="absolute top-4 right-4 p-2 bg-white/20 hover:bg-white/30 text-white rounded-xl transition-colors">
-                                <LucideIcon name="X" className="h-5 w-5" />
-                            </button>
+                        {/* Close button */}
+                        <button
+                            onClick={handleClose}
+                            className="absolute top-4 right-4 z-20 p-2 bg-white/80 hover:bg-white text-brand-dark rounded-xl shadow-sm transition-colors"
+                        >
+                            <LucideIcon name="X" className="h-4 w-4" />
+                        </button>
+
+                        {/* Top section: avatar + background */}
+                        <div className="relative bg-gradient-to-br from-brand-blue to-brand-blue/70 pt-12 pb-16 flex flex-col items-center">
+                            {/* Decorative circles */}
+                            <div className="absolute top-0 right-0 h-40 w-40 rounded-full bg-white/5 -translate-y-1/2 translate-x-1/4" />
+                            <div className="absolute bottom-0 left-0 h-24 w-24 rounded-full bg-white/5 translate-y-1/2 -translate-x-1/4" />
+
+                            {/* Avatar */}
+                            <div className="relative z-10 h-24 w-24 rounded-full border-4 border-white shadow-xl overflow-hidden bg-white flex items-center justify-center">
+                                {user?.avatar ? (
+                                    <img
+                                        src={user.avatar}
+                                        alt={user.name}
+                                        className="w-full h-full object-cover"
+                                        onError={(e) => {
+                                            (e.target as HTMLImageElement).style.display = 'none';
+                                        }}
+                                    />
+                                ) : (
+                                    <span className="text-brand-blue font-black text-3xl font-poppins">{initials}</span>
+                                )}
+                            </div>
                         </div>
 
-                        {/* Avatar */}
-                        <div className="-mt-14 flex flex-col items-center px-8 pb-8">
-                            <div className="h-28 w-28 rounded-full border-4 border-white shadow-xl overflow-hidden bg-brand-blue flex items-center justify-center">
-                                {user?.avatar
-                                    ? <img src={user.avatar} alt={user.name} className="w-full h-full object-cover" />
-                                    : <span className="text-white font-black text-3xl font-poppins">{initials}</span>
-                                }
+                        {/* Name + email (overflows out of the blue band) */}
+                        <div className="px-8 -mt-6 text-center">
+                            <div className="bg-white rounded-2xl shadow-md px-6 py-4 border border-gray-100">
+                                <h2 className="text-xl font-poppins font-black text-brand-dark">{user?.name}</h2>
+                                <p className="text-sm text-brand-gray-text mt-0.5">{user?.email}</p>
+                                <span className="mt-2 inline-block text-[10px] font-bold uppercase tracking-widest bg-brand-blue/10 text-brand-blue px-3 py-1 rounded-full">
+                                    Client Odoo
+                                </span>
                             </div>
+                        </div>
 
-                            <h2 className="mt-4 text-2xl font-poppins font-black text-brand-dark">{user?.name}</h2>
-                            <p className="text-sm text-brand-gray-text">{user?.email}</p>
+                        {/* Info Cards */}
+                        <div className="px-8 mt-5 grid grid-cols-2 gap-3">
+                            <InfoCard icon="User" label="Identifiant" value={user?.login || user?.email} />
+                            <InfoCard icon="Hash" label="ID Partenaire" value={user?.partner_id ? `#${user.partner_id}` : '—'} />
+                            <InfoCard icon="Globe" label="Langue" value={user?.lang || 'Non définie'} />
+                            <InfoCard icon="Clock" label="Fuseau horaire" value={user?.tz || 'Non défini'} />
+                        </div>
 
-                            <span className="mt-2 text-[10px] font-bold uppercase tracking-widest bg-brand-blue/10 text-brand-blue px-3 py-1 rounded-full">
-                                Client Odoo
-                            </span>
-
-                            {/* Info Cards */}
-                            <div className="w-full mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <InfoCard icon="User" label="Identifiant" value={user?.login || user?.email} />
-                                <InfoCard icon="Hash" label="ID Partenaire" value={user?.partner_id ? `#${user.partner_id}` : '—'} />
-                                <InfoCard icon="Globe" label="Langue" value={user?.lang || 'Non définie'} />
-                                <InfoCard icon="Clock" label="Fuseau horaire" value={user?.tz || 'Non défini'} />
-                            </div>
-
-                            {/* Actions */}
-                            <div className="w-full mt-8 flex flex-col sm:flex-row gap-3">
-                                <a
-                                    href={`${window.location.origin.includes('localhost') ? 'https://essaiek3.odoo.com' : ''}/web#action=profile`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="flex-1 py-3 px-4 border-2 border-brand-blue text-brand-blue hover:bg-brand-blue/5 rounded-xl font-bold font-poppins text-sm flex items-center justify-center gap-2 transition-colors"
-                                >
-                                    <LucideIcon name="ExternalLink" className="h-4 w-4" />
-                                    <span>Modifier sur Odoo</span>
-                                </a>
-                                <button
-                                    onClick={handleLogout}
-                                    className="flex-1 py-3 px-4 bg-rose-50 hover:bg-rose-100 text-rose-600 border-2 border-rose-200 rounded-xl font-bold font-poppins text-sm flex items-center justify-center gap-2 transition-colors"
-                                >
-                                    <LucideIcon name="LogOut" className="h-4 w-4" />
-                                    <span>Se déconnecter</span>
-                                </button>
-                            </div>
+                        {/* Actions */}
+                        <div className="px-8 mt-6 mb-8 flex flex-col sm:flex-row gap-3">
+                            <a
+                                href="#"
+                                onClick={(e) => e.preventDefault()}
+                                className="flex-1 py-3 px-4 border-2 border-brand-blue text-brand-blue hover:bg-brand-blue/5 rounded-xl font-bold font-poppins text-sm flex items-center justify-center gap-2 transition-colors"
+                            >
+                                <LucideIcon name="ExternalLink" className="h-4 w-4" />
+                                <span>Voir sur Odoo</span>
+                            </a>
+                            <button
+                                onClick={handleLogout}
+                                className="flex-1 py-3 px-4 bg-rose-50 hover:bg-rose-100 text-rose-600 border-2 border-rose-200 rounded-xl font-bold font-poppins text-sm flex items-center justify-center gap-2 transition-colors"
+                            >
+                                <LucideIcon name="LogOut" className="h-4 w-4" />
+                                <span>Déconnexion</span>
+                            </button>
                         </div>
                     </motion.div>
                 </div>
@@ -105,13 +121,13 @@ export default function UserProfilePage({ user, onClose, onLogout }: UserProfile
 
 function InfoCard({ icon, label, value }: { icon: string; label: string; value: string }) {
     return (
-        <div className="p-4 bg-brand-gray-light rounded-xl flex items-center gap-3">
+        <div className="p-3.5 bg-brand-gray-light rounded-xl flex items-center gap-3">
             <div className="p-2 bg-white rounded-lg shadow-xs text-brand-blue shrink-0">
                 <LucideIcon name={icon} className="h-4 w-4" />
             </div>
             <div className="min-w-0">
                 <p className="text-[10px] font-bold uppercase tracking-wider text-brand-gray-text">{label}</p>
-                <p className="text-sm font-semibold text-brand-dark truncate">{value}</p>
+                <p className="text-xs font-semibold text-brand-dark truncate">{value}</p>
             </div>
         </div>
     );

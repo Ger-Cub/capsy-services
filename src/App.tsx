@@ -21,18 +21,12 @@ export default function App() {
   const [loginOpen, setLoginOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
 
-  const refreshAppointmentsCount = () => {
-    try {
-      const saved = localStorage.getItem('capsy_appointments');
-      if (saved) {
-        const list = JSON.parse(saved);
-        setAppointmentsCount(list.length);
-      } else {
-        setAppointmentsCount(0);
-      }
-    } catch (e) {
-      console.error(e);
+  const refreshAppointmentsCount = (count?: number) => {
+    if (typeof count === 'number') {
+      setAppointmentsCount(count);
+      return;
     }
+    // Fallback if needed...
   };
 
   useEffect(() => {
@@ -185,6 +179,7 @@ export default function App() {
           // Broadcast custom event
           window.dispatchEvent(new Event('appointments-updated'));
         }}
+        user={user}
       />
 
       {/* Floating conversational assistant */}

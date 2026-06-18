@@ -9,6 +9,7 @@ interface BookingModalProps {
   onClose: () => void;
   initialServiceId?: string;
   onBookingSuccess?: (appointment: Appointment) => void;
+  user?: any;
 }
 
 const TIME_SLOTS = [
@@ -25,6 +26,7 @@ export default function BookingModal({
   onClose,
   initialServiceId = '',
   onBookingSuccess,
+  user,
 }: BookingModalProps) {
   const [step, setStep] = useState(1);
   const [serviceId, setServiceId] = useState(initialServiceId || SERVICES[0].id);
@@ -39,7 +41,14 @@ export default function BookingModal({
   const [clientNotes, setClientNotes] = useState('');
   const [createdAppointment, setCreatedAppointment] = useState<Appointment | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitError, setSubmitError] = useState<string | null>(null);
+
+  // Pre-fill user data if logged in
+  useEffect(() => {
+    if (user && isOpen) {
+      setClientName(user.name || '');
+      setClientEmail(user.email || '');
+    }
+  }, [user, isOpen]);
 
   const matchedService = SERVICES.find((s) => s.id === serviceId);
 
@@ -101,7 +110,6 @@ export default function BookingModal({
     }
 
     setIsSubmitting(true);
-    setSubmitError(null);
 
     const appointmentId = `CAPS-${Date.now().toString().slice(-4)}-${Math.floor(1000 + Math.random() * 9000)}`;
 
@@ -127,34 +135,35 @@ export default function BookingModal({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           action: 'create_appointment',
-          params: { appointment: newAppointment }
+          params: {
+            appointment: newAppointment,
+            loggedInPartnerId: user?.partner_id
+          }
         })
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-        console.warn('Odoo sync failed, saving locally only:', errorData.error);
-        // We don't throw here to allow local fallback if Odoo is not yet configured
-      } else {
-        const data = await response.json();
-        console.log('Successfully synced with Odoo, ID:', data.id);
+        throw new Error(errorData.error || 'Erreur lors de la synchronisation Odoo');
       }
-    } catch (err) {
-      console.warn('Odoo sync error, saving locally only:', err);
-    } finally {
-      // Always save to localStorage as a fallback
-      const saved = localStorage.getItem('capsy_appointments');
-      const appointmentsList = saved ? JSON.parse(saved) : [];
-      appointmentsList.unshift(newAppointment);
-      localStorage.setItem('capsy_appointments', JSON.stringify(appointmentsList));
+
+      const data = await response.json();
+      console.log('Successfully synced with Odoo, ID:', data.id);
 
       setCreatedAppointment(newAppointment);
-      setIsSubmitting(false);
       setStep(4);
-
       if (onBookingSuccess) {
         onBookingSuccess(newAppointment);
       }
+
+      // Dispatch event to refresh manager
+      window.dispatchEvent(new Event('appointments-updated'));
+
+    } catch (err: any) {
+      console.error('Odoo sync error:', err);
+      alert(`Erreur: Impossible de programmer votre rendez-vous dans notre système Odoo. ${err.message}`);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -258,8 +267,8 @@ export default function BookingModal({
                         type="button"
                         onClick={() => handleServiceSelect(s.id)}
                         className={`p-4 rounded-xl border-2 text-left transition-all hover:bg-neutral-50 flex flex-col justify-between h-full ${serviceId === s.id
-                            ? 'border-brand-green bg-green-50/20 shadow-sm'
-                            : 'border-gray-200'
+                          ? 'border-brand-green bg-green-50/20 shadow-sm'
+                          : 'border-gray-200'
                           }`}
                       >
                         <div className="flex items-center gap-3 mb-2">
@@ -309,8 +318,8 @@ export default function BookingModal({
                         type="button"
                         onClick={() => setFormat('presentiel')}
                         className={`p-3 rounded-xl border-2 flex items-center justify-center gap-2 transition-all ${format === 'presentiel'
-                            ? 'border-brand-blue bg-blue-50/10 text-brand-blue font-semibold'
-                            : 'border-gray-200 text-brand-gray-text hover:bg-neutral-50'
+                          ? 'border-brand-blue bg-blue-50/10 text-brand-blue font-semibold'
+                          : 'border-gray-200 text-brand-gray-text hover:bg-neutral-50'
                           }`}
                       >
                         <LucideIcon name="MapPin" className="h-4 w-4" />
@@ -320,8 +329,8 @@ export default function BookingModal({
                         type="button"
                         onClick={() => setFormat('en_ligne')}
                         className={`p-3 rounded-xl border-2 flex items-center justify-center gap-2 transition-all ${format === 'en_ligne'
-                            ? 'border-brand-blue bg-blue-50/10 text-brand-blue font-semibold'
-                            : 'border-gray-200 text-brand-gray-text hover:bg-neutral-50'
+                          ? 'border-brand-blue bg-blue-50/10 text-brand-blue font-semibold'
+                          : 'border-gray-200 text-brand-gray-text hover:bg-neutral-50'
                           }`}
                       >
                         <LucideIcon name="Globe" className="h-4 w-4" />
@@ -361,8 +370,8 @@ export default function BookingModal({
                           type="button"
                           onClick={() => setTimeSlot(slot)}
                           className={`p-3 rounded-xl border-2 text-center text-xs font-semibold font-mono transition-all ${timeSlot === slot
-                              ? 'border-brand-green bg-green-50/20 text-brand-green shadow-xs'
-                              : 'border-gray-200 text-brand-gray-text hover:border-gray-300'
+                            ? 'border-brand-green bg-green-50/20 text-brand-green shadow-xs'
+                            : 'border-gray-200 text-brand-gray-text hover:border-gray-300'
                             }`}
                         >
                           {slot}
@@ -389,8 +398,8 @@ export default function BookingModal({
                           type="button"
                           onClick={() => setPreferredTherapist(therapist.label)}
                           className={`p-3 rounded-xl border-2 text-left transition-all ${preferredTherapist === therapist.label
-                              ? 'border-brand-blue bg-blue-50/10 text-brand-blue font-semibold'
-                              : 'border-gray-250 text-brand-gray-text hover:border-gray-300'
+                            ? 'border-brand-blue bg-blue-50/10 text-brand-blue font-semibold'
+                            : 'border-gray-250 text-brand-gray-text hover:border-gray-300'
                             }`}
                         >
                           <p className="text-[11px] font-poppins font-bold leading-tight">{therapist.label}</p>
@@ -450,8 +459,8 @@ export default function BookingModal({
                               type="button"
                               onClick={() => setClientPhoneType(net)}
                               className={`text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full border transition-all ${clientPhoneType === net
-                                  ? 'bg-brand-blue/10 border-brand-blue text-brand-blue'
-                                  : 'border-transparent text-brand-gray-text bg-brand-gray-light hover:bg-neutral-200'
+                                ? 'bg-brand-blue/10 border-brand-blue text-brand-blue'
+                                : 'border-transparent text-brand-gray-text bg-brand-gray-light hover:bg-neutral-200'
                                 }`}
                             >
                               {net}
