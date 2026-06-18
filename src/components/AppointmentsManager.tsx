@@ -18,6 +18,11 @@ export default function AppointmentsManager({
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const stripHtml = (html: string) => {
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    return doc.body.textContent || "";
+  };
+
   const loadFromOdoo = async () => {
     if (!user) {
       setAppointments([]);
@@ -45,10 +50,29 @@ export default function AppointmentsManager({
           const startDate = app.start ? new Date(app.start.replace(' ', 'T') + 'Z') : new Date();
           const stopDate = app.stop ? new Date(app.stop.replace(' ', 'T') + 'Z') : new Date();
 
-          const desc = app.description || '';
-          const therapistMatch = desc.match(/Therapist:\s*([^\n]*)/);
-          const notesMatch = desc.match(/Notes:\s*([\s\S]*?)($|\n[A-Z][a-z]+:)/);
-          const clientPhoneMatch = desc.match(/Phone:\s*([^\n]*)/);
+          // Odoo might return HTML in description
+          const rawDesc = app.description || '';
+          const cleanDesc = stripHtml(rawDesc);
+
+          // Regex extraction from the clean text
+          const therapistMatch = cleanDesc.match(/Therapist:\s*([^\n]*)/i);
+          const notesMatch = cleanDesc.match(/Notes:\s*([\s\S]*?)($|\n[A-Z][a-z]+:)/i);
+          const clientPhoneMatch = cleanDesc.match(/Phone:\s*([^\n]*)/i);
+
+          // If we found therapist with extra junk (like "Organisé par"), clean it
+          let therapist = therapistMatch ? therapistMatch[1].trim() : '';
+          if (therapist.includes('Organisé par')) {
+            therapist = therapist.split('Organisé par')[0].trim();
+          }
+
+          // If therapy session name is just Jacques Batenga etc, use it
+          if (!therapist && cleanDesc) {
+            // First line might be the therapist if it doesn't have keywords
+            const firstLine = cleanDesc.split('\n')[0].trim();
+            if (!firstLine.includes(':') && firstLine.length < 50) {
+              therapist = firstLine;
+            }
+          }
 
           return {
             id: `odoo-${app.id}`,
@@ -56,11 +80,11 @@ export default function AppointmentsManager({
             serviceTitle: app.name.replace('RDV: ', ''),
             date: startDate.toISOString().split('T')[0],
             timeSlot: `${startDate.getHours()}h00 - ${stopDate.getHours()}h00`,
-            preferredTherapist: therapistMatch ? therapistMatch[1].trim() : 'Assigné Odoo',
+            preferredTherapist: therapist || 'Assigné Odoo',
             clientName: user.name,
             clientEmail: user.email,
             clientPhone: clientPhoneMatch ? clientPhoneMatch[1].trim() : '',
-            clientNotes: notesMatch ? notesMatch[1].trim() : (app.description || 'Aucun détail'),
+            clientNotes: notesMatch ? notesMatch[1].trim() : (cleanDesc.length < 100 ? cleanDesc : 'Détails dans Odoo'),
             createdAt: startDate.toISOString(),
             status: 'confirmed'
           };
@@ -122,7 +146,9 @@ export default function AppointmentsManager({
             <LucideIcon name="Clock" className="h-6 w-6 text-brand-green" />
           </div>
           <h2 className="text-3xl font-poppins font-black text-brand-blue tracking-tight">Vos Rendez-vous Odoo</h2>
-          <p className="text-sm text-brand-gray-text mt-2">Gérez vos consultations en temps réel depuis Odoo.</p>
+          <p className="text-sm text-brand-gray-text mt-2 leading-relaxed">
+            Gérez vos consultations en temps réel depuis Odoo.
+          </p>
           <button onClick={loadFromOdoo} disabled={isRefreshing} className="mt-4 text-xs font-bold text-brand-blue flex items-center justify-center gap-1.5 mx-auto hover:underline">
             <LucideIcon name="RefreshCw" className={`h-3 w-3 ${isRefreshing ? 'animate-spin' : ''}`} />
             <span>{isRefreshing ? 'Mise à jour...' : 'Actualiser'}</span>
@@ -163,7 +189,7 @@ export default function AppointmentsManager({
                         <div className="flex items-center gap-2 text-xs text-brand-gray-text">
                           <LucideIcon name="User" className="h-3.5 w-3.5 text-brand-blue" />
                           <span className="font-medium">Praticien :</span>
-                          <span className="text-brand-dark">{app.preferredTherapist}</span>
+                          <span className="text-brand-dark truncate">{app.preferredTherapist}</span>
                         </div>
                         <div className="flex items-center gap-2 text-xs text-brand-gray-text">
                           <LucideIcon name="Phone" className="h-3.5 w-3.5 text-brand-blue" />
@@ -171,7 +197,7 @@ export default function AppointmentsManager({
                           <span className="text-brand-dark">{app.clientPhone || 'N/A'}</span>
                         </div>
                       </div>
-                      {app.clientNotes && app.clientNotes !== 'Aucun détail' && (
+                      {app.clientNotes && app.clientNotes !== 'Aucun détail' && app.clientNotes !== 'Détails dans Odoo' && (
                         <div className="mt-2.5 p-2.5 bg-brand-gray-light rounded-xl text-[11px] text-brand-gray-text border-l-2 border-brand-green/30 italic">
                           "{app.clientNotes}"
                         </div>
