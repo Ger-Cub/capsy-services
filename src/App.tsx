@@ -124,6 +124,13 @@ export default function App() {
           onOpenStressTest={handleOpenStressTest}
         />
 
+        {/* Mes Rendez-vous Odoo (Moved here) */}
+        <AppointmentsManager
+          onOpenBooking={() => handleOpenBooking('')}
+          onRefreshCounter={refreshAppointmentsCount}
+          user={user}
+        />
+
         {/* Services Grid (Bento/Card format) */}
         <div id="services">
           <ServicesGrid onSelectService={handleOpenBooking} />
@@ -147,12 +154,6 @@ export default function App() {
           </div>
         </section>
 
-        {/* Persistent List of client reservations logged on current device */}
-        <AppointmentsManager
-          onOpenBooking={() => handleOpenBooking('')}
-          onRefreshCounter={refreshAppointmentsCount}
-          user={user}
-        />
 
         {/* Collapsible Accordion FAQs */}
         <div id="faq">

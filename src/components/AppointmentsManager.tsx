@@ -145,7 +145,7 @@ export default function AppointmentsManager({
           <div className="inline-flex p-2 bg-brand-blue/10 rounded-full text-brand-blue mb-2.5">
             <LucideIcon name="Clock" className="h-6 w-6 text-brand-green" />
           </div>
-          <h2 className="text-3xl font-poppins font-black text-brand-blue tracking-tight">Vos Rendez-vous Odoo</h2>
+          <h2 className="text-3xl font-poppins font-black text-brand-blue tracking-tight">Mes Rendez-vous</h2>
           <p className="text-sm text-brand-gray-text mt-2 leading-relaxed">
             Gérez vos consultations en temps réel depuis Odoo.
           </p>
