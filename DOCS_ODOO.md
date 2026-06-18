@@ -80,7 +80,7 @@ ODOO_PASSWORD=cle_api_ou_mot_de_passe
 3. **Backend** -> *XML-RPC call* -> **Odoo ERP**
 4. **Odoo ERP** -> *Success (ID)* -> **Backend**
 5. **Backend** -> *JSON Success* -> **Frontend**
-6. **Frontend** -> *Actualisation UI* -> **User (Wowed! 🚀)**
+6. **Frontend** -> *Actualisation UI* -> **User**
 
 ---
-*Document rédigé le 18 Juin 2026 pour CAPSY Services.*
+*Document rédigé le 18 Juin 2026 pour Gerard Stagiaire IT et Communication CAPSY Services.*

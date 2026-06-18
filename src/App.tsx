@@ -179,6 +179,8 @@ export default function App() {
           refreshAppointmentsCount();
           // Broadcast custom event
           window.dispatchEvent(new Event('appointments-updated'));
+          // Scroll to appointments section
+          setTimeout(handleViewAppointments, 500);
         }}
         user={user}
       />
