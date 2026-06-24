@@ -1,8 +1,6 @@
 import React from 'react';
 // @ts-ignore
-import logoClaire from '../assets/images/logo-surface-claire.svg';
-// @ts-ignore
-import logoSombre from '../assets/images/logo-surface-sombre.svg';
+import logoGreen from '../assets/images/logo-capsy-monochrome-green.png';
 
 
 interface LogoProps {
@@ -18,7 +16,7 @@ export default function Logo({
   variant = 'color',
   showSubtitle = true,
 }: LogoProps) {
-  // Height and responsive dimensions optimized for the 1.9:1 vector artboards
+  // Height and responsive dimensions optimized for the brand logo.
   const sizes = {
     sm: 'h-11 sm:h-12',
     md: 'h-14 sm:h-16',
@@ -27,13 +25,13 @@ export default function Logo({
   };
 
   const selectedClass = sizes[size];
-  const logoSrc = variant === 'color' ? logoClaire : logoSombre;
+  const logoSrc = logoGreen;
 
   return (
     <div className={`flex items-center select-none ${className}`} id="capsy-logo">
       <img
         src={logoSrc}
-        className={`${selectedClass} w-auto object-contain transition-transform hover:scale-[1.03] duration-300`}
+        className={`${selectedClass} w-auto object-contain transition-transform hover:scale-[1.03] duration-300 ${variant === 'white' ? 'brightness-0 invert' : ''}`}
         alt="CAPSY SERVICES"
         referrerPolicy="no-referrer"
       />

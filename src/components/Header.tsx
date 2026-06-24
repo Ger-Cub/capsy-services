@@ -59,7 +59,7 @@ export default function Header({
   const Avatar = ({ size = 'sm' }: { size?: 'sm' | 'md' }) => {
     const dim = size === 'sm' ? 'h-9 w-9 text-sm' : 'h-11 w-11 text-base';
     return (
-      <div className={`${dim} rounded-full bg-brand-blue text-white font-black font-poppins flex items-center justify-center overflow-hidden ring-2 ring-brand-blue/30 cursor-pointer transition-all hover:ring-brand-blue/60`}>
+      <div className={`${dim} rounded-full bg-brand-wellbeing text-white font-black font-poppins flex items-center justify-center overflow-hidden ring-2 ring-brand-wellbeing/30 cursor-pointer transition-all hover:ring-brand-wellbeing/60`}>
         {user?.avatar
           ? <img src={user.avatar} alt={user.name} className="w-full h-full object-cover" />
           : <span>{initials}</span>
@@ -86,10 +86,10 @@ export default function Header({
               <a
                 key={link.name}
                 href={link.href}
-                className="text-sm font-sans font-semibold text-brand-dark hover:text-brand-blue transition-colors relative py-1 group"
+                className="text-sm font-sans font-semibold text-brand-dark hover:text-brand-wellbeing transition-colors relative py-1 group"
               >
                 {link.name}
-                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-brand-green transition-all duration-300 group-hover:w-full" />
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-brand-wellbeing transition-all duration-300 group-hover:w-full" />
               </a>
             ))}
           </nav>
@@ -98,7 +98,7 @@ export default function Header({
             {activeAppointmentsCount > 0 && !user && (
               <button
                 onClick={onViewAppointments}
-                className="py-2 px-3 bg-brand-blue/10 hover:bg-brand-blue/15 text-brand-blue rounded-xl text-xs font-semibold font-poppins flex items-center gap-1.5 transition-all"
+                className="py-2 px-3 bg-brand-wellbeing/10 hover:bg-brand-wellbeing/15 text-brand-wellbeing rounded-xl text-xs font-semibold font-poppins flex items-center gap-1.5 transition-all"
                 id="my-appointments-header-btn"
               >
                 <LucideIcon name="Clock" className="h-4 w-4" />
@@ -113,9 +113,9 @@ export default function Header({
                   className="relative p-2 text-brand-dark hover:bg-brand-gray-light rounded-xl transition-all group"
                   title="Mes rendez-vous"
                 >
-                  <LucideIcon name="Calendar" className="h-5 w-5 text-brand-blue" />
+                  <LucideIcon name="Calendar" className="h-5 w-5 text-brand-wellbeing" />
                   {activeAppointmentsCount > 0 && (
-                    <span className="absolute -top-1 -right-1 h-5 w-5 bg-brand-green text-white text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-white shadow-sm ring-1 ring-brand-green/20">
+                    <span className="absolute -top-1 -right-1 h-5 w-5 bg-brand-wellbeing text-white text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-white shadow-sm ring-1 ring-brand-wellbeing/20">
                       {activeAppointmentsCount}
                     </span>
                   )}
@@ -134,8 +134,8 @@ export default function Header({
                         exit={{ opacity: 0, scale: 0.95, y: -8 }}
                         className="absolute top-12 right-0 w-72 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden z-50"
                       >
-                        <div className="p-5 bg-gradient-to-br from-brand-blue/5 to-brand-blue/10 flex items-center gap-4 border-b border-gray-100">
-                          <div className="h-12 w-12 rounded-full bg-brand-blue text-white font-black font-poppins flex items-center justify-center overflow-hidden shrink-0 ring-2 ring-brand-blue/30">
+                        <div className="p-5 bg-gradient-to-br from-brand-wellbeing/5 to-brand-wellbeing/10 flex items-center gap-4 border-b border-gray-100">
+                          <div className="h-12 w-12 rounded-full bg-brand-wellbeing text-white font-black font-poppins flex items-center justify-center overflow-hidden shrink-0 ring-2 ring-brand-wellbeing/30">
                             {user.avatar
                               ? <img src={user.avatar} alt={user.name} className="w-full h-full object-cover" />
                               : <span className="text-base">{initials}</span>

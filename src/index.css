@@ -6,11 +6,12 @@
   --font-sans: "Open Sans", ui-sans-serif, system-ui, sans-serif;
   --font-poppins: "Poppins", sans-serif;
   
-  --color-brand-dark: #0c1d2d;
-  --color-brand-blue: #1E5AA8;
-  --color-brand-green: #39A96B;
+  --color-brand-wellbeing: #008738;
+  --color-brand-confidence: #91FCA3;
+  --color-brand-darkgreen: #003600;
   --color-brand-gray-light: #F5F5F5;
   --color-brand-gray-text: #555555;
+  --color-brand-dark: #003600; /* Setting brand-dark to dark green as per charter */
 }
 
 html {

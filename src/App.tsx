@@ -102,7 +102,7 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-white text-brand-dark flex flex-col font-sans selection:bg-brand-green/20 selection:text-brand-dark" id="capsy-landing-root">
+    <div className="min-h-screen bg-white text-brand-dark flex flex-col font-sans selection:bg-brand-wellbeing/20 selection:text-brand-dark" id="capsy-landing-root">
 
       {/* Upper Navigation Header */}
       <Header
@@ -144,7 +144,7 @@ export default function App() {
         {/* Innovative Self-assessment Stress Test questionnaire */}
         <section className="py-20 bg-brand-gray-light border-y border-gray-150" id="stress-test">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="text-center text-3xl font-poppins font-black text-brand-blue tracking-tight mb-3">
+            <h2 className="text-center text-3xl font-poppins font-black text-brand-wellbeing tracking-tight mb-3">
               Solutions Innovantes — Prenez un moment pour vous
             </h2>
             <p className="text-center text-sm text-brand-gray-text max-w-xl mx-auto mb-12">
