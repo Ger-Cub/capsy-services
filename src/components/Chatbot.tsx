@@ -304,26 +304,6 @@ export default function Chatbot({ onOpenBooking, isFullScreen = false }: Chatbot
             Retourner au site principal
           </a>
 
-          {/* Emergency Alert Panel */}
-          <div className="mb-8 bg-red-500/10 border border-red-500/25 rounded-2xl p-4.5">
-            <span className="flex items-center gap-2 text-xs font-black text-red-400 uppercase tracking-wider mb-2">
-              <span className="w-2.5 h-2.5 bg-red-500 rounded-full animate-ping shrink-0" />
-              Urgence Psychosociale RDC
-            </span>
-            <p className="text-xs text-white/80 leading-relaxed mb-3">
-              Si vous traversez une crise psychosociale majeure de désespoir ou de fatigue extrême, vous n'êtes pas seul. Contactez-nous immédiatement :
-            </p>
-            <div className="flex flex-col gap-1.5 font-mono text-xs text-brand-green">
-              <div className="flex items-center gap-2">
-                <LucideIcon name="Phone" className="w-3.5 h-3.5 text-brand-green" />
-                <a href="tel:+243997707312" className="hover:underline text-white/95 font-bold">+243 997 707 312</a>
-              </div>
-              <div className="flex items-center gap-2">
-                <LucideIcon name="Lock" className="w-3.5 h-3.5 text-brand-green" />
-                <span className="text-white/70">Secret professionnel garanti</span>
-              </div>
-            </div>
-          </div>
 
           {/* Dedicated Psychologists Profile */}
           <div className="mb-8 space-y-4">
@@ -413,15 +393,6 @@ export default function Chatbot({ onOpenBooking, isFullScreen = false }: Chatbot
             </div>
           </div>
 
-          <div className="lg:hidden bg-red-500/10 border-b border-red-500/20 px-4 py-2.5 flex items-center justify-between shrink-0">
-            <span className="text-[11px] font-black text-red-600 flex items-center gap-1.5 uppercase">
-              <span className="w-1.5 h-1.5 bg-red-600 rounded-full shrink-0" />
-              Urgence Psycho :
-            </span>
-            <a href="tel:+243997707312" className="text-xs font-mono font-black text-red-600 hover:underline">
-              +243 997 707 312
-            </a>
-          </div>
 
           <div className="flex-1 overflow-y-auto p-4 md:p-8 space-y-6 select-text chat-feed-viewport" id="chatbot-messages-feed" style={{ scrollBehavior: 'smooth' }}>
             <div className="max-w-3xl mx-auto space-y-6">
@@ -517,29 +488,42 @@ export default function Chatbot({ onOpenBooking, isFullScreen = false }: Chatbot
               e.preventDefault();
               handleSendMessage(inputVal);
             }}
-            className="px-4.5 pt-2 pb-3 bg-white border-t border-gray-150 shadow-[0_-4px_12px_rgba(0,0,0,0.02)]"
+            className="px-4.5 pt-2 pb-3 bg-white shrink-0"
           >
-            <div className="max-w-3xl mx-auto relative">
-              <input
-                type="text"
-                value={inputVal}
-                onChange={(e) => setInputVal(e.target.value)}
-                placeholder="Écrivez votre message..."
-                disabled={isLoading}
-                className="w-full text-sm md:text-base bg-gray-50 border border-gray-200 focus:border-brand-green focus:bg-white px-5 py-3.5 rounded-full outline-none transition-all placeholder:text-gray-400 text-gray-800 pr-15"
-              />
-              <button
-                type="submit"
-                disabled={!inputVal.trim() || isLoading}
-                className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-brand-green text-white hover:bg-brand-green-dark flex items-center justify-center transition-all disabled:opacity-40 cursor-pointer shadow-sm hover:scale-105 active:scale-95"
-                aria-label="Envoyer"
-              >
-                <LucideIcon name="Send" className="w-4 h-4" />
-              </button>
+            <div className="max-w-3xl mx-auto rounded-[28px] border border-brand-green/30 bg-gray-50/30 p-2 focus-within:border-brand-green transition-all shadow-sm">
+              <div className="px-4 pt-2">
+                <textarea
+                  rows={1}
+                  value={inputVal}
+                  onChange={(e) => setInputVal(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                      e.preventDefault();
+                      handleSendMessage(inputVal);
+                    }
+                  }}
+                  placeholder="Posez une question à CAPSY AI"
+                  disabled={isLoading}
+                  className="w-full text-sm bg-transparent outline-none placeholder:text-gray-400/80 placeholder:text-[13px] resize-none overflow-hidden min-h-[40px] py-2"
+                  style={{ height: 'auto' }}
+                />
+              </div>
+              <div className="flex items-center justify-between px-2 pb-1">
+                <div className="flex items-center gap-1">
+                  <button type="button" className="p-2 text-gray-500 hover:text-brand-green transition-colors"><LucideIcon name="Plus" className="w-4 h-4" /></button>
+                  <button type="button" className="p-2 text-gray-500 hover:text-brand-green transition-colors"><LucideIcon name="Mic" className="w-4 h-4" /></button>
+                  <button type="button" className="p-2 text-gray-500 hover:text-brand-green transition-colors"><LucideIcon name="Phone" className="w-4 h-4" /></button>
+                  <button type="button" className="p-2 text-gray-500 hover:text-brand-green transition-colors"><LucideIcon name="Map" className="w-4 h-4" /></button>
+                </div>
+                <button
+                  type="submit"
+                  disabled={!inputVal.trim() || isLoading}
+                  className="w-10 h-10 rounded-xl bg-brand-green/50 text-white hover:bg-brand-green flex items-center justify-center transition-all disabled:opacity-40 cursor-pointer shadow-sm"
+                >
+                  <LucideIcon name="Send" className="w-5 h-5" />
+                </button>
+              </div>
             </div>
-            <p className="text-[10px] text-brand-gray-text/80 text-center mt-1 tracking-wide">
-              🔒 Vos conversations avec l'IA sont entièrement confidentielles et temporaires.
-            </p>
           </form>
         </div>
       </div>
@@ -688,29 +672,33 @@ export default function Chatbot({ onOpenBooking, isFullScreen = false }: Chatbot
               e.preventDefault();
               handleSendMessage(inputVal);
             }}
-            className="px-4.5 pt-3.5 pb-4 bg-white border-t border-gray-150 shadow-[0_-4px_12px_rgba(0,0,0,0.02)]"
+            className="px-4 pb-4 bg-white shrink-0"
           >
-            <div className="max-w-3xl mx-auto relative">
-              <input
-                type="text"
-                value={inputVal}
-                onChange={(e) => setInputVal(e.target.value)}
-                placeholder="Écrivez votre message..."
-                disabled={isLoading}
-                className="w-full text-sm md:text-base bg-gray-50 border border-gray-200 focus:border-brand-green focus:bg-white px-5 py-4 rounded-full outline-none transition-all placeholder:text-gray-400 text-gray-800 pr-16"
-              />
+            <div className="flex items-center gap-2">
+              <div className="flex-1 rounded-2xl border border-brand-green/30 px-4 py-1.5 focus-within:border-brand-green transition-all">
+                <textarea
+                  rows={1}
+                  value={inputVal}
+                  onChange={(e) => setInputVal(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                      e.preventDefault();
+                      handleSendMessage(inputVal);
+                    }
+                  }}
+                  placeholder="Posez une question..."
+                  disabled={isLoading}
+                  className="w-full text-sm bg-transparent outline-none placeholder:text-gray-400/80 placeholder:text-[12px] resize-none overflow-hidden min-h-[32px] py-1.5 pt-2"
+                />
+              </div>
               <button
                 type="submit"
                 disabled={!inputVal.trim() || isLoading}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-brand-green text-white hover:bg-brand-green-dark flex items-center justify-center transition-all disabled:opacity-40 cursor-pointer shadow-sm hover:scale-105 active:scale-95"
-                aria-label="Envoyer"
+                className="w-11 h-11 rounded-2xl bg-brand-green/50 text-white hover:bg-brand-green flex items-center justify-center transition-all disabled:opacity-40 cursor-pointer shadow-sm"
               >
-                <LucideIcon name="Send" className="w-4 h-4" />
+                <LucideIcon name="Send" className="w-5 h-5" />
               </button>
             </div>
-            <p className="text-[10px] text-brand-gray-text/80 text-center mt-1 tracking-wide">
-              🔒 Vos conversations avec l'IA sont entièrement confidentielles et temporaires.
-            </p>
           </form>
         </div>
       )}

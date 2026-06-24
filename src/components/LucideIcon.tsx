@@ -40,7 +40,11 @@ import {
   Bot,
   ExternalLink,
   Maximize2,
-  ChevronLeft
+  ChevronLeft,
+  Plus,
+  Mic,
+  Map,
+  ArrowUp
 } from 'lucide-react';
 
 const iconMap = {
@@ -84,7 +88,11 @@ const iconMap = {
   Bot,
   ExternalLink,
   Maximize2,
-  ChevronLeft
+  ChevronLeft,
+  Plus,
+  Mic,
+  Map,
+  ArrowUp
 };
 
 export type IconName = keyof typeof iconMap;
