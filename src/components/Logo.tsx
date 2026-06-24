@@ -1,6 +1,6 @@
 import React from 'react';
 // @ts-ignore
-import logoIcon from '../assets/images/capsy-icon-new.png';
+import logoFull from '../assets/images/logo-full-brand.png';
 
 interface LogoProps {
   className?: string;
@@ -15,40 +15,23 @@ export default function Logo({
   variant = 'color',
   showSubtitle = true,
 }: LogoProps) {
-  const iconSizes = {
-    sm: 'h-8',
-    md: 'h-10',
-    lg: 'h-14',
-    xl: 'h-20',
+  const sizes = {
+    sm: 'h-10 sm:h-11',
+    md: 'h-14 sm:h-16',
+    lg: 'h-20 sm:h-24',
+    xl: 'h-28 sm:h-32',
   };
 
-  const textSizes = {
-    sm: 'text-lg',
-    md: 'text-xl',
-    lg: 'text-3xl',
-    xl: 'text-4xl',
-  };
-
-  const textColor = variant === 'white' ? 'text-white' : 'text-brand-wellbeing';
-  const subtitleColor = variant === 'white' ? 'text-white/60' : 'text-brand-gray-text';
+  const selectedClass = sizes[size];
 
   return (
-    <div className={`flex items-center gap-3 select-none ${className}`} id="capsy-logo">
+    <div className={`flex flex-col items-start select-none ${className}`} id="capsy-logo">
       <img
-        src={logoIcon}
-        className={`${iconSizes[size]} w-auto object-contain transition-transform hover:scale-105 duration-300`}
-        alt="CAPSY"
+        src={logoFull}
+        className={`${selectedClass} w-auto object-contain transition-transform hover:scale-[1.03] duration-300 ${variant === 'white' ? 'brightness-0 invert' : ''}`}
+        alt="CAPSY SERVICES"
+        referrerPolicy="no-referrer"
       />
-      <div className="flex flex-col justify-center">
-        <h2 className={`${textSizes[size]} font-poppins font-black tracking-tighter leading-none ${textColor}`}>
-          CAPSY <span className="font-light">SERVICES</span>
-        </h2>
-        {showSubtitle && (
-          <p className="text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.2em] font-poppins opacity-80 mt-0.5" style={{ color: variant === 'white' ? 'rgba(255,255,255,0.7)' : 'var(--color-brand-wellbeing)' }}>
-            Santé Mentale & Innovation
-          </p>
-        )}
-      </div>
     </div>
   );
 }
