@@ -30,7 +30,7 @@ export default function ContactSection() {
         {/* Title Alignment */}
         <div className="text-center max-w-2xl mx-auto mb-16">
           <span className="text-[10px] font-bold uppercase tracking-widest text-brand-green">CAPSY ACCUEIL</span>
-          <h2 className="text-3xl sm:text-4xl font-poppins font-black text-brand-blue tracking-tight mt-1">
+          <h2 className="text-3xl sm:text-4xl font-poppins font-black text-brand-wellbeing tracking-tight mt-1">
             Contactez Notre Centre
           </h2>
           <p className="text-sm text-brand-gray-text mt-3">
@@ -48,8 +48,8 @@ export default function ContactSection() {
               
               {/* Address detail - Goma & Kinshasa */}
               <div className="flex gap-4">
-                <div className="p-3 bg-brand-blue/10 text-brand-blue rounded-xl shrink-0 h-12 w-12 flex items-center justify-center">
-                  <LucideIcon name="MapPin" className="h-6 w-6 text-brand-blue" />
+                <div className="p-3 bg-brand-wellbeing/10 text-brand-wellbeing rounded-xl shrink-0 h-12 w-12 flex items-center justify-center">
+                  <LucideIcon name="MapPin" className="h-6 w-6 text-brand-wellbeing" />
                 </div>
                 <div>
                   <h4 className="font-poppins font-bold text-brand-dark text-base">Nos Cabinets (RDC)</h4>
@@ -59,7 +59,7 @@ export default function ContactSection() {
                       <p className="text-xs mt-0.5">N°18, av. Des écoles, Q. Les Volcans, Goma, RDC</p>
                     </div>
                     <div>
-                      <p className="font-bold text-xs text-brand-blue uppercase tracking-wider">Cabinet de Kinshasa</p>
+                      <p className="font-bold text-xs text-brand-wellbeing uppercase tracking-wider">Cabinet de Kinshasa</p>
                       <p className="text-xs mt-0.5">N°63, av. Kabinda, Q. Boyoma, Kinshasa, RDC</p>
                     </div>
                   </div>
@@ -84,13 +84,13 @@ export default function ContactSection() {
 
               {/* Email details */}
               <div className="flex gap-4">
-                <div className="p-3 bg-brand-blue/10 text-brand-blue rounded-xl shrink-0 h-12 w-12 flex items-center justify-center">
-                  <LucideIcon name="Globe" className="h-6 w-6 text-brand-blue" />
+                <div className="p-3 bg-brand-wellbeing/10 text-brand-wellbeing rounded-xl shrink-0 h-12 w-12 flex items-center justify-center">
+                  <LucideIcon name="Globe" className="h-6 w-6 text-brand-wellbeing" />
                 </div>
                 <div>
                   <h4 className="font-poppins font-bold text-brand-dark text-base">Secrétariat & Web</h4>
                   <div className="text-sm text-brand-gray-text mt-1 font-semibold space-y-0.5">
-                    <p className="hover:text-brand-blue transition-colors">
+                    <p className="hover:text-brand-wellbeing transition-colors">
                       <a href="mailto:contact@capsy-rdc.org">contact@capsy-rdc.org</a>
                     </p>
                     <p className="text-brand-green">
@@ -102,8 +102,8 @@ export default function ContactSection() {
 
               {/* Working Hours */}
               <div className="flex gap-4">
-                <div className="p-3 bg-brand-blue/10 text-brand-blue rounded-xl shrink-0 h-12 w-12 flex items-center justify-center">
-                  <LucideIcon name="Clock" className="h-6 w-6 text-brand-blue" />
+                <div className="p-3 bg-brand-wellbeing/10 text-brand-wellbeing rounded-xl shrink-0 h-12 w-12 flex items-center justify-center">
+                  <LucideIcon name="Clock" className="h-6 w-6 text-brand-wellbeing" />
                 </div>
                 <div>
                   <h4 className="font-poppins font-bold text-brand-dark text-base">Heures d'Ouverture</h4>
@@ -122,11 +122,11 @@ export default function ContactSection() {
               <p className="text-xs font-bold text-brand-dark uppercase tracking-wider font-poppins">Suivez-nous sur les réseaux</p>
               <div className="flex gap-2.5">
                 {[
-                  { icon: 'Facebook', href: '#', label: 'Capsy Services Facebook', color: 'hover:bg-blue-600 hover:text-white' },
+                  { icon: 'Facebook', href: '#', label: 'Capsy Services Facebook', color: 'hover:bg-brand-wellbeing hover:text-white' },
                   { icon: 'Instagram', href: '#', label: 'Capsy Services Instagram', color: 'hover:bg-pink-600 hover:text-white' },
                   { icon: 'MessageSquareShare', href: 'https://wa.me/243997707312', label: 'WhatsApp direct link', color: 'hover:bg-green-600 hover:text-white bg-brand-green/20 text-brand-green' },
-                  { icon: 'Send', href: '#', label: 'Telegram channel', color: 'hover:bg-sky-500 hover:text-white' },
-                  { icon: 'Linkedin', href: '#', label: 'LinkedIn corporate handle', color: 'hover:bg-blue-800 hover:text-white' }
+                  { icon: 'Send', href: '#', label: 'Telegram channel', color: 'hover:bg-brand-wellbeing hover:text-white' },
+                  { icon: 'Linkedin', href: '#', label: 'LinkedIn corporate handle', color: 'hover:bg-brand-dark hover:text-white' }
                 ].map((social, sIdx) => (
                   <a
                     key={sIdx}
@@ -146,7 +146,7 @@ export default function ContactSection() {
           <div className="lg:col-span-7 flex flex-col gap-6" id="contact-form-plane">
             {/* Action Messaging card */}
             <div className="bg-brand-gray-light rounded-2xl p-6 sm:p-8 border border-gray-150">
-              <h4 className="font-poppins font-bold text-brand-blue text-lg mb-4">Écrivez-nous un message</h4>
+              <h4 className="font-poppins font-bold text-brand-wellbeing text-lg mb-4">Écrivez-nous un message</h4>
               
               <form onSubmit={handleMessageSubmit} className="space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -158,7 +158,7 @@ export default function ContactSection() {
                       value={formName}
                       onChange={(e) => setFormName(e.target.value)}
                       placeholder="Ex: David Kabasubabo"
-                      className="w-full p-3 bg-white border border-gray-200 rounded-xl text-brand-dark text-sm outline-none focus:border-brand-blue transition-colors"
+                      className="w-full p-3 bg-white border border-gray-200 rounded-xl text-brand-dark text-sm outline-none focus:border-brand-wellbeing transition-colors"
                     />
                   </div>
                   <div>
@@ -168,7 +168,7 @@ export default function ContactSection() {
                       value={formEmail}
                       onChange={(e) => setFormEmail(e.target.value)}
                       placeholder="votre.email@domaine.com"
-                      className="w-full p-3 bg-white border border-gray-200 rounded-xl text-brand-dark text-sm outline-none focus:border-brand-blue transition-colors"
+                      className="w-full p-3 bg-white border border-gray-200 rounded-xl text-brand-dark text-sm outline-none focus:border-brand-wellbeing transition-colors"
                     />
                   </div>
                 </div>
@@ -181,7 +181,7 @@ export default function ContactSection() {
                     value={formMessage}
                     onChange={(e) => setFormMessage(e.target.value)}
                     placeholder="Dites-nous comment nous pouvons vous orienter..."
-                    className="w-full p-3 bg-white border border-gray-200 rounded-xl text-brand-dark text-sm outline-none focus:border-brand-blue transition-colors resize-none"
+                    className="w-full p-3 bg-white border border-gray-200 rounded-xl text-brand-dark text-sm outline-none focus:border-brand-wellbeing transition-colors resize-none"
                   />
                 </div>
 
@@ -193,7 +193,7 @@ export default function ContactSection() {
                   
                   <button
                     type="submit"
-                    className="px-6 py-2.5 bg-brand-blue hover:bg-brand-blue/90 text-white font-bold font-poppins rounded-xl text-xs flex items-center gap-2 transition-all shadow-md cursor-pointer"
+                    className="px-6 py-2.5 bg-brand-wellbeing hover:bg-brand-wellbeing/90 text-white font-bold font-poppins rounded-xl text-xs flex items-center gap-2 transition-all shadow-md cursor-pointer"
                   >
                     <LucideIcon name="Send" className="h-3.5 w-3.5 text-brand-green" />
                     <span>Envoyer le Message</span>
@@ -218,7 +218,7 @@ export default function ContactSection() {
                 title="CAPSY Services (Goma)"
                 address="N°18, av. Des écoles, Q. Les Volcans, Goma, RDC"
               />
-              <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-xs px-2.5 py-1 rounded-lg text-[9px] font-bold font-poppins uppercase tracking-wider text-brand-blue z-20 select-none shadow-2xs pointer-events-none">
+              <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-xs px-2.5 py-1 rounded-lg text-[9px] font-bold font-poppins uppercase tracking-wider text-brand-wellbeing z-20 select-none shadow-2xs pointer-events-none">
                 📍 Goma : -1.6815, 29.2306
               </div>
             </div>

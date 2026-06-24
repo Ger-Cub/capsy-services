@@ -144,7 +144,7 @@ export default function Header({
                           <div className="min-w-0">
                             <p className="font-bold font-poppins text-brand-dark truncate">{user.name}</p>
                             <p className="text-xs text-brand-gray-text truncate">{user.email}</p>
-                            <span className="text-[10px] font-bold uppercase tracking-wider text-brand-blue">Client Odoo</span>
+                            <span className="text-[10px] font-bold uppercase tracking-wider text-brand-wellbeing">Client Odoo</span>
                           </div>
                         </div>
 
@@ -153,17 +153,17 @@ export default function Header({
                             onClick={() => { setToastOpen(false); onViewAppointments(); }}
                             className="w-full px-4 py-2.5 text-sm text-brand-dark hover:bg-brand-gray-light rounded-xl flex items-center gap-3 transition-colors"
                           >
-                            <LucideIcon name="Calendar" className="h-4 w-4 text-brand-blue" />
+                            <LucideIcon name="Calendar" className="h-4 w-4 text-brand-wellbeing" />
                             <span className="font-medium">Mes rendez-vous</span>
                             {activeAppointmentsCount > 0 && (
-                              <span className="ml-auto text-xs bg-brand-blue text-white px-1.5 py-0.5 rounded-full">{activeAppointmentsCount}</span>
+                              <span className="ml-auto text-xs bg-brand-wellbeing text-white px-1.5 py-0.5 rounded-full">{activeAppointmentsCount}</span>
                             )}
                           </button>
                           <button
                             onClick={() => { setToastOpen(false); onViewProfile(); }}
                             className="w-full px-4 py-2.5 text-sm text-brand-dark hover:bg-brand-gray-light rounded-xl flex items-center gap-3 transition-colors"
                           >
-                            <LucideIcon name="UserCircle" className="h-4 w-4 text-brand-blue" />
+                            <LucideIcon name="UserCircle" className="h-4 w-4 text-brand-wellbeing" />
                             <span className="font-medium">Mon profil</span>
                           </button>
                           <div className="my-1 border-t border-gray-100" />
@@ -183,7 +183,7 @@ export default function Header({
             ) : (
               <button
                 onClick={onLogin}
-                className="py-2 px-4 text-brand-blue hover:bg-brand-blue/5 rounded-xl text-xs font-bold font-poppins transition-all flex items-center gap-2"
+                className="py-2 px-4 text-brand-wellbeing hover:bg-brand-wellbeing/5 rounded-xl text-xs font-bold font-poppins transition-all flex items-center gap-2"
               >
                 <LucideIcon name="User" className="h-4 w-4" />
                 <span>Connexion</span>
@@ -192,11 +192,11 @@ export default function Header({
 
             <button
               onClick={onOpenBooking}
-              className="py-2.5 px-5 bg-brand-green hover:bg-brand-green/95 text-white rounded-xl text-sm font-bold font-poppins flex items-center gap-2 transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5 cursor-pointer"
+              className="py-2.5 px-5 bg-brand-wellbeing hover:bg-brand-wellbeing/90 text-white rounded-xl text-sm font-bold font-poppins flex items-center gap-2 transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5 cursor-pointer"
               id="header-cta-booking-btn"
             >
               <LucideIcon name="Calendar" className="h-4 w-4" />
-              <span>Rendez-vous</span>
+              <span>Prendre Rendez-vous</span>
             </button>
           </div>
 
@@ -207,7 +207,7 @@ export default function Header({
                   onClick={onViewAppointments}
                   className="relative p-2 text-brand-dark hover:bg-brand-gray-light rounded-xl transition-all"
                 >
-                  <LucideIcon name="Calendar" className="h-5 w-5 text-brand-blue" />
+                  <LucideIcon name="Calendar" className="h-5 w-5 text-brand-wellbeing" />
                   {activeAppointmentsCount > 0 && (
                     <span className="absolute -top-1 -right-1 h-4 w-4 bg-brand-green text-white text-[9px] font-bold rounded-full flex items-center justify-center border-2 border-white shadow-sm">
                       {activeAppointmentsCount}
@@ -226,14 +226,14 @@ export default function Header({
                         exit={{ opacity: 0, scale: 0.95, y: -8 }}
                         className="absolute top-12 right-0 w-64 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden z-50"
                       >
-                        <div className="p-4 bg-gradient-to-br from-brand-blue/5 to-brand-blue/10 border-b border-gray-100">
+                        <div className="p-4 bg-gradient-to-br from-brand-wellbeing/5 to-brand-wellbeing/10 border-b border-gray-100">
                           <p className="font-bold font-poppins text-brand-dark text-sm">{user.name}</p>
                           <p className="text-xs text-brand-gray-text">{user.email}</p>
                         </div>
                         <div className="p-2">
                           <button onClick={() => { setToastOpen(false); onViewProfile(); }}
                             className="w-full px-3 py-2 text-sm text-brand-dark hover:bg-brand-gray-light rounded-xl flex items-center gap-2">
-                            <LucideIcon name="UserCircle" className="h-4 w-4 text-brand-blue" />Mon profil
+                            <LucideIcon name="UserCircle" className="h-4 w-4 text-brand-wellbeing" />Mon profil
                           </button>
                           <button onClick={() => { setToastOpen(false); onLogout(); }}
                             className="w-full px-3 py-2 text-sm text-rose-500 hover:bg-rose-50 rounded-xl flex items-center gap-2">
@@ -248,7 +248,7 @@ export default function Header({
             ) : (
               activeAppointmentsCount > 0 && (
                 <button onClick={onViewAppointments}
-                  className="p-2 bg-brand-blue/10 text-brand-blue rounded-xl">
+                  className="p-2 bg-brand-wellbeing/10 text-brand-wellbeing rounded-xl">
                   <LucideIcon name="Clock" className="h-4 w-4" />
                 </button>
               )
@@ -278,24 +278,24 @@ export default function Header({
               key={link.name}
               href={link.href}
               onClick={() => setMobileMenuOpen(false)}
-              className="block py-2.5 px-3 rounded-lg text-sm font-medium text-brand-dark hover:bg-brand-gray-light hover:text-brand-blue transition-colors"
+              className="block py-2.5 px-3 rounded-lg text-sm font-medium text-brand-dark hover:bg-brand-gray-light hover:text-brand-wellbeing transition-colors"
             >
               {link.name}
             </a>
           ))}
           <div className="pt-3 border-t border-gray-100 flex flex-col gap-2">
             <button
-              onClick={() => { setMobileMenuOpen(false); onOpenBooking(); }}
-              className="w-full py-3 bg-brand-green hover:bg-brand-green/95 text-white font-bold font-poppins rounded-xl text-center text-sm flex items-center justify-center gap-2 transition-all shadow-md cursor-pointer"
-              id="mobile-drawer-cta-booking-btn"
+              onClick={onOpenBooking}
+              className="w-full sm:w-auto py-2.5 px-5 bg-brand-wellbeing hover:bg-brand-wellbeing/90 text-white text-xs font-bold font-poppins rounded-xl flex items-center justify-center gap-1.5 transition-all shadow-md cursor-pointer"
+              id="footer-inline-booking-btn"
             >
               <LucideIcon name="Calendar" className="h-4 w-4" />
-              <span>Prendre un rendez-vous</span>
+              <span>Faire une réservation</span>
             </button>
             {!user && (
               <button
                 onClick={() => { setMobileMenuOpen(false); onLogin(); }}
-                className="w-full py-2.5 bg-brand-blue/5 text-brand-blue font-semibold font-poppins rounded-xl text-center text-sm flex items-center justify-center gap-2"
+                className="w-full py-2.5 bg-brand-wellbeing/5 text-brand-wellbeing font-semibold font-poppins rounded-xl text-center text-sm flex items-center justify-center gap-2"
               >
                 <LucideIcon name="User" className="h-4 w-4" />
                 <span>Se connecter</span>

@@ -40,10 +40,10 @@ export default function LeafletMap({ lat, lng, zoom = 15, title = "Capsy Service
         className: 'custom-tile-marker',
         html: `
           <div class="flex flex-col items-center shadow-md justify-center" style="transform: translate(-50%, -100%);">
-            <div class="h-9 w-9 bg-[#1E5AA8] rounded-full border-2 border-white shadow-lg flex items-center justify-center text-white">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#39A96B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-map-pin"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            <div class="h-9 w-9 bg-[var(--color-brand-wellbeing)] rounded-full border-2 border-white shadow-lg flex items-center justify-center text-white">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-brand-wellbeing)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-map-pin"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg>
             </div>
-            <div class="bg-white px-2 py-0.5 rounded-md text-[8px] font-bold font-poppins text-brand-dark mt-1 border border-[#1E5AA8] shadow-xs whitespace-nowrap">
+            <div class="bg-white px-2 py-0.5 rounded-md text-[8px] font-bold font-poppins text-brand-dark mt-1 border border-[var(--color-brand-wellbeing)] shadow-xs whitespace-nowrap">
               ${title}
             </div>
           </div>
@@ -55,7 +55,7 @@ export default function LeafletMap({ lat, lng, zoom = 15, title = "Capsy Service
       L.marker([lat, lng], { icon: customIcon }).addTo(mapRef.current)
         .bindPopup(`
           <div style="font-family: 'Poppins', sans-serif; font-size: 12px; color: #0c1d2d; padding: 4px;">
-            <b style="color: #1E5AA8; font-weight: 700;">${title}</b><br/>
+            <b style="color: var(--color-brand-wellbeing); font-weight: 700;">${title}</b><br/>
             <span style="font-size: 11px; color: #4B5563;">${address}</span>
           </div>
         `)

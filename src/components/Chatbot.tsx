@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import LucideIcon from './LucideIcon';
-import logoIcon from '../assets/images/logo-capsy-icon.png';
+import logoIcon from '../assets/images/capsy-icon-new.png';
 
 interface Message {
   role: 'user' | 'model';
@@ -430,7 +430,7 @@ export default function Chatbot({ onOpenBooking, isFullScreen = false }: Chatbot
                 return (
                   <div key={i} className={`flex ${isModel ? 'justify-start' : 'justify-end'}`}>
                     <div className={`flex gap-3 max-w-[85%] ${isModel ? '' : 'flex-row-reverse'}`}>
-                      <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${isModel ? 'bg-brand-green/10 text-brand-green border border-brand-green/20' : 'bg-brand-blue/10 text-brand-blue border border-brand-blue/20'}`}>
+                      <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${isModel ? 'bg-brand-green/10 text-brand-green border border-brand-green/20' : 'bg-brand-wellbeing/10 text-brand-wellbeing border border-brand-wellbeing/20'}`}>
                         {isModel ? <img src={logoIcon} alt="CAPSY" className="w-6 h-6 rounded-full object-cover" /> : <LucideIcon name="User" className="w-4 h-4" />}
                       </div>
 
@@ -438,7 +438,7 @@ export default function Chatbot({ onOpenBooking, isFullScreen = false }: Chatbot
                         <div
                           className={`rounded-2xl px-5 py-4 text-sm md:text-base leading-relaxed shadow-sm ${isModel
                             ? 'bg-gray-50 border border-gray-150 text-gray-800 rounded-tl-none font-normal'
-                            : 'bg-brand-blue text-white rounded-tr-none font-medium'
+                            : 'bg-brand-wellbeing text-white rounded-tr-none font-medium'
                             }`}
                         >
                           {renderMessageContent(msg.text, !isModel)}
@@ -556,7 +556,7 @@ export default function Chatbot({ onOpenBooking, isFullScreen = false }: Chatbot
           aria-label="Discuter avec CAPSY IA"
         >
           {unreadCount > 0 && (
-            <span className="absolute -top-1.5 -right-1.5 bg-brand-blue text-white text-[10px] font-black px-2 py-0.5 rounded-full border-2 border-white animate-bounce">
+            <span className="absolute -top-1.5 -right-1.5 bg-brand-wellbeing text-white text-[10px] font-black px-2 py-0.5 rounded-full border-2 border-white animate-bounce">
               {unreadCount}
             </span>
           )}
@@ -616,7 +616,7 @@ export default function Chatbot({ onOpenBooking, isFullScreen = false }: Chatbot
                   <div
                     className={`max-w-[85%] rounded-2xl px-4 py-3 text-sm shadow-sm ${isModel
                       ? 'bg-white border border-gray-150 text-gray-800 rounded-tl-none'
-                      : 'bg-brand-blue text-white rounded-tr-none font-medium'
+                      : 'bg-brand-wellbeing text-white rounded-tr-none font-medium'
                       }`}
                   >
                     {renderMessageContent(msg.text, !isModel)}

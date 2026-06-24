@@ -40,10 +40,10 @@ export default function Faqs() {
                   onClick={() => toggleAccordion(idx)}
                   className="w-full p-5 text-left flex items-center justify-between gap-4 font-poppins font-bold text-brand-dark text-sm sm:text-base select-none cursor-pointer"
                 >
-                  <span className={`${isOpen ? 'text-brand-blue' : ''} transition-colors`}>
+                  <span className={`${isOpen ? 'text-brand-wellbeing' : ''} transition-colors`}>
                     {item.question}
                   </span>
-                  <div className={`p-1.5 rounded-xl bg-brand-gray-light text-brand-gray-text transition-transform duration-300 ${isOpen ? 'rotate-180 bg-brand-blue/10 text-brand-blue' : ''}`}>
+                  <div className={`p-1.5 rounded-xl bg-brand-gray-light text-brand-gray-text transition-transform duration-300 ${isOpen ? 'rotate-180 bg-brand-wellbeing/10 text-brand-wellbeing' : ''}`}>
                     <LucideIcon name="ChevronDown" className="h-4 w-4" />
                   </div>
                 </button>

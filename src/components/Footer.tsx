@@ -12,10 +12,10 @@ export default function Footer({ onOpenBooking }: FooterProps) {
   return (
     <footer className="bg-brand-dark text-white pt-16 pb-8 border-t border-white/5" id="main-footer">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
+
         {/* Core Layout Split */}
         <div className="grid grid-cols-1 md:grid-cols-12 gap-10 items-start pb-12 border-b border-white/10 select-none">
-          
+
           {/* Logo and About Column */}
           <div className="md:col-span-5 space-y-4">
             <Logo size="md" variant="white" showSubtitle={true} />
@@ -34,7 +34,7 @@ export default function Footer({ onOpenBooking }: FooterProps) {
               <p className="flex items-start gap-1.5">
                 <LucideIcon name="MapPin" className="h-3.5 w-3.5 text-brand-green shrink-0 mt-0.5" />
                 <span>Goma : N°18, av. Des écoles, Q. Les Volcans, RDC<br />
-                Kinshasa : N°63, av. Kabinda, Q. Boyoma, RDC</span>
+                  Kinshasa : N°63, av. Kabinda, Q. Boyoma, RDC</span>
               </p>
             </div>
           </div>
@@ -69,7 +69,7 @@ export default function Footer({ onOpenBooking }: FooterProps) {
             </p>
             <button
               onClick={onOpenBooking}
-              className="w-full sm:w-auto py-2.5 px-5 bg-brand-green hover:bg-brand-green/95 text-white text-xs font-bold font-poppins rounded-xl flex items-center justify-center gap-1.5 transition-all shadow-md cursor-pointer"
+              className="w-full sm:w-auto py-2.5 px-5 bg-brand-wellbeing hover:bg-brand-wellbeing/90 text-white text-xs font-bold font-poppins rounded-xl flex items-center justify-center gap-1.5 transition-all shadow-md cursor-pointer"
               id="footer-inline-booking-btn"
             >
               <LucideIcon name="Calendar" className="h-4 w-4" />

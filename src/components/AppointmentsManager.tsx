@@ -142,14 +142,14 @@ export default function AppointmentsManager({
     <section className="py-20 bg-white" id="mes-rendezvous">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-2xl mx-auto mb-12">
-          <div className="inline-flex p-2 bg-brand-blue/10 rounded-full text-brand-blue mb-2.5">
+          <div className="inline-flex p-2 bg-brand-wellbeing/10 rounded-full text-brand-wellbeing mb-2.5">
             <LucideIcon name="Clock" className="h-6 w-6 text-brand-green" />
           </div>
-          <h2 className="text-3xl font-poppins font-black text-brand-blue tracking-tight">Mes Rendez-vous</h2>
+          <h2 className="text-3xl font-poppins font-black text-brand-wellbeing tracking-tight">Mes Rendez-vous</h2>
           <p className="text-sm text-brand-gray-text mt-2 leading-relaxed">
             Gérez vos consultations en temps réel depuis Odoo.
           </p>
-          <button onClick={loadFromOdoo} disabled={isRefreshing} className="mt-4 text-xs font-bold text-brand-blue flex items-center justify-center gap-1.5 mx-auto hover:underline">
+          <button onClick={loadFromOdoo} disabled={isRefreshing} className="mt-4 text-xs font-bold text-brand-wellbeing flex items-center justify-center gap-1.5 mx-auto hover:underline">
             <LucideIcon name="RefreshCw" className={`h-3 w-3 ${isRefreshing ? 'animate-spin' : ''}`} />
             <span>{isRefreshing ? 'Mise à jour...' : 'Actualiser'}</span>
           </button>
@@ -167,7 +167,7 @@ export default function AppointmentsManager({
             <div className="text-center py-20 bg-brand-gray-light rounded-3xl border-2 border-dashed border-gray-200">
               <LucideIcon name="Calendar" className="h-12 w-12 text-gray-300 mx-auto mb-4" />
               <h3 className="text-lg font-bold text-brand-dark">Aucun rendez-vous</h3>
-              <button onClick={onOpenBooking} className="mt-6 px-6 py-2.5 bg-brand-blue text-white rounded-xl font-bold text-sm">Prendre un rendez-vous</button>
+              <button onClick={onOpenBooking} className="mt-6 px-6 py-2.5 bg-brand-wellbeing text-white rounded-xl font-bold text-sm">Prendre un rendez-vous</button>
             </div>
           ) : (
             appointments.map((app) => {
@@ -176,23 +176,23 @@ export default function AppointmentsManager({
               );
 
               return (
-                <div key={app.id} className="bg-white rounded-2xl border-2 border-slate-100 hover:border-brand-blue/30 p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 shadow-sm transition-all relative overflow-hidden">
-                  <div className="absolute top-0 bottom-0 left-0 w-1.5 bg-brand-blue" />
+                <div key={app.id} className="bg-white rounded-2xl border-2 border-gray-100 hover:border-brand-wellbeing/30 p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 shadow-sm transition-all relative overflow-hidden">
+                  <div className="absolute top-0 bottom-0 left-0 w-1.5 bg-brand-wellbeing" />
                   <div className="space-y-4 flex-1 pl-2 w-full">
                     <div className="flex flex-wrap items-center gap-2.5">
-                      <span className="font-mono text-[10px] font-bold text-brand-blue bg-brand-blue/10 px-2 py-0.5 rounded-md lowercase">{app.id}</span>
+                      <span className="font-mono text-[10px] font-bold text-brand-wellbeing bg-brand-wellbeing/10 px-2 py-0.5 rounded-md lowercase">{app.id}</span>
                       <span className="text-[10px] bg-green-50 text-green-700 border border-green-200 px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">Confirmé Odoo</span>
                     </div>
                     <div>
                       <h4 className="text-lg font-poppins font-bold text-brand-dark lowercase first-letter:uppercase">{app.serviceTitle}</h4>
                       <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-y-2 gap-x-4">
                         <div className="flex items-center gap-2 text-xs text-brand-gray-text">
-                          <LucideIcon name="User" className="h-3.5 w-3.5 text-brand-blue" />
+                          <LucideIcon name="User" className="h-3.5 w-3.5 text-brand-wellbeing" />
                           <span className="font-medium">Praticien :</span>
                           <span className="text-brand-dark truncate">{app.preferredTherapist}</span>
                         </div>
                         <div className="flex items-center gap-2 text-xs text-brand-gray-text">
-                          <LucideIcon name="Phone" className="h-3.5 w-3.5 text-brand-blue" />
+                          <LucideIcon name="Phone" className="h-3.5 w-3.5 text-brand-wellbeing" />
                           <span className="font-medium">Contact :</span>
                           <span className="text-brand-dark">{app.clientPhone || 'N/A'}</span>
                         </div>
@@ -224,8 +224,8 @@ export default function AppointmentsManager({
             })
           )}
         </div>
-        <div className="bg-brand-blue/5 p-5 rounded-2xl border border-brand-blue/10 flex gap-4 text-xs text-brand-gray-text leading-relaxed mt-10">
-          <LucideIcon name="ShieldCheck" className="h-5 w-5 text-brand-blue shrink-0" />
+        <div className="bg-brand-wellbeing/5 p-5 rounded-2xl border border-brand-wellbeing/10 flex gap-4 text-xs text-brand-gray-text leading-relaxed mt-10">
+          <LucideIcon name="ShieldCheck" className="h-5 w-5 text-brand-wellbeing shrink-0" />
           <p>Ces informations proviennent directement de votre compte <strong>Odoo CAPSY Services</strong>. Connecté en tant que <strong>{user.name}</strong>.</p>
         </div>
       </div>

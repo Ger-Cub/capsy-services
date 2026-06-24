@@ -209,7 +209,7 @@ export default function BookingModal({
             id="rdv-modal"
           >
             {/* Header */}
-            <div className="p-6 bg-brand-blue text-white flex items-center justify-between border-b border-white/10 shrink-0">
+            <div className="p-6 bg-brand-wellbeing text-white flex items-center justify-between border-b border-white/10 shrink-0">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-white/10 rounded-lg">
                   <LucideIcon name="Calendar" className="h-6 w-6 text-brand-green" />
@@ -232,17 +232,17 @@ export default function BookingModal({
             {step < 4 && (
               <div className="bg-brand-gray-light px-6 py-3 border-b border-gray-200 flex justify-between items-center text-xs text-brand-gray-text font-medium shrink-0">
                 <div className="flex items-center gap-2">
-                  <span className={`h-6 w-6 flex items-center justify-center rounded-full text-white font-bold ${step >= 1 ? 'bg-brand-blue' : 'bg-gray-300'}`}>1</span>
+                  <span className={`h-6 w-6 flex items-center justify-center rounded-full text-white font-bold ${step >= 1 ? 'bg-brand-wellbeing' : 'bg-gray-300'}`}>1</span>
                   <span>Service</span>
                 </div>
                 <div className="h-[2px] bg-gray-300 flex-1 mx-3" />
                 <div className="flex items-center gap-2">
-                  <span className={`h-6 w-6 flex items-center justify-center rounded-full text-white font-bold ${step >= 2 ? 'bg-brand-blue' : 'bg-gray-300'}`}>2</span>
+                  <span className={`h-6 w-6 flex items-center justify-center rounded-full text-white font-bold ${step >= 2 ? 'bg-brand-wellbeing' : 'bg-gray-300'}`}>2</span>
                   <span>Date & Heure</span>
                 </div>
                 <div className="h-[2px] bg-gray-300 flex-1 mx-3" />
                 <div className="flex items-center gap-2">
-                  <span className={`h-6 w-6 flex items-center justify-center rounded-full text-white font-bold ${step >= 3 ? 'bg-brand-blue' : 'bg-gray-300'}`}>3</span>
+                  <span className={`h-6 w-6 flex items-center justify-center rounded-full text-white font-bold ${step >= 3 ? 'bg-brand-wellbeing' : 'bg-gray-300'}`}>3</span>
                   <span>Vos coordonnées</span>
                 </div>
               </div>
@@ -272,7 +272,7 @@ export default function BookingModal({
                           }`}
                       >
                         <div className="flex items-center gap-3 mb-2">
-                          <div className={`p-2 rounded-lg ${serviceId === s.id ? 'bg-brand-green text-white' : 'bg-brand-gray-light text-brand-blue'}`}>
+                          <div className={`p-2 rounded-lg ${serviceId === s.id ? 'bg-brand-green text-white' : 'bg-brand-gray-light text-brand-wellbeing'}`}>
                             <LucideIcon name={s.iconName} className="h-5 w-5" />
                           </div>
                           <span className="font-poppins font-bold text-brand-dark text-sm leading-tight">
@@ -293,7 +293,7 @@ export default function BookingModal({
                     ))}
                   </div>
                   <div className="bg-brand-gray-light p-3.5 rounded-xl flex gap-3 text-xs text-brand-gray-text leading-relaxed border border-gray-200 mt-2">
-                    <LucideIcon name="ShieldCheck" className="h-5 w-5 text-brand-blue shrink-0 mt-0.5" />
+                    <LucideIcon name="ShieldCheck" className="h-5 w-5 text-brand-wellbeing shrink-0 mt-0.5" />
                     <p>
                       Tous nos suivis sont strictement confidentiels et soumis au secret professionnel absolu. Votre sécurité psychologique est préservée.
                     </p>
@@ -318,7 +318,7 @@ export default function BookingModal({
                         type="button"
                         onClick={() => setFormat('presentiel')}
                         className={`p-3 rounded-xl border-2 flex items-center justify-center gap-2 transition-all ${format === 'presentiel'
-                          ? 'border-brand-blue bg-blue-50/10 text-brand-blue font-semibold'
+                          ? 'border-brand-wellbeing bg-brand-wellbeing/5 text-brand-wellbeing font-semibold'
                           : 'border-gray-200 text-brand-gray-text hover:bg-neutral-50'
                           }`}
                       >
@@ -329,7 +329,7 @@ export default function BookingModal({
                         type="button"
                         onClick={() => setFormat('en_ligne')}
                         className={`p-3 rounded-xl border-2 flex items-center justify-center gap-2 transition-all ${format === 'en_ligne'
-                          ? 'border-brand-blue bg-blue-50/10 text-brand-blue font-semibold'
+                          ? 'border-brand-wellbeing bg-brand-wellbeing/5 text-brand-wellbeing font-semibold'
                           : 'border-gray-200 text-brand-gray-text hover:bg-neutral-50'
                           }`}
                       >
@@ -347,7 +347,7 @@ export default function BookingModal({
                     <select
                       value={date}
                       onChange={(e) => setDate(e.target.value)}
-                      className="w-full p-3.5 border-2 border-gray-200 rounded-xl bg-white font-sans text-brand-dark focus:border-brand-blue outline-none transition-colors"
+                      className="w-full p-3.5 border-2 border-gray-200 rounded-xl bg-white font-sans text-brand-dark focus:border-brand-wellbeing outline-none transition-colors"
                       id="date-picker"
                     >
                       {availableDates.map((d) => (
@@ -398,7 +398,7 @@ export default function BookingModal({
                           type="button"
                           onClick={() => setPreferredTherapist(therapist.label)}
                           className={`p-3 rounded-xl border-2 text-left transition-all ${preferredTherapist === therapist.label
-                            ? 'border-brand-blue bg-blue-50/10 text-brand-blue font-semibold'
+                            ? 'border-brand-wellbeing bg-brand-wellbeing/5 text-brand-wellbeing font-semibold'
                             : 'border-gray-250 text-brand-gray-text hover:border-gray-300'
                             }`}
                         >
@@ -428,7 +428,7 @@ export default function BookingModal({
                         value={clientName}
                         onChange={(e) => setClientName(e.target.value)}
                         placeholder="Ex: Jean Mukendi"
-                        className="w-full p-3.5 border-2 border-gray-200 rounded-xl text-brand-dark font-sans placeholder-gray-400 focus:border-brand-blue outline-none transition-colors"
+                        className="w-full p-3.5 border-2 border-gray-200 rounded-xl text-brand-dark font-sans placeholder-gray-400 focus:border-brand-wellbeing outline-none transition-colors"
                         id="form-client-name"
                       />
                     </div>
@@ -438,7 +438,7 @@ export default function BookingModal({
                         <label className="block text-xs font-poppins font-bold uppercase tracking-wider text-brand-dark mb-1.5">
                           Numéro WhatsApp / Téléphone *
                         </label>
-                        <div className="flex rounded-xl border-2 border-gray-200 overflow-hidden focus-within:border-brand-blue transition-colors">
+                        <div className="flex rounded-xl border-2 border-gray-200 overflow-hidden focus-within:border-brand-wellbeing transition-colors">
                           <span className="bg-brand-gray-light text-brand-dark font-sans text-sm font-semibold px-3 flex items-center justify-center border-r border-gray-200 select-none">
                             🇨🇩 +243
                           </span>
@@ -459,7 +459,7 @@ export default function BookingModal({
                               type="button"
                               onClick={() => setClientPhoneType(net)}
                               className={`text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full border transition-all ${clientPhoneType === net
-                                ? 'bg-brand-blue/10 border-brand-blue text-brand-blue'
+                                ? 'bg-brand-wellbeing/10 border-brand-wellbeing text-brand-wellbeing'
                                 : 'border-transparent text-brand-gray-text bg-brand-gray-light hover:bg-neutral-200'
                                 }`}
                             >
@@ -478,7 +478,7 @@ export default function BookingModal({
                           value={clientEmail}
                           onChange={(e) => setClientEmail(e.target.value)}
                           placeholder="votre.email@domaine.com"
-                          className="w-full p-3.5 border-2 border-gray-200 rounded-xl text-brand-dark font-sans placeholder-gray-400 focus:border-brand-blue outline-none transition-colors"
+                          className="w-full p-3.5 border-2 border-gray-200 rounded-xl text-brand-dark font-sans placeholder-gray-400 focus:border-brand-wellbeing outline-none transition-colors"
                           id="form-client-email"
                         />
                       </div>
@@ -493,7 +493,7 @@ export default function BookingModal({
                         onChange={(e) => setClientNotes(e.target.value)}
                         placeholder="Ex: Difficultés de sommeil récurrentes liées au surmenage professionnel..."
                         rows={3}
-                        className="w-full p-3.5 border-2 border-gray-200 rounded-xl text-brand-dark font-sans placeholder-gray-400 focus:border-brand-blue outline-none transition-colors resize-none"
+                        className="w-full p-3.5 border-2 border-gray-200 rounded-xl text-brand-dark font-sans placeholder-gray-400 focus:border-brand-wellbeing outline-none transition-colors resize-none"
                         id="form-client-notes"
                       />
                     </div>
@@ -527,7 +527,7 @@ export default function BookingModal({
                       Rendez-vous pré-enregistré !
                     </h4>
                     <p className="text-sm text-brand-gray-text max-w-md mx-auto">
-                      Un conseiller de <span className="font-semibold text-brand-blue">Capsy Services</span> va vous contacter sur WhatsApp dans l'heure pour finaliser et confirmer l'horaire précis.
+                      Un conseiller de <span className="font-semibold text-brand-wellbeing">Capsy Services</span> va vous contacter sur WhatsApp dans l'heure pour finaliser et confirmer l'horaire précis.
                     </p>
                   </div>
 
@@ -542,7 +542,7 @@ export default function BookingModal({
                     <p className="text-[11px] font-mono text-brand-gray-text uppercase tracking-widest mb-1">
                       Numéro de suivi RDV
                     </p>
-                    <p className="text-xl font-mono font-bold text-brand-blue mb-4">
+                    <p className="text-xl font-mono font-bold text-brand-wellbeing mb-4">
                       {createdAppointment.id}
                     </p>
 
@@ -572,7 +572,7 @@ export default function BookingModal({
                       </div>
                       <div className="flex justify-between border-b border-gray-200 pb-1.5">
                         <span className="text-brand-gray-text font-medium">Format :</span>
-                        <span className="font-bold uppercase tracking-wider text-[10px] bg-brand-blue/10 px-2 py-0.5 rounded-full text-brand-blue">
+                        <span className="font-bold uppercase tracking-wider text-[10px] bg-brand-wellbeing/10 px-2 py-0.5 rounded-full text-brand-wellbeing">
                           {format === 'presentiel' ? 'Présentiel (Goma)' : 'En Ligne'}
                         </span>
                       </div>
@@ -596,7 +596,7 @@ export default function BookingModal({
                     </a>
                     <button
                       onClick={handleCloseModal}
-                      className="py-3 px-6 bg-brand-blue hover:bg-brand-blue/90 text-white font-bold font-poppins rounded-xl transition-all text-sm"
+                      className="py-3 px-6 bg-brand-wellbeing hover:bg-brand-wellbeing/90 text-white font-bold font-poppins rounded-xl transition-all text-sm"
                     >
                       Terminer
                     </button>
@@ -612,7 +612,7 @@ export default function BookingModal({
                   type="button"
                   onClick={handlePrevStep}
                   disabled={step === 1}
-                  className={`py-2 px-4 rounded-xl text-xs font-bold font-poppins flex items-center gap-2 transition-all ${step === 1 ? 'opacity-30 cursor-not-allowed text-brand-gray-text' : 'text-brand-blue hover:bg-neutral-200'
+                  className={`py-2 px-4 rounded-xl text-xs font-bold font-poppins flex items-center gap-2 transition-all ${step === 1 ? 'opacity-30 cursor-not-allowed text-brand-gray-text' : 'text-brand-wellbeing hover:bg-neutral-200'
                     }`}
                 >
                   <LucideIcon name="ChevronDown" className="h-4 w-4 rotate-90" />
@@ -624,7 +624,7 @@ export default function BookingModal({
                     type="button"
                     onClick={handleNextStep}
                     disabled={!timeSlot}
-                    className={`py-2.5 px-6 rounded-xl font-poppins font-bold text-sm flex items-center gap-2 transition-all shadow-md text-white ${!timeSlot ? 'bg-gray-400 cursor-not-allowed' : 'bg-brand-blue hover:bg-brand-blue/90'
+                    className={`py-2.5 px-6 rounded-xl font-poppins font-bold text-sm flex items-center gap-2 transition-all shadow-md text-white ${!timeSlot ? 'bg-gray-400 cursor-not-allowed' : 'bg-brand-wellbeing hover:bg-brand-wellbeing/90'
                       }`}
                   >
                     <span>Continuer</span>

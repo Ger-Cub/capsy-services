@@ -16,11 +16,11 @@ export default function ServicesGrid({ onSelectService }: ServicesGridProps) {
         
         {/* Header Title alignment */}
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-blue/10 text-brand-blue text-xs font-bold font-poppins uppercase tracking-wider mb-3">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-wellbeing/10 text-brand-wellbeing text-xs font-bold font-poppins uppercase tracking-wider mb-3">
             <LucideIcon name="ShieldCheck" className="h-4 w-4 text-brand-green" />
             <span>Nos Solutions Saines et Structurées</span>
           </div>
-          <h2 className="text-3xl sm:text-4xl font-poppins font-black text-brand-blue tracking-tight">
+          <h2 className="text-3xl sm:text-4xl font-poppins font-black text-brand-wellbeing tracking-tight">
             Services d'Accompagnement Psychologique
           </h2>
           <p className="text-sm sm:text-base text-brand-gray-text mt-3 leading-relaxed font-sans font-medium">
@@ -45,12 +45,12 @@ export default function ServicesGrid({ onSelectService }: ServicesGridProps) {
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                       referrerPolicy="no-referrer"
                     />
-                    <div className="absolute top-3 left-3 bg-[#1E5AA8]/95 backdrop-blur-xs text-white text-[10px] font-bold font-poppins px-2.5 py-1 rounded-md shadow-xs uppercase tracking-wider">
+                    <div className="absolute top-3 left-3 bg-[var(--color-brand-wellbeing)]/95 backdrop-blur-xs text-white text-[10px] font-bold font-poppins px-2.5 py-1 rounded-md shadow-xs uppercase tracking-wider">
                       {srv.price} USD
                     </div>
                     {srv.modalite && (
                       <div className="absolute top-3 right-3 bg-white/95 backdrop-blur-xs text-brand-dark text-[9px] font-bold px-2 py-1 rounded-md shadow-xs flex items-center gap-1">
-                        <span className="h-1.5 w-1.5 rounded-full bg-[#39A96B]"></span>
+                        <span className="h-1.5 w-1.5 rounded-full bg-[var(--color-brand-wellbeing)]"></span>
                         {srv.modalite.toLowerCase().includes('en ligne') ? 'Cabinet ou En ligne' : 'Cabinet'}
                       </div>
                     )}
@@ -59,7 +59,7 @@ export default function ServicesGrid({ onSelectService }: ServicesGridProps) {
                   <div className="p-6 space-y-4">
                     {/* Header: Icon + Title */}
                     <div className="flex items-start gap-3">
-                      <div className="p-2.5 bg-[#1E5AA8]/10 text-[#1E5AA8] rounded-xl shrink-0 mt-0.5 group-hover:bg-[#1E5AA8] group-hover:text-white transition-colors">
+                      <div className="p-2.5 bg-[var(--color-brand-wellbeing)]/10 text-[var(--color-brand-wellbeing)] rounded-xl shrink-0 mt-0.5 group-hover:bg-[var(--color-brand-wellbeing)] group-hover:text-white transition-colors">
                         <LucideIcon name={srv.iconName} className="h-5 w-5" />
                       </div>
                       <h3 className="text-base font-bold font-poppins text-brand-dark tracking-tight leading-snug">
@@ -75,7 +75,7 @@ export default function ServicesGrid({ onSelectService }: ServicesGridProps) {
                     {/* Therapist Lineup */}
                     {srv.therapists && srv.therapists.length > 0 && (
                       <div className="pt-3 border-t border-gray-100">
-                        <p className="text-[10px] font-poppins font-bold uppercase tracking-wider text-[#1E5AA8] mb-1.5">
+                        <p className="text-[10px] font-poppins font-bold uppercase tracking-wider text-[var(--color-brand-wellbeing)] mb-1.5">
                           Praticiens CAPSY :
                         </p>
                         <div className="flex flex-wrap gap-1">
@@ -94,13 +94,13 @@ export default function ServicesGrid({ onSelectService }: ServicesGridProps) {
                 <div className="p-6 pt-0 flex gap-2">
                   <button
                     onClick={() => setSelectedService(srv)}
-                    className="flex-1 py-2.5 px-4 bg-brand-gray-light hover:bg-neutral-200 text-[#1E5AA8] text-xs font-bold font-poppins rounded-xl transition-colors cursor-pointer text-center"
+                    className="flex-1 py-2.5 px-4 bg-brand-gray-light hover:bg-neutral-200 text-[var(--color-brand-wellbeing)] text-xs font-bold font-poppins rounded-xl transition-colors cursor-pointer text-center"
                   >
                     Voir détails
                   </button>
                   <button
                     onClick={() => onSelectService(srv.id)}
-                    className="py-2.5 px-4 bg-[#39A96B]/10 hover:bg-[#39A96B] hover:text-white text-[#39A96B] text-xs font-extrabold font-poppins rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1"
+                    className="py-2.5 px-4 bg-[var(--color-brand-wellbeing)]/10 hover:bg-[var(--color-brand-wellbeing)] hover:text-white text-[var(--color-brand-wellbeing)] text-xs font-extrabold font-poppins rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1"
                   >
                     <span>Prendre RDV</span>
                     <LucideIcon name="ChevronDown" className="h-3 w-3 -rotate-90" />
@@ -112,7 +112,7 @@ export default function ServicesGrid({ onSelectService }: ServicesGridProps) {
         </div>
 
         {/* Informative lower callout */}
-        <div className="mt-14 bg-[#1E5AA8] rounded-2xl p-6 sm:p-8 text-white relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-6">
+        <div className="mt-14 bg-[var(--color-brand-wellbeing)] rounded-2xl p-6 sm:p-8 text-white relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="absolute top-0 right-0 w-24 h-24 bg-white/5 rounded-full translate-x-8 -translate-y-8 blur-lg" />
           <div className="space-y-2 text-center md:text-left max-w-2xl relative z-10">
             <h4 className="text-xl font-poppins font-bold">Un cas sortant du cadre habituel ?</h4>
@@ -122,7 +122,7 @@ export default function ServicesGrid({ onSelectService }: ServicesGridProps) {
           </div>
           <button
             onClick={() => onSelectService('individuelle')}
-            className="w-full md:w-auto px-6 py-3 bg-white hover:bg-brand-gray-light text-[#1E5AA8] rounded-xl text-xs font-poppins font-bold uppercase tracking-wider select-none shrink-0 transition-colors cursor-pointer"
+            className="w-full md:w-auto px-6 py-3 bg-white hover:bg-brand-gray-light text-[var(--color-brand-wellbeing)] rounded-xl text-xs font-poppins font-bold uppercase tracking-wider select-none shrink-0 transition-colors cursor-pointer"
           >
             S'inscrire ou planifier
           </button>
@@ -158,7 +158,7 @@ export default function ServicesGrid({ onSelectService }: ServicesGridProps) {
 
               <div className="absolute bottom-4 left-6 right-6">
                 <div className="flex items-center gap-1.5 mb-1.5">
-                  <span className="bg-[#39A96B] text-white text-[9px] font-bold uppercase tracking-widest px-2.5 py-0.5 rounded-full">
+                  <span className="bg-[var(--color-brand-wellbeing)] text-white text-[9px] font-bold uppercase tracking-widest px-2.5 py-0.5 rounded-full">
                     {selectedService.price} USD
                   </span>
                   <span className="bg-white/20 text-white backdrop-blur-xs text-[9px] font-bold uppercase tracking-widest px-2.5 py-0.5 rounded-full">
@@ -176,7 +176,7 @@ export default function ServicesGrid({ onSelectService }: ServicesGridProps) {
               
               {/* Introduction */}
               <div className="space-y-1">
-                <p className="text-[10px] font-poppins font-black text-[#1E5AA8] uppercase tracking-wider">Présentation</p>
+                <p className="text-[10px] font-poppins font-black text-[var(--color-brand-wellbeing)] uppercase tracking-wider">Présentation</p>
                 <p className="text-xs sm:text-sm text-brand-dark leading-relaxed font-sans">
                   {selectedService.shortDescription} {selectedService.fullDescription}
                 </p>
@@ -186,36 +186,36 @@ export default function ServicesGrid({ onSelectService }: ServicesGridProps) {
               <div className="space-y-3 pt-1">
                 {selectedService.pourQui && (
                   <div className="p-3.5 bg-neutral-50 rounded-xl border border-neutral-150">
-                    <p className="text-[9px] font-poppins font-black text-[#1E5AA8] uppercase tracking-wider mb-1">Pour qui ?</p>
+                    <p className="text-[9px] font-poppins font-black text-[var(--color-brand-wellbeing)] uppercase tracking-wider mb-1">Pour qui ?</p>
                     <p className="text-xs text-brand-gray-text leading-relaxed font-sans">{selectedService.pourQui}</p>
                   </div>
                 )}
 
                 {selectedService.objectif && (
                   <div className="p-3.5 bg-neutral-50 rounded-xl border border-neutral-150">
-                    <p className="text-[9px] font-poppins font-black text-[#1E5AA8] uppercase tracking-wider mb-1">Objectif thérapeutique</p>
+                    <p className="text-[9px] font-poppins font-black text-[var(--color-brand-wellbeing)] uppercase tracking-wider mb-1">Objectif thérapeutique</p>
                     <p className="text-xs text-brand-gray-text leading-relaxed font-sans">{selectedService.objectif}</p>
                   </div>
                 )}
 
                 {selectedService.commentCaSePasse && (
                   <div className="p-3.5 bg-neutral-50 rounded-xl border border-neutral-150">
-                    <p className="text-[9px] font-poppins font-black text-[#1E5AA8] uppercase tracking-wider mb-1">Comment se déroule la séance ?</p>
+                    <p className="text-[9px] font-poppins font-black text-[var(--color-brand-wellbeing)] uppercase tracking-wider mb-1">Comment se déroule la séance ?</p>
                     <p className="text-xs text-brand-gray-text leading-relaxed font-sans">{selectedService.commentCaSePasse}</p>
                   </div>
                 )}
 
                 {selectedService.quandLutiliser && (
                   <div className="p-3.5 bg-neutral-50 rounded-xl border border-neutral-150">
-                    <p className="text-[9px] font-poppins font-black text-[#1E5AA8] uppercase tracking-wider mb-1">Indications cliniques fréquentes</p>
+                    <p className="text-[9px] font-poppins font-black text-[var(--color-brand-wellbeing)] uppercase tracking-wider mb-1">Indications cliniques fréquentes</p>
                     <p className="text-xs text-brand-gray-text leading-relaxed font-sans">{selectedService.quandLutiliser}</p>
                   </div>
                 )}
               </div>
 
               {/* Clinic staff reassurance block */}
-              <div className="p-4 bg-[#1E5AA8]/5 rounded-xl border border-[#1E5AA8]/15 space-y-2">
-                <p className="text-[9px] font-poppins font-black uppercase tracking-wider text-[#1E5AA8]">
+              <div className="p-4 bg-[var(--color-brand-wellbeing)]/5 rounded-xl border border-[var(--color-brand-wellbeing)]/15 space-y-2">
+                <p className="text-[9px] font-poppins font-black uppercase tracking-wider text-[var(--color-brand-wellbeing)]">
                   Spécialistes qualifiés d'astreinte :
                 </p>
                 <div className="flex flex-wrap gap-1.5">
@@ -225,7 +225,7 @@ export default function ServicesGrid({ onSelectService }: ServicesGridProps) {
                     </span>
                   ))}
                 </div>
-                <p className="text-[9px] text-[#1E5AA8] leading-tight font-sans">
+                <p className="text-[9px] text-[var(--color-brand-wellbeing)] leading-tight font-sans">
                   📍 Modalité : {selectedService.modalite}
                 </p>
               </div>
@@ -248,7 +248,7 @@ export default function ServicesGrid({ onSelectService }: ServicesGridProps) {
                   setSelectedService(null);
                   onSelectService(id);
                 }}
-                className="flex-1 py-3 px-4 bg-[#39A96B] hover:bg-[#39A96B]/95 text-white rounded-xl text-xs font-bold font-poppins transition-all flex items-center justify-center gap-1.5 shadow-md shadow-brand-green/10 cursor-pointer"
+                className="flex-1 py-3 px-4 bg-[var(--color-brand-wellbeing)] hover:bg-[var(--color-brand-wellbeing)]/95 text-white rounded-xl text-xs font-bold font-poppins transition-all flex items-center justify-center gap-1.5 shadow-md shadow-brand-green/10 cursor-pointer"
               >
                 <LucideIcon name="Calendar" className="h-4 w-4" />
                 <span>Prendre RDV</span>

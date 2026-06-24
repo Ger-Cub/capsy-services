@@ -53,7 +53,7 @@ export default function UserProfilePage({ user, onClose, onLogout }: UserProfile
                         </button>
 
                         {/* Top section: Reduced banner height */}
-                        <div className="relative bg-gradient-to-br from-brand-blue to-brand-blue/70 pt-8 pb-10 flex flex-col items-center">
+                        <div className="relative bg-gradient-to-br from-brand-wellbeing to-brand-wellbeing/70 pt-8 pb-10 flex flex-col items-center">
                             {/* Decorative circles */}
                             <div className="absolute top-0 right-0 h-40 w-40 rounded-full bg-white/5 -translate-y-1/2 translate-x-1/4" />
                             <div className="absolute bottom-0 left-0 h-24 w-24 rounded-full bg-white/5 translate-y-1/2 -translate-x-1/4" />
@@ -70,7 +70,7 @@ export default function UserProfilePage({ user, onClose, onLogout }: UserProfile
                                         }}
                                     />
                                 ) : (
-                                    <span className="text-brand-blue font-black text-3xl font-poppins">{initials}</span>
+                                    <span className="text-brand-wellbeing font-black text-3xl font-poppins">{initials}</span>
                                 )}
                             </div>
                         </div>
@@ -80,7 +80,7 @@ export default function UserProfilePage({ user, onClose, onLogout }: UserProfile
                             <div className="bg-white rounded-2xl shadow-sm px-6 py-5 border border-gray-100 ring-1 ring-gray-200/50">
                                 <h2 className="text-xl font-poppins font-black text-brand-dark leading-tight">{user?.name}</h2>
                                 <p className="text-sm text-brand-gray-text mt-1">{user?.email}</p>
-                                <span className="mt-3 inline-block text-[10px] font-bold uppercase tracking-widest bg-brand-blue/10 text-brand-blue px-3 py-1.5 rounded-full">
+                                <span className="mt-3 inline-block text-[10px] font-bold uppercase tracking-widest bg-brand-wellbeing/10 text-brand-wellbeing px-3 py-1.5 rounded-full">
                                     Client Odoo
                                 </span>
                             </div>
@@ -104,7 +104,7 @@ export default function UserProfilePage({ user, onClose, onLogout }: UserProfile
                                 }}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="flex-1 py-3 px-4 border-2 border-brand-blue text-brand-blue hover:bg-brand-blue/5 rounded-xl font-bold font-poppins text-sm flex items-center justify-center gap-2 transition-colors"
+                                className="flex-1 py-3 px-4 border-2 border-brand-wellbeing text-brand-wellbeing hover:bg-brand-wellbeing/5 rounded-xl font-bold font-poppins text-sm flex items-center justify-center gap-2 transition-colors"
                             >
                                 <LucideIcon name="ExternalLink" className="h-4 w-4" />
                                 <span>Voir sur Odoo</span>
@@ -127,7 +127,7 @@ export default function UserProfilePage({ user, onClose, onLogout }: UserProfile
 function InfoCard({ icon, label, value }: { icon: string; label: string; value: string }) {
     return (
         <div className="p-3.5 bg-brand-gray-light rounded-xl flex items-center gap-3">
-            <div className="p-2 bg-white rounded-lg shadow-xs text-brand-blue shrink-0">
+            <div className="p-2 bg-white rounded-lg shadow-xs text-brand-wellbeing shrink-0">
                 <LucideIcon name={icon} className="h-4 w-4" />
             </div>
             <div className="min-w-0">

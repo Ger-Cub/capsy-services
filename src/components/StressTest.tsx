@@ -79,7 +79,7 @@ export default function StressTest({ onOpenBooking }: StressTestProps) {
     <div className="bg-white rounded-2xl border border-gray-150 shadow-lg p-6 sm:p-8 max-w-2xl mx-auto overflow-hidden relative" id="stress-test-section">
       {/* Decorative background vectors */}
       <div className="absolute -top-12 -right-12 h-32 w-32 bg-brand-green/5 rounded-full blur-xl" />
-      <div className="absolute -bottom-12 -left-12 h-32 w-32 bg-brand-blue/5 rounded-full blur-xl" />
+      <div className="absolute -bottom-12 -left-12 h-32 w-32 bg-brand-wellbeing/5 rounded-full blur-xl" />
 
       <AnimatePresence mode="wait">
         {currentIdx === -1 && (
@@ -91,7 +91,7 @@ export default function StressTest({ onOpenBooking }: StressTestProps) {
             className="text-center space-y-5 py-6"
             id="test-intro-container"
           >
-            <div className="h-16 w-16 bg-brand-blue/10 rounded-2xl flex items-center justify-center text-brand-blue mx-auto">
+            <div className="h-16 w-16 bg-brand-wellbeing/10 rounded-2xl flex items-center justify-center text-brand-wellbeing mx-auto">
               <LucideIcon name="Sparkles" className="h-8 w-8 text-brand-green animate-pulse" />
             </div>
             <div className="space-y-2">
@@ -103,7 +103,7 @@ export default function StressTest({ onOpenBooking }: StressTestProps) {
             </div>
             <button
               onClick={handleStart}
-              className="px-6 py-3 bg-brand-blue text-white rounded-xl font-bold font-poppins hover:bg-brand-blue/90 shadow-md hover:shadow-lg transition-all cursor-pointer text-sm"
+              className="px-6 py-3 bg-brand-wellbeing text-white rounded-xl font-bold font-poppins hover:bg-brand-wellbeing/90 shadow-md hover:shadow-lg transition-all cursor-pointer text-sm"
               id="start-test-btn"
             >
               Démarrer le questionnaire (6 questions)
@@ -128,7 +128,7 @@ export default function StressTest({ onOpenBooking }: StressTestProps) {
               <span className="font-poppins font-semibold">Question {currentIdx + 1} de {STRESS_TEST_QUESTIONS.length}</span>
               <div className="w-1/2 bg-gray-200 h-1.5 rounded-full overflow-hidden">
                 <div
-                  className="bg-brand-blue h-full transition-all duration-300"
+                  className="bg-brand-wellbeing h-full transition-all duration-300"
                   style={{ width: `${((currentIdx + 1) / STRESS_TEST_QUESTIONS.length) * 100}%` }}
                 />
               </div>
@@ -145,11 +145,11 @@ export default function StressTest({ onOpenBooking }: StressTestProps) {
                 <button
                   key={oIdx}
                   onClick={() => handleAnswer(opt.score)}
-                  className="w-full text-left p-4 rounded-xl border border-gray-200 hover:border-brand-blue hover:bg-blue-50/10 transition-all font-sans text-sm text-brand-dark flex items-center justify-between group"
+                  className="w-full text-left p-4 rounded-xl border border-gray-200 hover:border-brand-wellbeing hover:bg-brand-wellbeing/5 transition-all font-sans text-sm text-brand-dark flex items-center justify-between group"
                 >
-                  <span className="group-hover:text-brand-blue transition-colors font-medium">{opt.text}</span>
-                  <div className="h-4 w-4 rounded-full border border-gray-300 flex items-center justify-center shrink-0 group-hover:border-brand-blue ml-4">
-                    <div className="h-2 w-2 rounded-full bg-brand-blue scale-0 group-hover:scale-100 transition-all" />
+                  <span className="group-hover:text-brand-wellbeing transition-colors font-medium">{opt.text}</span>
+                  <div className="h-4 w-4 rounded-full border border-gray-300 flex items-center justify-center shrink-0 group-hover:border-brand-wellbeing ml-4">
+                    <div className="h-2 w-2 rounded-full bg-brand-wellbeing scale-0 group-hover:scale-100 transition-all" />
                   </div>
                 </button>
               ))}
@@ -201,7 +201,7 @@ export default function StressTest({ onOpenBooking }: StressTestProps) {
 
             {/* Qualitative Feedback */}
             <div className="space-y-4 text-sm leading-relaxed text-brand-dark">
-              <p className="font-poppins font-bold text-brand-blue text-base">
+              <p className="font-poppins font-bold text-brand-wellbeing text-base">
                 "{result.intro}"
               </p>
               <p className="text-brand-gray-text font-normal font-sans">
@@ -217,7 +217,7 @@ export default function StressTest({ onOpenBooking }: StressTestProps) {
                 </div>
                 <div>
                   <p className="text-xs text-brand-gray-text font-semibold uppercase tracking-wider">Solution Recommandée</p>
-                  <p className="text-sm font-poppins font-bold text-brand-blue mt-0.5">{result.recommendedServiceName}</p>
+                  <p className="text-sm font-poppins font-bold text-brand-wellbeing mt-0.5">{result.recommendedServiceName}</p>
                 </div>
               </div>
               <button
@@ -236,7 +236,7 @@ export default function StressTest({ onOpenBooking }: StressTestProps) {
             <div className="flex justify-center pt-2">
               <button
                 onClick={handleReset}
-                className="text-xs text-brand-gray-text hover:text-brand-blue flex items-center gap-1.5 font-bold transition-colors"
+                className="text-xs text-brand-gray-text hover:text-brand-wellbeing flex items-center gap-1.5 font-bold transition-colors"
                 id="redo-test-btn"
               >
                 <LucideIcon name="Sparkles" className="h-4 w-4 text-brand-green" /> Recommencer le test

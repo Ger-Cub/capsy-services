@@ -137,7 +137,7 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginMod
                     >
                         {/* Header */}
                         <div className="text-center mb-8">
-                            <div className="inline-flex p-3 bg-brand-blue/10 rounded-full text-brand-blue mb-4">
+                            <div className="inline-flex p-3 bg-brand-wellbeing/10 rounded-full text-brand-wellbeing mb-4">
                                 <LucideIcon name={icons[view]} className="h-8 w-8" />
                             </div>
                             <h3 className="text-2xl font-bold font-poppins text-brand-dark">{titles[view]}</h3>
@@ -169,7 +169,7 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginMod
                                         type="text" required value={username}
                                         onChange={(e) => setUsername(e.target.value)}
                                         placeholder="votre.email@capsy.com"
-                                        className="w-full p-3.5 border-2 border-gray-200 rounded-xl outline-none focus:border-brand-blue transition-colors"
+                                        className="w-full p-3.5 border-2 border-gray-200 rounded-xl outline-none focus:border-brand-wellbeing transition-colors"
                                     />
                                 </div>
                                 <div>
@@ -179,7 +179,7 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginMod
                                             type={showPassword ? 'text' : 'password'} required value={password}
                                             onChange={(e) => setPassword(e.target.value)}
                                             placeholder="••••••••"
-                                            className="w-full p-3.5 pr-12 border-2 border-gray-200 rounded-xl outline-none focus:border-brand-blue transition-colors"
+                                            className="w-full p-3.5 pr-12 border-2 border-gray-200 rounded-xl outline-none focus:border-brand-wellbeing transition-colors"
                                         />
                                         <button type="button" onClick={() => setShowPassword(!showPassword)}
                                             className="absolute right-3.5 top-1/2 -translate-y-1/2 text-brand-gray-text hover:text-brand-dark transition-colors">
@@ -187,17 +187,17 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginMod
                                         </button>
                                     </div>
                                     <button type="button" onClick={() => switchView('reset')}
-                                        className="text-xs text-brand-blue hover:underline mt-1.5 block text-right">
+                                        className="text-xs text-brand-wellbeing hover:underline mt-1.5 block text-right">
                                         Mot de passe oublié ?
                                     </button>
                                 </div>
                                 <button type="submit" disabled={isLoading}
-                                    className="w-full py-3.5 bg-brand-blue hover:bg-brand-blue/90 text-white font-bold font-poppins rounded-xl transition-all shadow-md flex items-center justify-center gap-2">
+                                    className="w-full py-3.5 bg-brand-wellbeing hover:bg-brand-wellbeing/90 text-white font-bold font-poppins rounded-xl transition-all shadow-md flex items-center justify-center gap-2">
                                     {isLoading ? <><LucideIcon name="Loader2" className="h-5 w-5 animate-spin" /><span>Connexion...</span></> : <><LucideIcon name="LogIn" className="h-5 w-5" /><span>Se connecter</span></>}
                                 </button>
                                 <p className="text-center text-xs text-brand-gray-text">
                                     Pas encore de compte ?{' '}
-                                    <button type="button" onClick={() => switchView('register')} className="text-brand-blue font-bold hover:underline">
+                                    <button type="button" onClick={() => switchView('register')} className="text-brand-wellbeing font-bold hover:underline">
                                         Créer un compte
                                     </button>
                                 </p>
@@ -211,20 +211,20 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginMod
                                     <label className="block text-xs font-bold text-brand-dark uppercase tracking-wider mb-1.5">Nom complet</label>
                                     <input type="text" required value={name} onChange={(e) => setName(e.target.value)}
                                         placeholder="Jean-Paul Mutombo"
-                                        className="w-full p-3.5 border-2 border-gray-200 rounded-xl outline-none focus:border-brand-blue transition-colors" />
+                                        className="w-full p-3.5 border-2 border-gray-200 rounded-xl outline-none focus:border-brand-wellbeing transition-colors" />
                                 </div>
                                 <div>
                                     <label className="block text-xs font-bold text-brand-dark uppercase tracking-wider mb-1.5">Email</label>
                                     <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)}
                                         placeholder="votre.email@exemple.com"
-                                        className="w-full p-3.5 border-2 border-gray-200 rounded-xl outline-none focus:border-brand-blue transition-colors" />
+                                        className="w-full p-3.5 border-2 border-gray-200 rounded-xl outline-none focus:border-brand-wellbeing transition-colors" />
                                 </div>
                                 <div>
                                     <label className="block text-xs font-bold text-brand-dark uppercase tracking-wider mb-1.5">Mot de passe</label>
                                     <div className="relative">
                                         <input type={showPassword ? 'text' : 'password'} required value={password}
                                             onChange={(e) => setPassword(e.target.value)} placeholder="Minimum 8 caractères"
-                                            className="w-full p-3.5 pr-12 border-2 border-gray-200 rounded-xl outline-none focus:border-brand-blue transition-colors" />
+                                            className="w-full p-3.5 pr-12 border-2 border-gray-200 rounded-xl outline-none focus:border-brand-wellbeing transition-colors" />
                                         <button type="button" onClick={() => setShowPassword(!showPassword)}
                                             className="absolute right-3.5 top-1/2 -translate-y-1/2 text-brand-gray-text hover:text-brand-dark">
                                             <LucideIcon name={showPassword ? 'EyeOff' : 'Eye'} className="h-5 w-5" />
@@ -232,12 +232,12 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginMod
                                     </div>
                                 </div>
                                 <button type="submit" disabled={isLoading}
-                                    className="w-full py-3.5 bg-brand-blue hover:bg-brand-blue/90 text-white font-bold font-poppins rounded-xl transition-all shadow-md flex items-center justify-center gap-2">
+                                    className="w-full py-3.5 bg-brand-wellbeing hover:bg-brand-wellbeing/90 text-white font-bold font-poppins rounded-xl transition-all shadow-md flex items-center justify-center gap-2">
                                     {isLoading ? <><LucideIcon name="Loader2" className="h-5 w-5 animate-spin" /><span>Création...</span></> : <><LucideIcon name="UserPlus" className="h-5 w-5" /><span>Créer mon compte</span></>}
                                 </button>
                                 <p className="text-center text-xs text-brand-gray-text">
                                     Déjà un compte ?{' '}
-                                    <button type="button" onClick={() => switchView('login')} className="text-brand-blue font-bold hover:underline">Se connecter</button>
+                                    <button type="button" onClick={() => switchView('login')} className="text-brand-wellbeing font-bold hover:underline">Se connecter</button>
                                 </p>
                             </form>
                         )}
@@ -249,14 +249,14 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginMod
                                     <label className="block text-xs font-bold text-brand-dark uppercase tracking-wider mb-1.5">Adresse email</label>
                                     <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)}
                                         placeholder="votre.email@exemple.com"
-                                        className="w-full p-3.5 border-2 border-gray-200 rounded-xl outline-none focus:border-brand-blue transition-colors" />
+                                        className="w-full p-3.5 border-2 border-gray-200 rounded-xl outline-none focus:border-brand-wellbeing transition-colors" />
                                 </div>
                                 <button type="submit" disabled={isLoading}
-                                    className="w-full py-3.5 bg-brand-blue hover:bg-brand-blue/90 text-white font-bold font-poppins rounded-xl transition-all shadow-md flex items-center justify-center gap-2">
+                                    className="w-full py-3.5 bg-brand-wellbeing hover:bg-brand-wellbeing/90 text-white font-bold font-poppins rounded-xl transition-all shadow-md flex items-center justify-center gap-2">
                                     {isLoading ? <><LucideIcon name="Loader2" className="h-5 w-5 animate-spin" /><span>Envoi...</span></> : <><LucideIcon name="Send" className="h-5 w-5" /><span>Envoyer le lien</span></>}
                                 </button>
                                 <p className="text-center text-xs text-brand-gray-text">
-                                    <button type="button" onClick={() => switchView('login')} className="text-brand-blue font-bold hover:underline">← Retour à la connexion</button>
+                                    <button type="button" onClick={() => switchView('login')} className="text-brand-wellbeing font-bold hover:underline">← Retour à la connexion</button>
                                 </p>
                             </form>
                         )}
