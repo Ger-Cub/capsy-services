@@ -115,11 +115,20 @@ Ne l\'ajoutez que si la conversation s\'oriente clairement vers la réservation 
   } catch (error: any) {
     const duration = Date.now() - start;
     console.error(`[${new Date().toISOString()}] Gemini API error after ${duration}ms:`, error);
-    // If headers haven't been sent yet, send a normal error. Otherwise, send an error event.
+
+    let errorMessage = "Désolé, j'ai une petite difficulté technique. Pourriez-vous réessayer dans un instant ?";
+
+    // Specifically handle high demand (503) or quota issues
+    if (error.status === 503 || (error.message && error.message.includes("high demand"))) {
+      errorMessage = "Mon service est actuellement très sollicité. Veuillez patienter une minute et réessayer, je serai bientôt de nouveau disponible pour vous.";
+    } else if (error.status === 429) {
+      errorMessage = "J'ai atteint ma limite de messages pour l'instant. Merci de patienter quelques instants avant de me solliciter à nouveau.";
+    }
+
     if (!res.headersSent) {
-      res.status(500).json({ error: error.message || "Erreur de communication avec l'IA" });
+      res.status(error.status || 500).json({ error: errorMessage });
     } else {
-      res.write(`data: ${JSON.stringify({ error: error.message || "Erreur de flux" })}\n\n`);
+      res.write(`data: ${JSON.stringify({ error: errorMessage })}\n\n`);
       res.end();
     }
   }

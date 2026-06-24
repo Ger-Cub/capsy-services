@@ -120,7 +120,8 @@ export default function Chatbot({ onOpenBooking, isFullScreen = false }: Chatbot
       });
 
       if (!res.ok) {
-        throw new Error("Impossible de joindre le service de discussion.");
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.error || "Impossible de joindre le service de discussion.");
       }
 
       // Read the stream
@@ -208,15 +209,17 @@ export default function Chatbot({ onOpenBooking, isFullScreen = false }: Chatbot
 
     } catch (err: any) {
       console.error("Chatbot response error:", err);
-      // If we already added a model message but it failed mid-stream
+      const errorMessage = err.message || "Désolé, j'ai une petite difficulté technique de connexion. Pourriez-vous réessayer dans un instant ?";
+
       setMessages(prev => {
         const last = prev[prev.length - 1];
-        if (last && last.role === 'model' && !last.isWelcome) {
-          return prev; // keep what we have
+        // If we already started showing a model response, keep it and maybe append error
+        if (last && last.role === 'model' && !last.isWelcome && isStreaming) {
+          return prev;
         }
         return [...prev, {
           role: 'model',
-          text: "Désolé, j'encours des difficultés de réseau en ce moment. Vous pouvez toujours nous appeler ou écrire directement au +243 997 707 312 📞."
+          text: `${errorMessage}\n\nVous pouvez aussi nous contacter directement au **+243 997 707 312** 📞.`
         }];
       });
     } finally {
