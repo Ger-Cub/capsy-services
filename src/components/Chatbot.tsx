@@ -513,7 +513,6 @@ export default function Chatbot({ onOpenBooking, isFullScreen = false }: Chatbot
                   <button type="button" className="p-2 text-gray-500 hover:text-brand-green transition-colors"><LucideIcon name="Plus" className="w-4 h-4" /></button>
                   <button type="button" className="p-2 text-gray-500 hover:text-brand-green transition-colors"><LucideIcon name="Mic" className="w-4 h-4" /></button>
                   <button type="button" className="p-2 text-gray-500 hover:text-brand-green transition-colors"><LucideIcon name="Phone" className="w-4 h-4" /></button>
-                  <button type="button" className="p-2 text-gray-500 hover:text-brand-green transition-colors"><LucideIcon name="Map" className="w-4 h-4" /></button>
                 </div>
                 <button
                   type="submit"
