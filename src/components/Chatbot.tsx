@@ -230,39 +230,92 @@ export default function Chatbot({ onOpenBooking, isFullScreen = false }: Chatbot
   };
 
   const renderMessageContent = (text: string, isUser?: boolean) => {
-    // Simple robust markdown parsing for **bold** and newlines
-    const paragraphs = text.split('\n');
-    return paragraphs.map((p, idx) => {
-      if (!p.trim()) return <div key={idx} className="h-2" />;
+    // 1. Pre-process: Strip markdown card wraps if they exist (sometimes agent adds them redundantly)
+    let processedText = text.trim();
+    if (processedText.startsWith('```markdown')) {
+      processedText = processedText.replace(/^```markdown\n?/, '').replace(/\n?```$/, '').trim();
+    } else if (processedText.startsWith('```')) {
+      processedText = processedText.replace(/^```[a-z]*\n?/, '').replace(/\n?```$/, '').trim();
+    }
 
-      // Parse **bold** phrases safely
-      const parts = [];
-      let lastIndex = 0;
-      const boldRegex = /\*\*([^*]+)\*\*/g;
-      let match;
+    const lines = processedText.split('\n');
+    return lines.map((line, idx) => {
+      const trimmedLine = line.trim();
+      if (!trimmedLine) return <div key={idx} className="h-2" />;
 
-      while ((match = boldRegex.exec(p)) !== null) {
-        if (match.index > lastIndex) {
-          parts.push(p.substring(lastIndex, match.index));
+      // Handle Bullet Points
+      const isBullet = trimmedLine.startsWith('- ') || trimmedLine.startsWith('* ') || trimmedLine.startsWith('• ');
+      const isNumbered = /^\d+\.\s/.test(trimmedLine);
+      const isHeader = trimmedLine.startsWith('#');
+
+      let content = trimmedLine;
+      if (isBullet) content = trimmedLine.substring(2);
+      else if (isNumbered) content = trimmedLine.replace(/^\d+\.\s/, '');
+      else if (isHeader) {
+        const match = trimmedLine.match(/^(#+)\s+(.*)$/);
+        if (match) {
+          const level = match[1].length;
+          content = match[2];
+          const headerClasses = level === 1 ? 'text-lg font-black' : level === 2 ? 'text-base font-bold' : 'text-sm font-bold';
+          return (
+            <h3 key={idx} className={`${headerClasses} mt-3 mb-1.5 ${isUser ? 'text-white' : 'text-brand-dark'}`}>
+              {content}
+            </h3>
+          );
         }
-        parts.push(
-          <strong
-            key={match.index}
-            className={`font-bold ${isUser ? 'text-white underline decoration-white/30' : 'text-brand-dark'}`}
-          >
-            {match[1]}
-          </strong>
-        );
-        lastIndex = boldRegex.lastIndex;
       }
 
-      if (lastIndex < p.length) {
-        parts.push(p.substring(lastIndex));
+      // Parse inline styles: **bold** and *italic*
+      const parseInline = (chunk: string) => {
+        const parts = [];
+        let lastIndex = 0;
+        // Regex for bold **text** or __text__, and italic *text* or _text_
+        const inlineRegex = /(\*\*|__|\*|_)(.*?)\1/g;
+        let match;
+
+        while ((match = inlineRegex.exec(chunk)) !== null) {
+          if (match.index > lastIndex) {
+            parts.push(chunk.substring(lastIndex, match.index));
+          }
+          const tag = match[1];
+          const innerText = match[2];
+
+          if (tag === '**' || tag === '__') {
+            parts.push(
+              <strong key={match.index} className={`font-bold ${isUser ? 'text-white underline decoration-white/30' : 'text-brand-dark'}`}>
+                {innerText}
+              </strong>
+            );
+          } else {
+            parts.push(<em key={match.index} className="italic">{innerText}</em>);
+          }
+          lastIndex = inlineRegex.lastIndex;
+        }
+
+        if (lastIndex < chunk.length) {
+          parts.push(chunk.substring(lastIndex));
+        }
+        return parts.length > 0 ? parts : chunk;
+      };
+
+      const renderedContent = parseInline(content);
+
+      if (isBullet || isNumbered) {
+        return (
+          <div key={idx} className="flex gap-2.5 mb-1.5 pl-1">
+            <span className={`shrink-0 font-bold ${isUser ? 'text-white/70' : 'text-brand-green'}`}>
+              {isBullet ? '•' : line.match(/^(\d+\.)/)?.[1]}
+            </span>
+            <div className={`leading-relaxed text-sm ${isUser ? 'text-white/95' : 'text-gray-800'}`}>
+              {renderedContent}
+            </div>
+          </div>
+        );
       }
 
       return (
-        <p key={idx} className={`leading-relaxed text-sm mb-1 ${isUser ? 'text-white/95' : 'text-gray-800'}`}>
-          {parts.length > 0 ? parts : p}
+        <p key={idx} className={`leading-relaxed text-sm mb-2 ${isUser ? 'text-white/95' : 'text-gray-800'}`}>
+          {renderedContent}
         </p>
       );
     });
