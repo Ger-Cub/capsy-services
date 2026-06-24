@@ -44,7 +44,9 @@ import {
   Plus,
   Mic,
   Map,
-  ArrowUp
+  ArrowUp,
+  RefreshCw,
+  ChevronRight
 } from 'lucide-react';
 
 const iconMap = {
@@ -92,7 +94,9 @@ const iconMap = {
   Plus,
   Mic,
   Map,
-  ArrowUp
+  ArrowUp,
+  RefreshCw,
+  ChevronRight
 };
 
 export type IconName = keyof typeof iconMap;

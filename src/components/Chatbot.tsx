@@ -40,6 +40,7 @@ export default function Chatbot({ onOpenBooking, isFullScreen = false }: Chatbot
   const [isLoading, setIsLoading] = useState(false);
   const [isStreaming, setIsStreaming] = useState(false);
   const [unreadCount, setUnreadCount] = useState(1);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -282,17 +283,37 @@ export default function Chatbot({ onOpenBooking, isFullScreen = false }: Chatbot
   if (isFullScreen) {
     return (
       <div className="flex flex-col md:flex-row h-screen w-screen bg-gray-50 text-brand-dark overflow-hidden font-sans select-none" id="capsy-fullscreen-chat-workspace">
+        {/* Mobile Sidebar Overlay */}
+        {isSidebarOpen && (
+          <div
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] lg:hidden"
+            onClick={() => setIsSidebarOpen(false)}
+          />
+        )}
+
         {/* Left Side Panel - Information & Aesthetics */}
-        <div className="hidden lg:flex flex-col lg:w-1/3 xl:w-1/4 bg-brand-dark text-white p-8 border-r border-white/10 shrink-0 select-text overflow-y-auto chat-left-panel">
+        <div className={`
+          fixed inset-y-0 left-0 z-[70] w-[280px] lg:relative lg:w-1/3 xl:w-1/4 bg-brand-dark text-white p-8 border-r border-white/10 shrink-0 select-text overflow-y-auto chat-left-panel transition-transform duration-300
+          ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0 flex'}
+          inline-flex flex-col
+        `}>
           {/* Logo & Info */}
-          <div className="flex items-center gap-3 mb-8">
-            <div className="w-10 h-10 rounded-full bg-brand-green/20 border border-brand-green/30 flex items-center justify-center text-brand-green">
-              <img src={logoIcon} alt="CAPSY" className="w-7 h-7 rounded-full object-cover" />
+          <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-brand-green/20 border border-brand-green/30 flex items-center justify-center text-brand-green">
+                <img src={logoIcon} alt="CAPSY" className="w-7 h-7 rounded-full object-cover" />
+              </div>
+              <div>
+                <h1 className="text-lg font-black tracking-wider text-white font-poppins">CAPSY SERVICES</h1>
+                <p className="text-[10px] text-white/50 font-medium">Santé Mentale & Innovation</p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-lg font-black tracking-wider text-white font-poppins">CAPSY SERVICES</h1>
-              <p className="text-[10px] text-white/50 font-medium">Santé Mentale & Innovation</p>
-            </div>
+            <button
+              onClick={() => setIsSidebarOpen(false)}
+              className="lg:hidden p-2 text-white/50 hover:text-white"
+            >
+              <LucideIcon name="X" className="w-6 h-6" />
+            </button>
           </div>
 
           {/* Back to Home page */}
@@ -348,24 +369,28 @@ export default function Chatbot({ onOpenBooking, isFullScreen = false }: Chatbot
           {/* Top Bar for Chat */}
           <div className="bg-brand-dark px-6 py-4 flex items-center justify-between border-b border-white/10 shrink-0">
             <div className="flex items-center gap-3.5">
+              <button
+                onClick={() => setIsSidebarOpen(true)}
+                className="lg:hidden p-2 rounded-xl bg-white/5 text-white/80 hover:text-white hover:bg-white/10 transition-colors"
+                title="Menu"
+              >
+                <LucideIcon name="ChevronRight" className="w-5 h-5 md:hidden" />
+                <LucideIcon name="ChevronLeft" className="w-5 h-5 hidden md:block" />
+              </button>
+
               <a
                 href="/"
-                className="lg:hidden p-2 rounded-xl bg-white/5 text-white/80 hover:text-white hover:bg-white/10 transition-colors"
-                title="Retour"
+                className="w-10 h-10 rounded-full bg-brand-green/20 border border-brand-green/30 flex items-center justify-center text-brand-green relative shrink-0 cursor-pointer"
               >
-                <LucideIcon name="ChevronLeft" className="w-5 h-5" />
-              </a>
-
-              <div className="w-10 h-10 rounded-full bg-brand-green/20 border border-brand-green/30 flex items-center justify-center text-brand-green relative shrink-0">
                 <img src={logoIcon} alt="CAPSY" className="w-7 h-7 rounded-full object-cover" />
                 <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full border border-brand-dark" />
-              </div>
+              </a>
               <div>
                 <h2 className="text-sm sm:text-base font-bold text-white tracking-wide flex items-center gap-1.5 font-poppins">
-                  CAPSY Assistant IA
+                  CAPSY <span className="hidden sm:inline">Assistant IA</span>
                   <LucideIcon name="Sparkles" className="w-3.5 h-3.5 text-brand-green" />
                 </h2>
-                <p className="text-[10px] sm:text-xs text-white/60">Discussions, orientation & évaluation du stress en RDC</p>
+                <p className="text-[10px] sm:text-xs text-white/60 line-clamp-1">Discussions, orientation & évaluation du stress en RDC</p>
               </div>
             </div>
 
@@ -387,8 +412,8 @@ export default function Chatbot({ onOpenBooking, isFullScreen = false }: Chatbot
                 className="px-3.5 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 active:scale-95 text-xs text-white/95 font-bold transition-all border border-white/10 cursor-pointer flex items-center gap-1.5"
                 title="Nouvelle discussion"
               >
-                <LucideIcon name="X" className="w-3.5 h-3.5 text-red-400" />
-                Démarrer à zéro
+                <LucideIcon name="RefreshCw" className="w-3.5 h-3.5 text-brand-green" />
+                <span className="hidden sm:inline">Démarrer à zéro</span>
               </button>
             </div>
           </div>
@@ -401,7 +426,7 @@ export default function Chatbot({ onOpenBooking, isFullScreen = false }: Chatbot
                 return (
                   <div key={i} className={`flex ${isModel ? 'justify-start' : 'justify-end'}`}>
                     <div className={`flex gap-3 max-w-[85%] ${isModel ? '' : 'flex-row-reverse'}`}>
-                      <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${isModel ? 'bg-brand-green/10 text-brand-green border border-brand-green/20' : 'bg-brand-wellbeing/10 text-brand-wellbeing border border-brand-wellbeing/20'}`}>
+                      <div className={`hidden md:flex w-8 h-8 rounded-full items-center justify-center shrink-0 ${isModel ? 'bg-brand-green/10 text-brand-green border border-brand-green/20' : 'bg-brand-wellbeing/10 text-brand-wellbeing border border-brand-wellbeing/20'}`}>
                         {isModel ? <img src={logoIcon} alt="CAPSY" className="w-6 h-6 rounded-full object-cover" /> : <LucideIcon name="User" className="w-4 h-4" />}
                       </div>
 
@@ -430,7 +455,7 @@ export default function Chatbot({ onOpenBooking, isFullScreen = false }: Chatbot
                             </div>
                           )}
                         </div>
-                        <span className="text-[10px] text-brand-gray-text font-mono px-1">
+                        <span className="hidden md:inline text-[10px] text-brand-gray-text font-mono px-1">
                           {isModel ? 'CAPSY' : 'Vous'}
                         </span>
                       </div>
@@ -442,7 +467,7 @@ export default function Chatbot({ onOpenBooking, isFullScreen = false }: Chatbot
               {isLoading && !isStreaming && (
                 <div className="flex justify-start">
                   <div className="flex gap-3">
-                    <div className="w-8 h-8 rounded-full bg-brand-green/10 text-brand-green border border-brand-green/20 flex items-center justify-center shrink-0">
+                    <div className="hidden md:flex w-8 h-8 rounded-full bg-brand-green/10 text-brand-green border border-brand-green/20 items-center justify-center shrink-0">
                       <img src={logoIcon} alt="CAPSY" className="w-5 h-5 rounded-full object-cover" />
                     </div>
                     <div className="flex flex-col space-y-1">
@@ -451,7 +476,7 @@ export default function Chatbot({ onOpenBooking, isFullScreen = false }: Chatbot
                         <span className="w-2 h-2.5 bg-brand-green rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
                         <span className="w-2 h-2.5 bg-brand-green rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
                       </div>
-                      <span className="text-[10px] text-brand-gray-text font-mono px-1">CAPSY réfléchit...</span>
+                      <span className="hidden md:inline text-[10px] text-brand-gray-text font-mono px-1">CAPSY réfléchit...</span>
                     </div>
                   </div>
                 </div>
@@ -490,8 +515,8 @@ export default function Chatbot({ onOpenBooking, isFullScreen = false }: Chatbot
             }}
             className="px-4.5 pt-2 pb-3 bg-white shrink-0"
           >
-            <div className="max-w-3xl mx-auto rounded-[28px] border border-brand-green/30 bg-gray-50/30 p-2 focus-within:border-brand-green transition-all shadow-sm">
-              <div className="px-4 pt-2">
+            <div className="max-w-3xl mx-auto rounded-[28px] border border-brand-green/30 bg-gray-50/30 p-1.5 md:p-2 focus-within:border-brand-green transition-all shadow-sm">
+              <div className="flex items-end gap-2 px-3">
                 <textarea
                   rows={1}
                   value={inputVal}
@@ -504,23 +529,22 @@ export default function Chatbot({ onOpenBooking, isFullScreen = false }: Chatbot
                   }}
                   placeholder="Posez une question à CAPSY AI"
                   disabled={isLoading}
-                  className="w-full text-sm bg-transparent outline-none placeholder:text-gray-400/80 placeholder:text-[13px] resize-none overflow-hidden min-h-[40px] py-2"
+                  className="flex-1 text-sm bg-transparent outline-none placeholder:text-gray-400/80 placeholder:text-[13px] resize-none overflow-hidden min-h-[40px] py-3"
                   style={{ height: 'auto' }}
                 />
-              </div>
-              <div className="flex items-center justify-between px-2 pb-1">
-                <div className="flex items-center gap-1">
-                  <button type="button" className="p-2 text-gray-500 hover:text-brand-green transition-colors"><LucideIcon name="Plus" className="w-4 h-4" /></button>
-                  <button type="button" className="p-2 text-gray-500 hover:text-brand-green transition-colors"><LucideIcon name="Mic" className="w-4 h-4" /></button>
-                  <button type="button" className="p-2 text-gray-500 hover:text-brand-green transition-colors"><LucideIcon name="Phone" className="w-4 h-4" /></button>
-                </div>
                 <button
                   type="submit"
                   disabled={!inputVal.trim() || isLoading}
-                  className="w-10 h-10 rounded-xl bg-brand-green/50 text-white hover:bg-brand-green flex items-center justify-center transition-all disabled:opacity-40 cursor-pointer shadow-sm"
+                  className="mb-1.5 w-10 h-10 rounded-xl bg-brand-green/50 text-white hover:bg-brand-green flex items-center justify-center transition-all disabled:opacity-40 cursor-pointer shadow-sm shrink-0"
                 >
                   <LucideIcon name="Send" className="w-5 h-5" />
                 </button>
+              </div>
+              <div className="flex items-center gap-1 px-2 pb-1 border-t border-brand-green/10 mt-1 pt-1">
+                <button type="button" className="p-1.5 md:p-2 text-gray-500 hover:text-brand-green transition-colors"><LucideIcon name="Plus" className="w-3.5 h-3.5 md:w-4 md:h-4" /></button>
+                <button type="button" className="p-1.5 md:p-2 text-gray-500 hover:text-brand-green transition-colors"><LucideIcon name="Mic" className="w-3.5 h-3.5 md:w-4 md:h-4" /></button>
+                <button type="button" className="p-1.5 md:p-2 text-gray-500 hover:text-brand-green transition-colors"><LucideIcon name="Phone" className="w-3.5 h-3.5 md:w-4 md:h-4" /></button>
+                <button type="button" className="p-1.5 md:p-2 text-gray-500 hover:text-brand-green transition-colors"><LucideIcon name="Map" className="w-3.5 h-3.5 md:w-4 md:h-4" /></button>
               </div>
             </div>
           </form>
@@ -530,7 +554,7 @@ export default function Chatbot({ onOpenBooking, isFullScreen = false }: Chatbot
   }
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 font-sans" id="capsy-chatbot-container">
+    <div className="fixed bottom-6 right-6 sm:right-6 sm:bottom-6 left-6 sm:left-auto z-50 font-sans flex flex-col items-center sm:items-end" id="capsy-chatbot-container">
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
@@ -552,7 +576,7 @@ export default function Chatbot({ onOpenBooking, isFullScreen = false }: Chatbot
 
       {isOpen && (
         <div
-          className="flex flex-col w-90 sm:w-100 h-137.5 max-h-[85vh] rounded-2xl bg-white border border-gray-150 shadow-2xl overflow-hidden transition-all duration-300 transform scale-100 origin-bottom-right"
+          className="flex flex-col w-[calc(100vw-2rem)] sm:w-100 h-[75vh] sm:h-137.5 max-h-[85vh] rounded-2xl bg-white border border-gray-150 shadow-2xl overflow-hidden transition-all duration-300 fixed bottom-24 left-4 right-4 sm:relative sm:bottom-0 sm:left-auto sm:right-0"
           id="chatbot-window"
         >
           <div className="bg-brand-dark px-5 py-4 flex items-center justify-between border-b border-white/10">
@@ -563,10 +587,10 @@ export default function Chatbot({ onOpenBooking, isFullScreen = false }: Chatbot
               </div>
               <div>
                 <h4 className="text-sm font-bold text-white tracking-wide flex items-center gap-1.5">
-                  CAPSY Assistant IA
+                  CAPSY <span className="hidden sm:inline">IA</span>
                   <LucideIcon name="Sparkles" className="w-3.5 h-3.5 text-brand-green" />
                 </h4>
-                <p className="text-[10px] text-white/60">Écoute active & orientation</p>
+                <p className="text-[10px] text-white/60 line-clamp-1">Écoute active & orientation</p>
               </div>
             </div>
 
@@ -624,7 +648,7 @@ export default function Chatbot({ onOpenBooking, isFullScreen = false }: Chatbot
                     )}
                   </div>
 
-                  <span className="text-[9px] text-brand-gray-text px-1 font-mono">
+                  <span className="hidden md:inline text-[9px] text-brand-gray-text px-1 font-mono">
                     {isModel ? 'CAPSY' : 'Vous'}
                   </span>
                 </div>
@@ -638,7 +662,7 @@ export default function Chatbot({ onOpenBooking, isFullScreen = false }: Chatbot
                   <span className="w-2 h-2 bg-brand-green rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
                   <span className="w-2 h-2 bg-brand-green rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
                 </div>
-                <span className="text-[9px] text-brand-gray-text px-1 font-mono">CAPSY écrit...</span>
+                <span className="hidden md:inline text-[9px] text-brand-gray-text px-1 font-mono">CAPSY écrit...</span>
               </div>
             )}
 
