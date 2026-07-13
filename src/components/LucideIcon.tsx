@@ -46,7 +46,17 @@ import {
   Map,
   ArrowUp,
   RefreshCw,
-  ChevronRight
+  ChevronRight,
+  Download,
+  Search,
+  Hash,
+  Home,
+  BookOpen,
+  Handshake,
+  QrCode,
+  ArrowLeft,
+  UserCircle,
+  Mail
 } from 'lucide-react';
 
 const iconMap = {
@@ -96,7 +106,17 @@ const iconMap = {
   Map,
   ArrowUp,
   RefreshCw,
-  ChevronRight
+  ChevronRight,
+  Download,
+  Search,
+  Hash,
+  Home,
+  BookOpen,
+  Handshake,
+  QrCode,
+  ArrowLeft,
+  UserCircle,
+  Mail
 };
 
 export type IconName = keyof typeof iconMap;

@@ -51,6 +51,7 @@ export default function Header({
     { name: 'Accueil', href: '#' },
     { name: 'Services', href: '#services' },
     { name: 'Notre Identité', href: '#identite' },
+    { name: 'Formations', href: '/formations' },
     { name: 'Auto-Évaluation', href: '#stress-test' },
     { name: 'FAQ', href: '#faq' },
     { name: 'Contact', href: '#contact' },

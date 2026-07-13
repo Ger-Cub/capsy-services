@@ -12,6 +12,8 @@ import BookingModal from './components/BookingModal';
 import Chatbot from './components/Chatbot';
 import LoginModal from './components/LoginModal';
 import UserProfilePage from './components/UserProfilePage';
+import OdooDashboard from './components/OdooDashboard';
+import FormationsPage from './components/FormationsPage';
 
 export default function App() {
   const [bookingOpen, setBookingOpen] = useState(false);
@@ -26,29 +28,24 @@ export default function App() {
       setAppointmentsCount(count);
       return;
     }
-    // Fallback if needed...
   };
 
   useEffect(() => {
     refreshAppointmentsCount();
 
-    // Check for booking query parameter
     const params = new URLSearchParams(window.location.search);
     const bookingParam = params.get('booking');
     if (bookingParam) {
       handleOpenBooking(bookingParam);
-      // Clean query parameter from URL bar without page reload
       const newUrl = window.location.pathname;
       window.history.replaceState({}, document.title, newUrl);
     }
 
-    // Check for saved user
     const savedUser = localStorage.getItem('capsy_user');
     if (savedUser) {
       setUser(JSON.parse(savedUser));
     }
 
-    // Listen to changes (e.g. booked/cancelled)
     const handleStorageChange = () => {
       refreshAppointmentsCount();
       const updatedUser = localStorage.getItem('capsy_user');
@@ -72,16 +69,12 @@ export default function App() {
 
   const handleViewAppointments = () => {
     const el = document.getElementById('mes-rendezvous');
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth' });
-    }
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
   };
 
   const handleOpenStressTest = () => {
     const el = document.getElementById('stress-test');
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth' });
-    }
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
   };
 
   const handleLogout = () => {
@@ -90,8 +83,27 @@ export default function App() {
     window.dispatchEvent(new Event('auth-changed'));
   };
 
-  const isFullScreenChat = typeof window !== 'undefined' &&
-    (window.location.search.includes('chat=true') || window.location.pathname === '/chat');
+  // --- Vues spéciales ---
+  const pathname = window.location.pathname;
+  const isFullScreenChat = window.location.search.includes('chat=true') || pathname === '/chat';
+  const isDashboard = window.location.search.includes('dashboard=true');
+
+  // Formations routes
+  const isFormations = pathname === '/formations' || pathname.startsWith('/formations/');
+  const certifMatch = pathname.match(/^\/formations\/certificat\/(.+)$/);
+  const certifId = certifMatch ? certifMatch[1] : undefined;
+
+  if (isFormations) {
+    return (
+      <div className="min-h-screen bg-white text-brand-dark flex flex-col font-sans" id="formations-root">
+        <FormationsPage certifId={certifId} />
+      </div>
+    );
+  }
+
+  if (isDashboard) {
+    return <OdooDashboard />;
+  }
 
   if (isFullScreenChat) {
     return (
@@ -104,7 +116,6 @@ export default function App() {
   return (
     <div className="min-h-screen bg-white text-brand-dark flex flex-col font-sans selection:bg-brand-wellbeing/20 selection:text-brand-dark" id="capsy-landing-root">
 
-      {/* Upper Navigation Header */}
       <Header
         onOpenBooking={() => handleOpenBooking('')}
         activeAppointmentsCount={appointmentsCount}
@@ -115,33 +126,26 @@ export default function App() {
         onViewProfile={() => setProfileOpen(true)}
       />
 
-      {/* Main Container */}
       <main className="flex-grow">
-
-        {/* Hero Section Banner */}
         <Hero
           onOpenBooking={() => handleOpenBooking('')}
           onOpenStressTest={handleOpenStressTest}
         />
 
-        {/* Mes Rendez-vous Odoo (Moved here) */}
         <AppointmentsManager
           onOpenBooking={() => handleOpenBooking('')}
           onRefreshCounter={refreshAppointmentsCount}
           user={user}
         />
 
-        {/* Services Grid (Bento/Card format) */}
         <div id="services">
           <ServicesGrid onSelectService={handleOpenBooking} />
         </div>
 
-        {/* Brand Core Identity Section (Mission, Vision, Values) */}
         <div id="identite">
           <IdentitySection />
         </div>
 
-        {/* Innovative Self-assessment Stress Test questionnaire */}
         <section className="py-20 bg-brand-gray-light border-y border-gray-150" id="stress-test">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <h2 className="text-center text-3xl font-poppins font-black text-brand-wellbeing tracking-tight mb-3">
@@ -154,48 +158,37 @@ export default function App() {
           </div>
         </section>
 
-
-        {/* Collapsible Accordion FAQs */}
         <div id="faq">
           <Faqs />
         </div>
 
-        {/* Contact info, physical location map, and secure messaging form */}
         <div id="contact">
           <ContactSection />
         </div>
-
       </main>
 
-      {/* Brand Dark-themed footer */}
       <Footer onOpenBooking={() => handleOpenBooking('')} />
 
-      {/* Responsive scheduler wizard (Multi-step portal popup drawer) */}
       <BookingModal
         isOpen={bookingOpen}
         onClose={() => setBookingOpen(false)}
         initialServiceId={initialServiceId}
         onBookingSuccess={() => {
           refreshAppointmentsCount();
-          // Broadcast custom event
           window.dispatchEvent(new Event('appointments-updated'));
-          // Scroll to appointments section
           setTimeout(handleViewAppointments, 500);
         }}
         user={user}
       />
 
-      {/* Floating conversational assistant */}
       <Chatbot onOpenBooking={handleOpenBooking} />
 
-      {/* Login Modal */}
       <LoginModal
         isOpen={loginOpen}
         onClose={() => setLoginOpen(false)}
         onLoginSuccess={(u) => setUser(u)}
       />
 
-      {/* User Profile Modal */}
       {user && profileOpen && (
         <UserProfilePage
           user={user}

@@ -47,6 +47,9 @@ export default function Footer({ onOpenBooking }: FooterProps) {
                 <a href="#services" className="hover:text-brand-green transition-colors">Nos Services</a>
               </li>
               <li>
+                <a href="/formations" className="hover:text-brand-green transition-colors">Formations</a>
+              </li>
+              <li>
                 <a href="#identite" className="hover:text-brand-green transition-colors">Notre Identité</a>
               </li>
               <li>
