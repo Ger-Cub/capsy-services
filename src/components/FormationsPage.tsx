@@ -792,7 +792,7 @@ export default function FormationsPage({ certifId }: FormationsPageProps) {
     return (
         <div className="min-h-screen bg-brand-gray-light" id="formations-page">
             {/* Hero / Banner */}
-            <div className="relative bg-gradient-to-br from-brand-darkgreen via-brand-wellbeing to-[#00a847] py-16 sm:py-24 overflow-hidden">
+            <div className="relative bg-gradient-to-br from-brand-darkgreen via-brand-wellbeing to-[#00a847] py-8 sm:py-12 overflow-hidden">
                 {/* Decorative circles */}
                 <div className="absolute top-0 right-0 h-64 w-64 bg-white/5 rounded-full translate-x-1/2 -translate-y-1/3" />
                 <div className="absolute bottom-0 left-0 h-48 w-48 bg-white/5 rounded-full -translate-x-1/3 translate-y-1/3" />
@@ -810,7 +810,7 @@ export default function FormationsPage({ certifId }: FormationsPageProps) {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.1 }}
-                        className="font-poppins font-black text-white text-3xl sm:text-5xl leading-tight mb-4"
+                        className="font-poppins font-black text-white text-2xl sm:text-3xl leading-tight mb-3"
                     >
                         Nos Formations
                     </motion.h1>
@@ -828,7 +828,7 @@ export default function FormationsPage({ certifId }: FormationsPageProps) {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.3 }}
-                        className="flex flex-wrap justify-center gap-4 sm:gap-8 mt-8"
+                        className="flex flex-wrap justify-center gap-4 sm:gap-8 mt-4"
                     >
                         {[
                             { label: 'Formations', value: counts.all, icon: 'BookOpen' },
