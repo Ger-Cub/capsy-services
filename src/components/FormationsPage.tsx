@@ -827,6 +827,7 @@ export default function FormationsPage({ certifId, onOpenBooking }: FormationsPa
         en_cours: FORMATIONS.filter((f) => f.status === 'en_cours').length,
         à_venir: FORMATIONS.filter((f) => f.status === 'à_venir').length,
     };
+    const totalParticipants = FORMATIONS.reduce((s, f) => s + f.participants.length, 0);
 
     return (
         <div className="min-h-screen bg-brand-gray-light" id="formations-page">
@@ -834,30 +835,12 @@ export default function FormationsPage({ certifId, onOpenBooking }: FormationsPa
                 variant="green"
                 eyebrow="Formations"
                 title="Nos Formations"
-                description="Retrouvez toutes les formations organisées par CAPSY SERVICES. Les participants peuvent télécharger leurs certificats et les modules disponibles."
+                description={`Retrouvez toutes les formations organisées par CAPSY SERVICES (${counts.all} formation${counts.all > 1 ? 's' : ''}, ${totalParticipants} participants, 24h+ de formation). Les participants peuvent télécharger leurs certificats et les modules disponibles.`}
                 primaryCtaLabel="Prendre rendez-vous"
                 onPrimaryCta={onOpenBooking}
             />
 
-            <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 mt-5">
-                <div className="flex flex-wrap justify-center gap-4 sm:gap-8">
-                    {[
-                        { label: 'Formations', value: counts.all, icon: 'BookOpen' },
-                        {
-                            label: 'Participants',
-                            value: FORMATIONS.reduce((s, f) => s + f.participants.length, 0),
-                            icon: 'Users',
-                        },
-                        { label: 'Heures de formation', value: '24+', icon: 'Clock' },
-                    ].map((s) => (
-                        <div key={s.label} className="text-center">
-                            <p className="font-poppins font-black text-brand-dark text-2xl sm:text-3xl">{s.value}</p>
-                            <p className="text-brand-gray-text text-xs mt-0.5 font-poppins">{s.label}</p>
-                        </div>
-                    ))}
-                </div>
-            </div>
-            <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
                 <div className="flex border-b border-gray-200 gap-1 sm:gap-4 overflow-x-auto no-scrollbar">
                     {[
                         { key: 'all', label: `Toutes (${counts.all})`, icon: 'BookOpen' },

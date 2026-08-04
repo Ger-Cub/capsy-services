@@ -12,7 +12,7 @@ export default function ContactPage({ onOpenBooking }: ContactPageProps) {
       <PageHero
         variant="green"
         eyebrow="Contact"
-        title="Contactez CAPSY SERVICES"
+        title="Nous contacter"
         description="Nous sommes là pour répondre à vos questions, organiser un rendez-vous ou vous orienter vers le bon service."
         primaryCtaLabel="Prendre rendez-vous"
         onPrimaryCta={onOpenBooking}

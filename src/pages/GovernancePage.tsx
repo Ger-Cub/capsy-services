@@ -102,8 +102,8 @@ export default function GovernancePage({ onOpenBooking }: GovernancePageProps) {
     <main className="grow font-sans bg-white">
       <PageHero
         variant="green"
-        eyebrow="Gouvernance & Leadership"
-        title="Gouvernance, Direction et Engagement Institutionnel"
+        eyebrow="Gouvernance"
+        title="Direction & Leadership"
         description="Découvrez notre approche stratégique pour une gouvernance transparente, éthique et rigoureuse au service de la santé mentale et du bien-être en RDC."
         primaryCtaLabel="Prendre rendez-vous"
         onPrimaryCta={onOpenBooking}
