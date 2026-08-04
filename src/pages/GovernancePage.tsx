@@ -109,18 +109,7 @@ export default function GovernancePage({ onOpenBooking }: GovernancePageProps) {
         onPrimaryCta={onOpenBooking}
       />
 
-      {/* Intro Mission Statement */}
-      <section className="py-12 bg-linear-to-b from-brand-wellbeing/5 to-transparent border-b border-gray-100">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-4">
-          <div className="inline-flex items-center gap-2 px-3 py-1 bg-brand-wellbeing/10 text-brand-wellbeing rounded-full text-xs font-bold font-poppins uppercase tracking-wider">
-            <LucideIcon name="Shield" className="h-3.5 w-3.5" />
-            <span>Notre Engagement Fondamental</span>
-          </div>
-          <h2 className="text-xl sm:text-2xl font-poppins font-black text-brand-dark max-w-3xl mx-auto leading-relaxed">
-            CAPSY sarl est un centre d’assistance psychologique engagé pour une santé mentale accessible, éthique et de qualité, au service des personnes, des familles, des organisations et des communautés.
-          </h2>
-        </div>
-      </section>
+
 
       {/* Governance & Executive Leadership */}
       <section className="py-16 sm:py-20 bg-white">
