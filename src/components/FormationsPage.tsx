@@ -685,14 +685,21 @@ function FormationDetail({
                             <button
                                 key={tab.key}
                                 onClick={() => setActiveTab(tab.key as any)}
-                                className={`flex items-center gap-1.5 px-3 py-3.5 text-xs font-poppins font-bold border-b-2 transition-all -mb-px ${activeTab === tab.key
-                                    ? 'border-brand-wellbeing text-brand-wellbeing'
-                                    : 'border-transparent text-brand-gray-text hover:text-brand-dark'
+                                className={`relative flex items-center gap-1.5 px-3 py-3.5 text-xs font-poppins font-bold transition-all ${activeTab === tab.key
+                                    ? 'text-brand-wellbeing'
+                                    : 'text-brand-gray-text hover:text-brand-dark'
                                     }`}
                             >
                                 <LucideIcon name={tab.icon} className="h-3.5 w-3.5" />
                                 <span className="hidden sm:inline">{tab.label}</span>
                                 <span className="sm:hidden">{tab.key === 'participants' ? formation.participants.length : tab.label}</span>
+                                {activeTab === tab.key && (
+                                    <motion.div
+                                        layoutId="modalActiveTabUnderline"
+                                        className="absolute bottom-0 left-0 right-0 h-0.5 bg-brand-wellbeing"
+                                        transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                                    />
+                                )}
                             </button>
                         ))}
                     </div>
@@ -851,13 +858,20 @@ export default function FormationsPage({ certifId, onOpenBooking }: FormationsPa
                         <button
                             key={f.key}
                             onClick={() => setFilterStatus(f.key as any)}
-                            className={`flex items-center gap-2 px-3 sm:px-4 py-3.5 text-xs font-poppins font-bold border-b-2 transition-all -mb-px shrink-0 cursor-pointer ${filterStatus === f.key
-                                ? 'border-brand-wellbeing text-brand-wellbeing'
-                                : 'border-transparent text-brand-gray-text hover:text-brand-dark hover:border-gray-300'
+                            className={`relative flex items-center gap-2 px-3 sm:px-4 py-3.5 text-xs font-poppins font-bold transition-all shrink-0 cursor-pointer ${filterStatus === f.key
+                                ? 'text-brand-wellbeing'
+                                : 'text-brand-gray-text hover:text-brand-dark'
                                 }`}
                         >
                             <LucideIcon name={f.icon} className="h-4 w-4" />
                             <span>{f.label}</span>
+                            {filterStatus === f.key && (
+                                <motion.div
+                                    layoutId="pageActiveTabUnderline"
+                                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-brand-wellbeing"
+                                    transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                                />
+                            )}
                         </button>
                     ))}
                 </div>
