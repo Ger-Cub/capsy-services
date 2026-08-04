@@ -95,7 +95,17 @@ export default function UserProfilePage({ user, onClose, onLogout }: UserProfile
                         </div>
 
                         {/* Actions */}
-                        <div className="px-8 mt-8 mb-8 flex flex-col sm:flex-row gap-3">
+                        <div className="px-8 mt-6 mb-2">
+                            <a
+                                href="/?dashboard=true"
+                                className="w-full py-3 px-4 bg-gradient-to-r from-purple-600 to-indigo-700 text-white rounded-xl font-bold font-poppins text-sm flex items-center justify-center gap-2 transition-all hover:shadow-lg hover:shadow-purple-500/20 hover:-translate-y-0.5"
+                            >
+                                <LucideIcon name="LayoutDashboard" className="h-4 w-4" />
+                                <span>🚀 Ouvrir Dashboard Odoo</span>
+                            </a>
+                        </div>
+
+                        <div className="px-8 mt-4 mb-8 flex flex-col sm:flex-row gap-3">
                             <a
                                 href="#"
                                 onClick={(e) => {

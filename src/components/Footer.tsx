@@ -44,22 +44,22 @@ export default function Footer({ onOpenBooking }: FooterProps) {
             <h4 className="font-poppins font-bold text-sm uppercase tracking-wider text-brand-green">Accès Rapide</h4>
             <ul className="space-y-2 text-xs sm:text-sm text-white/70 font-sans">
               <li>
-                <a href="#services" className="hover:text-brand-green transition-colors">Nos Services</a>
+                <a href="/services" className="hover:text-brand-green transition-colors">Services</a>
               </li>
               <li>
                 <a href="/formations" className="hover:text-brand-green transition-colors">Formations</a>
               </li>
               <li>
-                <a href="#identite" className="hover:text-brand-green transition-colors">Notre Identité</a>
+                <a href="/a-propos" className="hover:text-brand-green transition-colors">À propos</a>
               </li>
               <li>
-                <a href="#stress-test" className="hover:text-brand-green transition-colors">Faire l'Auto-Évaluation</a>
+                <a href="/faq" className="hover:text-brand-green transition-colors">FAQ</a>
               </li>
               <li>
-                <a href="#faq" className="hover:text-brand-green transition-colors">Foire Aux Questions</a>
+                <a href="/gouvernance" className="hover:text-brand-green transition-colors">Gouvernance</a>
               </li>
               <li>
-                <a href="#contact" className="hover:text-brand-green transition-colors">Nous Contacter</a>
+                <a href="/contact" className="hover:text-brand-green transition-colors">Nous Contacter</a>
               </li>
             </ul>
           </div>

@@ -47,15 +47,24 @@ export default function Header({
     ? user.name.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase()
     : '?';
 
+  const currentPath = typeof window !== 'undefined' ? window.location.pathname : '/';
+  const isHomePage = currentPath === '/';
+  const useWhiteTop = !isHomePage && !scrolled;
+
   const navLinks = [
-    { name: 'Accueil', href: '#' },
-    { name: 'Services', href: '#services' },
-    { name: 'Notre Identité', href: '#identite' },
+    { name: 'Accueil', href: '/' },
+    { name: 'Services', href: '/services' },
+    { name: 'À propos', href: '/a-propos' },
     { name: 'Formations', href: '/formations' },
-    { name: 'Auto-Évaluation', href: '#stress-test' },
-    { name: 'FAQ', href: '#faq' },
-    { name: 'Contact', href: '#contact' },
+    { name: 'FAQ', href: '/faq' },
+    { name: 'Gouvernance', href: '/gouvernance' },
+    { name: 'Contact', href: '/contact' },
   ];
+
+  const isActiveLink = (href: string) => {
+    if (href === '/' && currentPath === '/') return true;
+    return currentPath === href;
+  };
 
   const Avatar = ({ size = 'sm' }: { size?: 'sm' | 'md' }) => {
     const dim = size === 'sm' ? 'h-9 w-9 text-sm' : 'h-11 w-11 text-base';
@@ -71,28 +80,30 @@ export default function Header({
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${scrolled ? 'bg-white shadow-md py-2.5 border-b border-gray-150' : 'bg-white/95 sm:bg-transparent py-4'
-        }`}
+      className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${scrolled ? 'bg-white shadow-md py-2.5 border-b border-gray-150' : useWhiteTop ? 'bg-transparent py-4' : 'bg-white/95 sm:bg-transparent py-4'}`}
       id="main-header"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between">
 
-          <a href="#" className="flex items-center">
-            <Logo size="md" showSubtitle={true} variant="color" />
+          <a href="/" className="flex items-center">
+            <Logo size="md" showSubtitle={true} variant={useWhiteTop ? 'white' : 'color'} />
           </a>
 
           <nav className="hidden lg:flex items-center gap-7">
-            {navLinks.map((link) => (
-              <a
-                key={link.name}
-                href={link.href}
-                className="text-sm font-sans font-semibold text-brand-dark hover:text-brand-wellbeing transition-colors relative py-1 group"
-              >
-                {link.name}
-                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-brand-wellbeing transition-all duration-300 group-hover:w-full" />
-              </a>
-            ))}
+            {navLinks.map((link) => {
+              const active = isActiveLink(link.href);
+              return (
+                <a
+                  key={link.name}
+                  href={link.href}
+                  className={`text-sm font-sans font-semibold transition-colors relative py-1 group ${active ? (useWhiteTop ? 'text-white' : 'text-brand-wellbeing') : useWhiteTop ? 'text-white hover:text-white/80' : 'text-brand-dark hover:text-brand-wellbeing'}`}
+                >
+                  {link.name}
+                  <span className={`absolute bottom-0 left-0 h-0.5 bg-brand-wellbeing transition-all duration-300 ${active ? 'w-full' : 'w-0 group-hover:w-full'}`} />
+                </a>
+              );
+            })}
           </nav>
 
           <div className="hidden lg:flex items-center gap-3">
@@ -135,7 +146,7 @@ export default function Header({
                         exit={{ opacity: 0, scale: 0.95, y: -8 }}
                         className="absolute top-12 right-0 w-72 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden z-50"
                       >
-                        <div className="p-5 bg-gradient-to-br from-brand-wellbeing/5 to-brand-wellbeing/10 flex items-center gap-4 border-b border-gray-100">
+                        <div className="p-5 bg-linear-to-br from-brand-wellbeing/5 to-brand-wellbeing/10 flex items-center gap-4 border-b border-gray-100">
                           <div className="h-12 w-12 rounded-full bg-brand-wellbeing text-white font-black font-poppins flex items-center justify-center overflow-hidden shrink-0 ring-2 ring-brand-wellbeing/30">
                             {user.avatar
                               ? <img src={user.avatar} alt={user.name} className="w-full h-full object-cover" />
@@ -184,7 +195,8 @@ export default function Header({
             ) : (
               <button
                 onClick={onLogin}
-                className="py-2 px-4 text-brand-wellbeing hover:bg-brand-wellbeing/5 rounded-xl text-xs font-bold font-poppins transition-all flex items-center gap-2"
+                className={`py-2 px-4 rounded-xl text-xs font-bold font-poppins transition-all flex items-center gap-2 ${useWhiteTop ? 'bg-transparent border border-white text-white hover:bg-white/10' : 'text-brand-wellbeing hover:bg-brand-wellbeing/5'}`}
+                style={useWhiteTop ? { borderColor: 'rgba(255,255,255,0.8)' } : undefined}
               >
                 <LucideIcon name="User" className="h-4 w-4" />
                 <span>Connexion</span>
@@ -193,7 +205,7 @@ export default function Header({
 
             <button
               onClick={onOpenBooking}
-              className="py-2.5 px-5 bg-brand-wellbeing hover:bg-brand-wellbeing/90 text-white rounded-xl text-sm font-bold font-poppins flex items-center gap-2 transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5 cursor-pointer"
+              className={`py-2.5 px-5 rounded-xl text-sm font-bold font-poppins flex items-center gap-2 transition-all shadow-md hover:-translate-y-0.5 cursor-pointer ${useWhiteTop ? 'bg-white text-brand-wellbeing hover:bg-white/90' : 'bg-brand-wellbeing hover:bg-brand-wellbeing/90 text-white shadow-lg hover:shadow-lg'}`}
               id="header-cta-booking-btn"
             >
               <LucideIcon name="Calendar" className="h-4 w-4" />
@@ -227,7 +239,7 @@ export default function Header({
                         exit={{ opacity: 0, scale: 0.95, y: -8 }}
                         className="absolute top-12 right-0 w-64 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden z-50"
                       >
-                        <div className="p-4 bg-gradient-to-br from-brand-wellbeing/5 to-brand-wellbeing/10 border-b border-gray-100">
+                        <div className="p-4 bg-linear-to-br from-brand-wellbeing/5 to-brand-wellbeing/10 border-b border-gray-100">
                           <p className="font-bold font-poppins text-brand-dark text-sm">{user.name}</p>
                           <p className="text-xs text-brand-gray-text">{user.email}</p>
                         </div>
@@ -257,7 +269,7 @@ export default function Header({
 
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 text-brand-dark hover:bg-brand-gray-light rounded-xl transition-colors"
+              className={`p-2 rounded-xl transition-colors ${useWhiteTop ? 'text-white hover:bg-white/10' : 'text-brand-dark hover:bg-brand-gray-light'}`}
               aria-label="Menu principal"
               id="mobile-menu-toggle-btn"
             >
@@ -269,7 +281,7 @@ export default function Header({
       </div>
 
       <div
-        className={`lg:hidden transition-all duration-300 overflow-hidden bg-white border-b border-gray-150 ${mobileMenuOpen ? 'max-h-[500px] opacity-100 shadow-lg' : 'max-h-0 opacity-0 pointer-events-none'
+        className={`lg:hidden transition-all duration-300 overflow-hidden bg-white border-b border-gray-150 ${mobileMenuOpen ? 'max-h-125 opacity-100 shadow-lg' : 'max-h-0 opacity-0 pointer-events-none'
           }`}
         id="mobile-menu-drawer"
       >

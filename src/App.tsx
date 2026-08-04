@@ -1,12 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import Header from './components/Header';
-import Hero from './components/Hero';
-import ServicesGrid from './components/ServicesGrid';
-import IdentitySection from './components/IdentitySection';
-import StressTest from './components/StressTest';
-import AppointmentsManager from './components/AppointmentsManager';
-import Faqs from './components/Faqs';
-import ContactSection from './components/ContactSection';
 import Footer from './components/Footer';
 import BookingModal from './components/BookingModal';
 import Chatbot from './components/Chatbot';
@@ -14,6 +7,15 @@ import LoginModal from './components/LoginModal';
 import UserProfilePage from './components/UserProfilePage';
 import OdooDashboard from './components/OdooDashboard';
 import FormationsPage from './components/FormationsPage';
+import HomePage from './pages/HomePage';
+import StressTest from './components/StressTest';
+import { AnimatePresence, motion } from 'motion/react';
+import ServicesPage from './pages/ServicesPage';
+import AboutPage from './pages/AboutPage';
+import FaqPage from './pages/FaqPage';
+import GovernancePage from './pages/GovernancePage';
+import ContactPage from './pages/ContactPage';
+import ContactSection from './components/ContactSection';
 
 export default function App() {
   const [bookingOpen, setBookingOpen] = useState(false);
@@ -22,6 +24,13 @@ export default function App() {
   const [user, setUser] = useState<any>(null);
   const [loginOpen, setLoginOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
+  const [stressOpen, setStressOpen] = useState(false);
+
+  // --- Client-side SPA routing state ---
+  const [currentLocation, setCurrentLocation] = useState({
+    pathname: window.location.pathname,
+    search: window.location.search,
+  });
 
   const refreshAppointmentsCount = (count?: number) => {
     if (typeof count === 'number') {
@@ -33,13 +42,25 @@ export default function App() {
   useEffect(() => {
     refreshAppointmentsCount();
 
-    const params = new URLSearchParams(window.location.search);
-    const bookingParam = params.get('booking');
-    if (bookingParam) {
-      handleOpenBooking(bookingParam);
-      const newUrl = window.location.pathname;
-      window.history.replaceState({}, document.title, newUrl);
-    }
+    const handleLocationChange = () => {
+      setCurrentLocation({
+        pathname: window.location.pathname,
+        search: window.location.search,
+      });
+
+      const params = new URLSearchParams(window.location.search);
+      const bookingParam = params.get('booking');
+      if (bookingParam) {
+        handleOpenBooking(bookingParam);
+        const newUrl = window.location.pathname;
+        window.history.replaceState({}, document.title, newUrl);
+      }
+    };
+
+    handleLocationChange();
+
+    window.addEventListener('popstate', handleLocationChange);
+    window.addEventListener('locationchange', handleLocationChange);
 
     const savedUser = localStorage.getItem('capsy_user');
     if (savedUser) {
@@ -55,7 +76,41 @@ export default function App() {
     window.addEventListener('appointments-updated', handleStorageChange);
     window.addEventListener('auth-changed', handleStorageChange);
 
+    // Global click listener to intercept internal SPA link navigation without full page reloads
+    const handleGlobalClick = (e: MouseEvent) => {
+      const target = (e.target as HTMLElement).closest('a');
+      if (!target) return;
+      const href = target.getAttribute('href');
+      if (!href) return;
+
+      if (
+        href.startsWith('http://') ||
+        href.startsWith('https://') ||
+        href.startsWith('mailto:') ||
+        href.startsWith('tel:') ||
+        href.startsWith('#') ||
+        target.getAttribute('target') === '_blank' ||
+        e.metaKey || e.ctrlKey || e.shiftKey || e.altKey
+      ) {
+        return;
+      }
+
+      if (href.startsWith('/')) {
+        e.preventDefault();
+        if (window.location.pathname + window.location.search !== href) {
+          window.history.pushState({}, '', href);
+          window.dispatchEvent(new Event('locationchange'));
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      }
+    };
+
+    document.addEventListener('click', handleGlobalClick);
+
     return () => {
+      window.removeEventListener('popstate', handleLocationChange);
+      window.removeEventListener('locationchange', handleLocationChange);
+      document.removeEventListener('click', handleGlobalClick);
       window.removeEventListener('storage', handleStorageChange);
       window.removeEventListener('appointments-updated', handleStorageChange);
       window.removeEventListener('auth-changed', handleStorageChange);
@@ -73,8 +128,12 @@ export default function App() {
   };
 
   const handleOpenStressTest = () => {
-    const el = document.getElementById('stress-test');
-    if (el) el.scrollIntoView({ behavior: 'smooth' });
+    setStressOpen(true);
+  };
+
+  const handleOpenStressBooking = (serviceId: string = '') => {
+    setStressOpen(false);
+    handleOpenBooking(serviceId);
   };
 
   const handleLogout = () => {
@@ -84,22 +143,20 @@ export default function App() {
   };
 
   // --- Vues spéciales ---
-  const pathname = window.location.pathname;
-  const isFullScreenChat = window.location.search.includes('chat=true') || pathname === '/chat';
-  const isDashboard = window.location.search.includes('dashboard=true');
+  const pathname = currentLocation.pathname;
+  const search = currentLocation.search;
+  const isFullScreenChat = search.includes('chat=true') || pathname === '/chat';
+  const isDashboard = search.includes('dashboard=true');
 
-  // Formations routes
+  // Page routes
   const isFormations = pathname === '/formations' || pathname.startsWith('/formations/');
+  const isServices = pathname === '/services';
+  const isAPropos = pathname === '/a-propos';
+  const isFaq = pathname === '/faq';
+  const isGouvernance = pathname === '/gouvernance';
+  const isContact = pathname === '/contact';
   const certifMatch = pathname.match(/^\/formations\/certificat\/(.+)$/);
   const certifId = certifMatch ? certifMatch[1] : undefined;
-
-  if (isFormations) {
-    return (
-      <div className="min-h-screen bg-white text-brand-dark flex flex-col font-sans" id="formations-root">
-        <FormationsPage certifId={certifId} />
-      </div>
-    );
-  }
 
   if (isDashboard) {
     return <OdooDashboard />;
@@ -113,9 +170,24 @@ export default function App() {
     );
   }
 
+  const currentPageContent = isServices ? (
+    <ServicesPage onOpenBooking={handleOpenBooking} />
+  ) : isAPropos ? (
+    <AboutPage onOpenBooking={handleOpenBooking} />
+  ) : isFaq ? (
+    <FaqPage onOpenBooking={handleOpenBooking} />
+  ) : isGouvernance ? (
+    <GovernancePage onOpenBooking={handleOpenBooking} />
+  ) : isContact ? (
+    <ContactPage onOpenBooking={handleOpenBooking} />
+  ) : isFormations ? (
+    <FormationsPage certifId={certifId} onOpenBooking={handleOpenBooking} />
+  ) : (
+    <HomePage onOpenBooking={handleOpenBooking} onOpenStressTest={handleOpenStressTest} />
+  );
+
   return (
     <div className="min-h-screen bg-white text-brand-dark flex flex-col font-sans selection:bg-brand-wellbeing/20 selection:text-brand-dark" id="capsy-landing-root">
-
       <Header
         onOpenBooking={() => handleOpenBooking('')}
         activeAppointmentsCount={appointmentsCount}
@@ -126,45 +198,8 @@ export default function App() {
         onViewProfile={() => setProfileOpen(true)}
       />
 
-      <main className="flex-grow">
-        <Hero
-          onOpenBooking={() => handleOpenBooking('')}
-          onOpenStressTest={handleOpenStressTest}
-        />
-
-        <AppointmentsManager
-          onOpenBooking={() => handleOpenBooking('')}
-          onRefreshCounter={refreshAppointmentsCount}
-          user={user}
-        />
-
-        <div id="services">
-          <ServicesGrid onSelectService={handleOpenBooking} />
-        </div>
-
-        <div id="identite">
-          <IdentitySection />
-        </div>
-
-        <section className="py-20 bg-brand-gray-light border-y border-gray-150" id="stress-test">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="text-center text-3xl font-poppins font-black text-brand-wellbeing tracking-tight mb-3">
-              Solutions Innovantes — Prenez un moment pour vous
-            </h2>
-            <p className="text-center text-sm text-brand-gray-text max-w-xl mx-auto mb-12">
-              Le stress affecte de nombreuses personnes de façon silencieuse. Répondez sincèrement et découvrez nos conseils personnalisés.
-            </p>
-            <StressTest onOpenBooking={handleOpenBooking} />
-          </div>
-        </section>
-
-        <div id="faq">
-          <Faqs />
-        </div>
-
-        <div id="contact">
-          <ContactSection />
-        </div>
+      <main className="grow">
+        {currentPageContent}
       </main>
 
       <Footer onOpenBooking={() => handleOpenBooking('')} />
@@ -188,6 +223,29 @@ export default function App() {
         onClose={() => setLoginOpen(false)}
         onLoginSuccess={(u) => setUser(u)}
       />
+
+      <AnimatePresence>
+        {stressOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+            onClick={() => setStressOpen(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.96, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.96, opacity: 0 }}
+              transition={{ type: 'spring', damping: 22, stiffness: 180 }}
+              className="w-full max-w-3xl overflow-hidden"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <StressTest onOpenBooking={handleOpenStressBooking} />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {user && profileOpen && (
         <UserProfilePage
