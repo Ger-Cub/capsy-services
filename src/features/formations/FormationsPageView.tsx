@@ -71,9 +71,7 @@ function CertificateModal({
     const qrDataUrl = useQrCode(verifUrl);
     const certRef = useRef<HTMLDivElement>(null);
 
-    const handlePrint = () => {
-        window.print();
-    };
+    // print action removed — printing removed from modal UI
 
     const certifNum = participant.id;
     const dateStr = formation.dateRange.split(' - ').slice(-1)[0] || formation.dateRange;
@@ -134,13 +132,7 @@ function CertificateModal({
                             Télécharger
                         </button>
 
-                        <button
-                            onClick={handlePrint}
-                            className="flex items-center gap-1.5 px-3 py-2 bg-white text-brand-dark border rounded-xl text-xs font-bold font-poppins hover:bg-gray-50 transition-all no-print"
-                        >
-                            <LucideIcon name="Printer" className="h-3.5 w-3.5" />
-                            Imprimer
-                        </button>
+                        {/* print button removed as requested */}
 
                         <button
                             onClick={onClose}
@@ -155,16 +147,11 @@ function CertificateModal({
                 <div className="p-6 sm:p-10 print:p-0">
                     <div ref={certRef} className="certificate-paper relative bg-white w-full aspect-[1.414/1] border-[12px] border-brand-wellbeing rounded-lg overflow-hidden shadow-xl print:shadow-none print:border-[8px] select-none" style={{ fontFamily: 'serif' }}>
                         {pngUrl ? (
-                            <div className="w-full h-full flex items-center justify-center overflow-hidden">
+                            <div className="w-full h-full overflow-hidden">
                                 <img
                                     src={pngUrl}
                                     alt={`Certificat ${participant.name}`}
-                                    style={{
-                                        transform: 'rotate(90deg)',
-                                        maxHeight: '100%',
-                                        maxWidth: '100%',
-                                        objectFit: 'contain',
-                                    }}
+                                    className="w-full h-full object-cover block"
                                 />
                             </div>
                         ) : (
