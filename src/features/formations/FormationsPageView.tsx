@@ -83,18 +83,35 @@ function CertificateModal({
     const pdfEntry = Object.entries(certPdfs).find(([p]) => p.includes(participant.id));
     const pdfUrl = pdfEntry ? pdfEntry[1] : undefined;
 
-    const handleDownload = () => {
+    const handleDownload = async () => {
         const url = downloadFormat === 'png' ? pngUrl : pdfUrl;
         if (!url) {
             alert('Fichier non disponible');
             return;
         }
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `${participant.id}.${downloadFormat === 'png' ? 'png' : 'pdf'}`;
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
+        try {
+            const res = await fetch(url);
+            if (!res.ok) {
+                // fallback: open in new tab if fetch fails
+                window.open(url, '_blank');
+                return;
+            }
+            const blob = await res.blob();
+            const ext = downloadFormat === 'png' ? 'png' : 'pdf';
+            const filename = `${participant.id}.${ext}`;
+            const blobUrl = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = blobUrl;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            URL.revokeObjectURL(blobUrl);
+        } catch (err) {
+            console.error('Download failed', err);
+            // final fallback: open in new tab
+            window.open(url, '_blank');
+        }
     };
 
     return (
@@ -109,16 +126,16 @@ function CertificateModal({
                 className="bg-white rounded-2xl shadow-2xl w-full max-w-5xl max-h-[95vh] overflow-y-auto"
             >
                 {/* Modal toolbar */}
-                <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 sticky top-0 bg-white z-10">
-                    <div>
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between px-6 py-4 border-b border-gray-100 sticky top-0 bg-white z-10">
+                    <div className="w-full sm:w-auto">
                         <p className="font-poppins font-bold text-brand-dark text-sm">Certificat de réussite</p>
-                        <p className="text-xs text-brand-gray-text">{participant.name}</p>
+                        <p className="text-xs text-brand-gray-text truncate">{participant.name}</p>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto mt-3 sm:mt-0 justify-end">
                         <select
                             value={downloadFormat}
                             onChange={(e) => setDownloadFormat(e.target.value as 'png' | 'pdf')}
-                            className="text-sm px-3 py-2 border rounded-lg bg-white"
+                            className="text-sm px-3 py-2 border rounded-lg bg-white w-full sm:w-auto"
                         >
                             <option value="png">Image (PNG)</option>
                             <option value="pdf">Document (PDF)</option>
@@ -126,13 +143,11 @@ function CertificateModal({
 
                         <button
                             onClick={handleDownload}
-                            className="flex items-center gap-1.5 px-4 py-2 bg-brand-wellbeing text-white rounded-xl text-xs font-bold font-poppins hover:bg-brand-wellbeing/90 transition-all no-print"
+                            className="flex items-center gap-1.5 px-4 py-2 bg-brand-wellbeing text-white rounded-xl text-xs font-bold font-poppins hover:bg-brand-wellbeing/90 transition-all no-print w-full sm:w-auto justify-center"
                         >
                             <LucideIcon name="Download" className="h-3.5 w-3.5" />
                             Télécharger
                         </button>
-
-                        {/* print button removed as requested */}
 
                         <button
                             onClick={onClose}
