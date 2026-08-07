@@ -6,7 +6,6 @@ import Chatbot from './components/Chatbot';
 import LoginModal from './components/LoginModal';
 import UserProfilePage from './components/UserProfilePage';
 import OdooDashboard from './components/OdooDashboard';
-import FormationsPage from './components/FormationsPage';
 import HomePage from './pages/HomePage';
 import StressTest from './components/StressTest';
 import { AnimatePresence, motion } from 'motion/react';
@@ -15,6 +14,7 @@ import AboutPage from './pages/AboutPage';
 import FaqPage from './pages/FaqPage';
 import GovernancePage from './pages/GovernancePage';
 import ContactPage from './pages/ContactPage';
+import FormationsPage from './pages/FormationsPage';
 import ContactSection from './components/ContactSection';
 
 export default function App() {
