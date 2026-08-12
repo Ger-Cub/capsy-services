@@ -26,8 +26,9 @@ const callOdoo = (path: string, method: string, params: any[], odooUrl: string):
 export default async function handler(req: VercelRequest, res: VercelResponse) {
     const ODOO_URL = process.env.ODOO_URL || '';
     const ODOO_DB = process.env.ODOO_DB || '';
-    const ODOO_USERNAME = process.env.ODOO_USERNAME || '';
-    const ODOO_PASSWORD = process.env.ODOO_PASSWORD || '';
+    const ENV_ODOO_USERNAME = process.env.ODOO_USERNAME || '';
+    const ENV_ODOO_PASSWORD = process.env.ODOO_PASSWORD || '';
+    const CAPSY_API_BASE = process.env.ODOO_API_URL || 'http://localhost:8000';
 
     if (!ODOO_URL || !ODOO_URL.startsWith('http')) {
         console.error('[Odoo API] Config error: ODOO_URL is missing or invalid:', ODOO_URL);
@@ -35,20 +36,56 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     try {
-        const { action, params } = req.body;
+        const { action, params, username: bodyUsername, password: bodyPassword } = req.body;
         console.log(`[Odoo API] Action received: ${action}`);
 
-        // 1. Authenticate with admin creds to perform operations
-        const uid = await callOdoo('/xmlrpc/2/common', 'authenticate', [
-            ODOO_DB,
-            ODOO_USERNAME,
-            ODOO_PASSWORD,
-            {}
-        ], ODOO_URL);
+        // Helper: call session proxy on capsy-odoo-api
+        const callSession = async (model: string, method: string, args: any[] = [], kwargs: any = {}) => {
+            try {
+                const resp = await fetch(`${CAPSY_API_BASE}/session/call`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ session_id: req.body.session_id, uid: req.body.uid, username: req.body.username || bodyUsername, model, method, args, kwargs, db: ODOO_DB, url: ODOO_URL }),
+                });
+                if (!resp.ok) throw new Error(await resp.text());
+                const d = await resp.json();
+                return d.result;
+            } catch (err) {
+                throw err;
+            }
+        };
 
-        if (!uid) {
-            console.error('[Odoo API] Authentication failed for user:', ODOO_USERNAME);
-            return res.status(401).json({ error: 'Échec de l\'authentification Odoo' });
+        // Determine which credentials to use: prefer credentials sent in body, fall back to env vars
+        const usernameToUse = (bodyUsername && String(bodyUsername)) || ENV_ODOO_USERNAME;
+        const passwordToUse = (bodyPassword && String(bodyPassword)) || ENV_ODOO_PASSWORD;
+
+        // If client provided session_id & uid, use session mode (no password required)
+        let uid: any = null;
+        let xmlrpcMode = true;
+        if (req.body && req.body.session_id && req.body.uid) {
+            xmlrpcMode = false;
+            uid = req.body.uid;
+        } else {
+            if (!usernameToUse || !passwordToUse) {
+                console.error('[Odoo API] No credentials provided (neither body nor env).');
+                return res.status(401).json({ error: "Aucun identifiant Odoo fourni. Pour créer des rendez-vous sans authentification interactive, configurez une 'service user' via les variables d'environnement ODOO_USERNAME/ODOO_PASSWORD ou envoyez 'username' et 'password' dans le corps de la requête." });
+            }
+            try {
+                uid = await callOdoo('/xmlrpc/2/common', 'authenticate', [
+                    ODOO_DB,
+                    usernameToUse,
+                    passwordToUse,
+                    {}
+                ], ODOO_URL);
+            } catch (err) {
+                console.error('[Odoo API] Authentication failed for user:', usernameToUse);
+                return res.status(401).json({ error: "Échec de l'authentification Odoo" });
+            }
+
+            if (!uid) {
+                console.error('[Odoo API] Authentication returned falsy uid for user:', usernameToUse);
+                return res.status(401).json({ error: "Échec de l'authentification Odoo" });
+            }
         }
 
         if (action === 'create_appointment') {
@@ -56,25 +93,39 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             console.log(`[Odoo API] Creating appointment for ${appointment.clientEmail}. LoggedInPartner: ${loggedInPartnerId}`);
 
             // Find or create Partner for the patient
-            let partnerIds = await callOdoo('/xmlrpc/2/object', 'execute_kw', [
-                ODOO_DB, uid, ODOO_PASSWORD,
-                'res.partner', 'search',
-                [[['email', '=', appointment.clientEmail]]]
-            ], ODOO_URL);
+            let partnerIds;
+            if (!xmlrpcMode) {
+                partnerIds = await callSession('res.partner', 'search', [[['email', '=', appointment.clientEmail]]]);
+            } else {
+                partnerIds = await callOdoo('/xmlrpc/2/object', 'execute_kw', [
+                    ODOO_DB, uid, passwordToUse,
+                    'res.partner', 'search',
+                    [[['email', '=', appointment.clientEmail]]]
+                ], ODOO_URL);
+            }
 
             let partnerId;
             if (partnerIds.length === 0) {
                 console.log('[Odoo API] Patient partner not found, creating...');
-                partnerId = await callOdoo('/xmlrpc/2/object', 'execute_kw', [
-                    ODOO_DB, uid, ODOO_PASSWORD,
-                    'res.partner', 'create',
-                    [{
+                if (!xmlrpcMode) {
+                    partnerId = await callSession('res.partner', 'create', [{
                         name: appointment.clientName,
                         email: appointment.clientEmail,
                         phone: appointment.clientPhone,
                         comment: 'Client créé via le site web CAPSY'
-                    }]
-                ], ODOO_URL);
+                    }]);
+                } else {
+                    partnerId = await callOdoo('/xmlrpc/2/object', 'execute_kw', [
+                        ODOO_DB, uid, passwordToUse,
+                        'res.partner', 'create',
+                        [{
+                            name: appointment.clientName,
+                            email: appointment.clientEmail,
+                            phone: appointment.clientPhone,
+                            comment: 'Client créé via le site web CAPSY'
+                        }]
+                    ], ODOO_URL);
+                }
             } else {
                 partnerId = partnerIds[0];
                 console.log(`[Odoo API] Patient partner found: ID ${partnerId}`);
@@ -97,17 +148,28 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             console.log(`[Odoo API] Event details: ${start} to ${stop}`);
 
             // Create Event
-            const appointmentId = await callOdoo('/xmlrpc/2/object', 'execute_kw', [
-                ODOO_DB, uid, ODOO_PASSWORD,
-                'calendar.event', 'create',
-                [{
+            let appointmentId;
+            if (!xmlrpcMode) {
+                appointmentId = await callSession('calendar.event', 'create', [{
                     name: `RDV: ${appointment.serviceTitle}`,
                     start: start,
                     stop: stop,
                     partner_ids: [[6, 0, attendees]],
                     description: `Client: ${appointment.clientName}\nEmail: ${appointment.clientEmail}\nPhone: ${appointment.clientPhone}\nNotes: ${appointment.clientNotes}\nTherapist: ${appointment.preferredTherapist}`,
-                }]
-            ], ODOO_URL);
+                }]);
+            } else {
+                appointmentId = await callOdoo('/xmlrpc/2/object', 'execute_kw', [
+                    ODOO_DB, uid, passwordToUse,
+                    'calendar.event', 'create',
+                    [{
+                        name: `RDV: ${appointment.serviceTitle}`,
+                        start: start,
+                        stop: stop,
+                        partner_ids: [[6, 0, attendees]],
+                        description: `Client: ${appointment.clientName}\nEmail: ${appointment.clientEmail}\nPhone: ${appointment.clientPhone}\nNotes: ${appointment.clientNotes}\nTherapist: ${appointment.preferredTherapist}`,
+                    }]
+                ], ODOO_URL);
+            }
 
             console.log(`[Odoo API] Success! Created calendar.event ID: ${appointmentId}`);
             return res.status(200).json({ success: true, id: appointmentId });
@@ -118,11 +180,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             console.log(`[Odoo API] Fetching appointments for info: ${partnerInfo}`);
 
             // Search partner by email or login
-            const partnerIds = await callOdoo('/xmlrpc/2/object', 'execute_kw', [
-                ODOO_DB, uid, ODOO_PASSWORD,
-                'res.partner', 'search',
-                [['|', ['email', '=', partnerInfo], ['name', '=', partnerInfo]]]
-            ], ODOO_URL);
+            let partnerIds;
+            if (!xmlrpcMode) {
+                partnerIds = await callSession('res.partner', 'search', [['|', ['email', '=', partnerInfo], ['name', '=', partnerInfo]]]);
+            } else {
+                partnerIds = await callOdoo('/xmlrpc/2/object', 'execute_kw', [
+                    ODOO_DB, uid, passwordToUse,
+                    'res.partner', 'search',
+                    [['|', ['email', '=', partnerInfo], ['name', '=', partnerInfo]]]
+                ], ODOO_URL);
+            }
 
             if (partnerIds.length === 0) {
                 console.log('[Odoo API] No partner found for this info');
@@ -132,18 +199,40 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             console.log(`[Odoo API] Partners found: ${partnerIds}. Searching events...`);
 
             // Search events where this partner is an attendee
-            const appointments = await callOdoo('/xmlrpc/2/object', 'execute_kw', [
-                ODOO_DB, uid, ODOO_PASSWORD,
-                'calendar.event', 'search_read',
-                [[['partner_ids', 'in', partnerIds]]],
-                {
-                    fields: ['name', 'start', 'stop', 'description', 'partner_ids'],
-                    order: 'start desc'
-                }
-            ], ODOO_URL);
+            let appointments;
+            if (!xmlrpcMode) {
+                appointments = await callSession('calendar.event', 'search_read', [[['partner_ids', 'in', partnerIds]]], { fields: ['name', 'start', 'stop', 'description', 'partner_ids'], order: 'start desc' });
+            } else {
+                appointments = await callOdoo('/xmlrpc/2/object', 'execute_kw', [
+                    ODOO_DB, uid, passwordToUse,
+                    'calendar.event', 'search_read',
+                    [[['partner_ids', 'in', partnerIds]]],
+                    {
+                        fields: ['name', 'start', 'stop', 'description', 'partner_ids'],
+                        order: 'start desc'
+                    }
+                ], ODOO_URL);
+            }
 
             console.log(`[Odoo API] Found ${appointments.length} appointments`);
             return res.status(200).json({ appointments });
+        }
+
+        if (action === 'list_products') {
+            const { limit = 50, fields = ['id', 'display_name', 'name', 'list_price'] } = params || {};
+            console.log(`[Odoo API] Listing products with limit ${limit}`);
+            let products;
+            if (!xmlrpcMode) {
+                products = await callSession('product.product', 'search_read', [[]], { fields, limit });
+            } else {
+                products = await callOdoo('/xmlrpc/2/object', 'execute_kw', [
+                    ODOO_DB, uid, passwordToUse,
+                    'product.product', 'search_read',
+                    [ [] ],
+                    { fields, limit }
+                ], ODOO_URL);
+            }
+            return res.status(200).json({ products });
         }
 
         return res.status(400).json({ error: 'Action non supportée' });

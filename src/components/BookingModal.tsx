@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { SERVICES } from '../data/staticData';
+import { SERVICES as STATIC_SERVICES } from '../data/staticData';
 import { Appointment } from '../types';
 import LucideIcon from './LucideIcon';
 
@@ -29,7 +29,7 @@ export default function BookingModal({
   user,
 }: BookingModalProps) {
   const [step, setStep] = useState(1);
-  const [serviceId, setServiceId] = useState(initialServiceId || SERVICES[0].id);
+  const [serviceId, setServiceId] = useState(initialServiceId || (STATIC_SERVICES[0] && STATIC_SERVICES[0].id) || '');
   const [preferredTherapist, setPreferredTherapist] = useState('Premier disponible');
   const [format, setFormat] = useState<'presentiel' | 'en_ligne'>('presentiel');
   const [date, setDate] = useState('');
@@ -41,6 +41,7 @@ export default function BookingModal({
   const [clientNotes, setClientNotes] = useState('');
   const [createdAppointment, setCreatedAppointment] = useState<Appointment | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [servicesList, setServicesList] = useState<any[]>([]);
 
   // Pre-fill user data if logged in
   useEffect(() => {
@@ -50,7 +51,8 @@ export default function BookingModal({
     }
   }, [user, isOpen]);
 
-  const matchedService = SERVICES.find((s) => s.id === serviceId);
+  const sourceServices = servicesList.length > 0 ? servicesList : STATIC_SERVICES;
+  const matchedService = sourceServices.find((s) => String(s.id) === String(serviceId));
 
 
   // Synchronize initial service if changed
@@ -59,6 +61,42 @@ export default function BookingModal({
       setServiceId(initialServiceId);
     }
   }, [initialServiceId]);
+
+  // Fetch products/services from backend (Odoo proxy)
+  useEffect(() => {
+    if (!isOpen) return;
+    const controller = new AbortController();
+    (async () => {
+      try {
+        const resp = await fetch('/api/odoo', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'list_products', params: { limit: 50 } }),
+          signal: controller.signal,
+        });
+        if (!resp.ok) return;
+        const data = await resp.json();
+        const products = data.products || [];
+        const mapped = products.map((p: any) => ({
+          id: String(p.id),
+          title: p.name || p.display_name || `Service ${p.id}`,
+          shortDescription: p.description_sale || p.description || '',
+          therapists: [],
+        }));
+        if (mapped.length > 0) {
+          setServicesList(mapped);
+          // If no service selected yet, set to first
+          if (!initialServiceId && (!serviceId || serviceId === STATIC_SERVICES[0].id)) {
+            setServiceId(mapped[0].id);
+          }
+        }
+      } catch (err) {
+        // keep static fallback
+        console.debug('Unable to fetch products, using static SERVICES');
+      }
+    })();
+    return () => controller.abort();
+  }, [isOpen]);
 
   // Generate 7 upcoming business days dynamically
   const [availableDates, setAvailableDates] = useState<{ value: string; label: string }[]>([]);
@@ -130,21 +168,28 @@ export default function BookingModal({
 
     try {
       // Try to save to Odoo
-      const response = await fetch('/api/odoo', {
+      // Post directly to FastAPI backend which uses its .env credentials
+      const response = await fetch('http://localhost:8000/appointments/create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          action: 'create_appointment',
-          params: {
-            appointment: newAppointment,
-            loggedInPartnerId: user?.partner_id
-          }
+          appointment: newAppointment,
+          loggedInPartnerId: user?.partner_id || null
         })
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Erreur lors de la synchronisation Odoo');
+        let errorMsg = 'Erreur lors de la synchronisation Odoo';
+        try {
+          const errorData = await response.json();
+          errorMsg = errorData.error || errorData.detail || errorData.message || errorMsg;
+        } catch (_e) {
+          try {
+            const text = await response.text();
+            if (text) errorMsg = text;
+          } catch (_e) {}
+        }
+        throw new Error(errorMsg);
       }
 
       const data = await response.json();
@@ -156,12 +201,29 @@ export default function BookingModal({
         onBookingSuccess(newAppointment);
       }
 
+      // success toast
+      window.dispatchEvent(new CustomEvent('capsy:toast', { detail: { message: 'Rendez-vous enregistré. Un conseiller vous contactera bientôt.', type: 'success' } }));
+
       // Dispatch event to refresh manager
       window.dispatchEvent(new Event('appointments-updated'));
 
     } catch (err: any) {
       console.error('Odoo sync error:', err);
-      alert(`Erreur: Impossible de programmer votre rendez-vous dans notre système Odoo. ${err.message}`);
+      // Extract friendly message
+      let msg = 'Impossible de programmer votre rendez-vous dans notre système Odoo.';
+      try {
+        if (err && err.message) {
+          // err.message may contain JSON or plain text
+          try {
+            const parsed = JSON.parse(err.message);
+            msg = parsed.detail || parsed.error || parsed.message || msg;
+          } catch (_e) {
+            msg = err.message;
+          }
+        }
+      } catch (_e) {}
+      // Dispatch toast event
+      window.dispatchEvent(new CustomEvent('capsy:toast', { detail: { message: msg, type: 'error' } }));
     } finally {
       setIsSubmitting(false);
     }
@@ -169,7 +231,7 @@ export default function BookingModal({
 
   const resetForm = () => {
     setStep(1);
-    setServiceId(initialServiceId || SERVICES[0].id);
+    setServiceId(initialServiceId || (sourceServices[0] && sourceServices[0].id) || '');
     setPreferredTherapist('Premier disponible');
     setFormat('presentiel');
     if (availableDates.length > 0) setDate(availableDates[0].value);
@@ -235,12 +297,12 @@ export default function BookingModal({
                   <span className={`h-6 w-6 flex items-center justify-center rounded-full text-white font-bold ${step >= 1 ? 'bg-brand-wellbeing' : 'bg-gray-300'}`}>1</span>
                   <span>Service</span>
                 </div>
-                <div className="h-[2px] bg-gray-300 flex-1 mx-3" />
+                <div className="h-0.5 bg-gray-300 flex-1 mx-3" />
                 <div className="flex items-center gap-2">
                   <span className={`h-6 w-6 flex items-center justify-center rounded-full text-white font-bold ${step >= 2 ? 'bg-brand-wellbeing' : 'bg-gray-300'}`}>2</span>
                   <span>Date & Heure</span>
                 </div>
-                <div className="h-[2px] bg-gray-300 flex-1 mx-3" />
+                <div className="h-0.5 bg-gray-300 flex-1 mx-3" />
                 <div className="flex items-center gap-2">
                   <span className={`h-6 w-6 flex items-center justify-center rounded-full text-white font-bold ${step >= 3 ? 'bg-brand-wellbeing' : 'bg-gray-300'}`}>3</span>
                   <span>Vos coordonnées</span>
@@ -261,7 +323,7 @@ export default function BookingModal({
                     Quel type d'accompagnement recherchez-vous aujourd'hui ?
                   </p>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3" id="service-selector">
-                    {SERVICES.map((s) => (
+                    {sourceServices.map((s) => (
                       <button
                         key={s.id}
                         type="button"

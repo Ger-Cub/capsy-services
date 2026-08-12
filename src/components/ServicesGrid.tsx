@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { SERVICES } from '../data/staticData';
+import { SERVICES as STATIC_SERVICES } from '../data/staticData';
 import { Service } from '../types';
 import LucideIcon from './LucideIcon';
 
@@ -30,7 +30,7 @@ export default function ServicesGrid({ onSelectService }: ServicesGridProps) {
 
         {/* The Grid mapping */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="services-list-container">
-          {SERVICES.map((srv) => {
+          {STATIC_SERVICES.map((srv) => {
             return (
               <div
                 key={srv.id}

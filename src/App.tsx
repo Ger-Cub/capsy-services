@@ -6,6 +6,7 @@ import Chatbot from './components/Chatbot';
 import LoginModal from './components/LoginModal';
 import UserProfilePage from './components/UserProfilePage';
 import OdooDashboard from './components/OdooDashboard';
+import ToastContainer from './components/Toast';
 import HomePage from './pages/HomePage';
 import StressTest from './components/StressTest';
 import { AnimatePresence, motion } from 'motion/react';
@@ -217,6 +218,8 @@ export default function App() {
       />
 
       <Chatbot onOpenBooking={handleOpenBooking} />
+
+      <ToastContainer />
 
       <LoginModal
         isOpen={loginOpen}

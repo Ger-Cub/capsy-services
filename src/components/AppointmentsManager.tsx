@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Appointment } from '../types';
-import { SERVICES } from '../data/staticData';
+import { SERVICES as STATIC_SERVICES } from '../data/staticData';
 import LucideIcon from './LucideIcon';
 
 interface AppointmentsManagerProps {
@@ -17,6 +17,7 @@ export default function AppointmentsManager({
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [productsList, setProductsList] = useState<any[]>([]);
 
   const stripHtml = (html: string) => {
     const doc = new DOMParser().parseFromString(html, 'text/html');
@@ -106,6 +107,21 @@ export default function AppointmentsManager({
 
   useEffect(() => {
     loadFromOdoo();
+    // Fetch products/services for price lookups (non-blocking)
+    (async () => {
+      try {
+        const resp = await fetch('/api/odoo', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'list_products', params: { limit: 100 } }),
+        });
+        if (!resp.ok) return;
+        const data = await resp.json();
+        setProductsList(data.products || []);
+      } catch (err) {
+        console.debug('Unable to fetch products for AppointmentsManager');
+      }
+    })();
     const handleUpdate = () => loadFromOdoo();
     window.addEventListener('appointments-updated', handleUpdate);
     window.addEventListener('auth-changed', handleUpdate);
@@ -116,8 +132,9 @@ export default function AppointmentsManager({
   }, [user]);
 
   const handlePay = async (app: Appointment) => {
-    const service = SERVICES.find((s) => s.id === app.serviceId);
-    const amount = service?.price || 40;
+    const product = productsList.find((p) => String(p.id) === String(app.serviceId));
+    const service = STATIC_SERVICES.find((s) => s.id === app.serviceId);
+    const amount = (product && product.list_price) || service?.price || 40;
     try {
       const response = await fetch('/api/odoo', {
         method: 'POST',

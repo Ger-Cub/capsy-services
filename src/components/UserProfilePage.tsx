@@ -88,17 +88,17 @@ export default function UserProfilePage({ user, onClose, onLogout }: UserProfile
 
                         {/* Info Cards */}
                         <div className="px-8 mt-6 grid grid-cols-2 gap-3">
-                            <InfoCard icon="User" label="Identifiant" value={user?.login || user?.email} />
+                            <InfoCard icon="User" label="Identifiant" value={user?.login || user?.username || user?.email} />
                             <InfoCard icon="Hash" label="ID Partenaire" value={user?.partner_id ? `#${user.partner_id}` : '—'} />
-                            <InfoCard icon="Globe" label="Langue" value={user?.lang || 'Non définie'} />
-                            <InfoCard icon="Clock" label="Fuseau horaire" value={user?.tz || 'Non défini'} />
+                            <InfoCard icon="Globe" label="Langue" value={user?.lang || user?.language || 'Non définie'} />
+                            <InfoCard icon="Hash" label="Société" value={user?.company || user?.company_name || '—'} />
                         </div>
 
                         {/* Actions */}
                         <div className="px-8 mt-6 mb-2">
                             <a
                                 href="/?dashboard=true"
-                                className="w-full py-3 px-4 bg-gradient-to-r from-purple-600 to-indigo-700 text-white rounded-xl font-bold font-poppins text-sm flex items-center justify-center gap-2 transition-all hover:shadow-lg hover:shadow-purple-500/20 hover:-translate-y-0.5"
+                                className="w-full py-3 px-4 bg-brand-wellbeing hover:bg-brand-wellbeing/95 text-white rounded-xl font-bold font-poppins text-sm flex items-center justify-center gap-2 transition-all shadow-lg"
                             >
                                 <LucideIcon name="LayoutDashboard" className="h-4 w-4" />
                                 <span>🚀 Ouvrir Dashboard Odoo</span>
@@ -110,7 +110,21 @@ export default function UserProfilePage({ user, onClose, onLogout }: UserProfile
                                 href="#"
                                 onClick={(e) => {
                                     e.preventDefault();
-                                    alert("Lien vers le portail Odoo bientôt disponible.");
+                                    const capsUser = localStorage.getItem('capsy_user');
+                                    if (!capsUser) return alert('Non connecté à CAPSY.');
+                                    try {
+                                        const u = JSON.parse(capsUser);
+                                        const url = u.instance || u.instance_url || u.odoo_url || u.instanceUrl;
+                                        const session = u.session_id || u.sessionId || u.sid;
+                                        if (!url) return alert('URL Odoo introuvable pour cet utilisateur.');
+
+                                        // If we have a session, try to open Odoo with the session token via query param
+                                        // The backend should accept ?session_id=... and set a cookie for SSO. Fallback to opening instance.
+                                        const target = session ? `${url}/web?session_id=${encodeURIComponent(session)}` : url;
+                                        window.open(target, '_blank');
+                                    } catch (err) {
+                                        alert('Impossible d\u2019ouvrir Odoo.');
+                                    }
                                 }}
                                 target="_blank"
                                 rel="noopener noreferrer"
