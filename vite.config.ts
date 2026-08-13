@@ -11,6 +11,11 @@ export default defineConfig(() => {
         '@': path.resolve(__dirname, '.'),
       },
     },
+    envPrefix: ['VITE_', 'ODOO_', 'APP_'],
+    define: {
+      'process.env.ODOO_API_URL': JSON.stringify(process.env.ODOO_API_URL),
+      'process.env.APP_URL': JSON.stringify(process.env.APP_URL),
+    },
     server: {
       // HMR is disabled in AI Studio via DISABLE_HMR env var.
       // Do not modifyâfile watching is disabled to prevent flickering during agent edits.
