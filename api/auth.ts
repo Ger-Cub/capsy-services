@@ -52,7 +52,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                 session_id: data.session_id,
                 instance:   data.instance,
                 database:   data.database,
-                avatar:     null,
+                partner_id: data.partner_id,
+                avatar:     data.avatar || null,
             },
         });
     }

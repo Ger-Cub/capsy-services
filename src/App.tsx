@@ -17,6 +17,7 @@ import GovernancePage from './pages/GovernancePage';
 import ContactPage from './pages/ContactPage';
 import FormationsPage from './pages/FormationsPage';
 import ContactSection from './components/ContactSection';
+import RendezVousPage from './pages/RendezVousPage';
 
 export default function App() {
   const [bookingOpen, setBookingOpen] = useState(false);
@@ -124,8 +125,10 @@ export default function App() {
   };
 
   const handleViewAppointments = () => {
-    const el = document.getElementById('mes-rendezvous');
-    if (el) el.scrollIntoView({ behavior: 'smooth' });
+    // Naviguer vers la page dédiée si un user est connecté, sinon scroll vers section
+    window.history.pushState({}, '', '/mes-rendezvous');
+    window.dispatchEvent(new Event('locationchange'));
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleOpenStressTest = () => {
@@ -156,6 +159,7 @@ export default function App() {
   const isFaq = pathname === '/faq';
   const isGouvernance = pathname === '/gouvernance';
   const isContact = pathname === '/contact';
+  const isRendezVous = pathname === '/mes-rendezvous';
   const certifMatch = pathname.match(/^\/formations\/certificat\/(.+)$/);
   const certifId = certifMatch ? certifMatch[1] : undefined;
 
@@ -171,7 +175,9 @@ export default function App() {
     );
   }
 
-  const currentPageContent = isServices ? (
+  const currentPageContent = isRendezVous ? (
+    <RendezVousPage user={user} onOpenBooking={() => handleOpenBooking('')} onLogin={() => setLoginOpen(true)} />
+  ) : isServices ? (
     <ServicesPage onOpenBooking={handleOpenBooking} />
   ) : isAPropos ? (
     <AboutPage onOpenBooking={handleOpenBooking} />
@@ -184,7 +190,7 @@ export default function App() {
   ) : isFormations ? (
     <FormationsPage certifId={certifId} onOpenBooking={handleOpenBooking} />
   ) : (
-    <HomePage onOpenBooking={handleOpenBooking} onOpenStressTest={handleOpenStressTest} />
+    <HomePage onOpenBooking={handleOpenBooking} onOpenStressTest={handleOpenStressTest} user={user} onViewAppointments={handleViewAppointments} />
   );
 
   return (

@@ -71,7 +71,7 @@ export const SERVICES: Service[] = [
   },
   {
     id: 'evaluation_enfants',
-    title: 'Évaluation psychologique enfants et adolescents',
+    title: 'Évaluation psychologique enfants/ados',
     shortDescription: 'Analyse complète du fonctionnement cognitif, émotionnel et comportemental de l’enfant et de l’adolescent.',
     fullDescription: 'Ce bilan permet de mieux comprendre les difficultés et de proposer des orientations thérapeutiques adaptées.',
     iconName: 'Activity',
@@ -105,7 +105,7 @@ export const SERVICES: Service[] = [
   },
   {
     id: 'accompagnement_enfants',
-    title: 'Accompagnement enfants et adolescents',
+    title: 'Accompagnement enfants/ados',
     shortDescription: 'Séance adaptée pour aider l’enfant à mieux gérer ses émotions et comportements.',
     fullDescription: 'Un suivi pensé pour les jeunes afin de soutenir leur stabilité affective et scolaire.',
     iconName: 'GraduationCap',

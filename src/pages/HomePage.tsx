@@ -7,12 +7,14 @@ import ContactSection from '../components/ContactSection';
 interface HomePageProps {
   onOpenBooking: () => void;
   onOpenStressTest: () => void;
+  user?: any;
+  onViewAppointments?: () => void;
 }
 
-export default function HomePage({ onOpenBooking, onOpenStressTest }: HomePageProps) {
+export default function HomePage({ onOpenBooking, onOpenStressTest, user, onViewAppointments }: HomePageProps) {
   return (
     <main className="grow">
-      <Hero onOpenBooking={onOpenBooking} onOpenStressTest={onOpenStressTest} />
+      <Hero onOpenBooking={onOpenBooking} onOpenStressTest={onOpenStressTest} user={user} onViewAppointments={onViewAppointments} />
       <SupportTypesSection onOpenBooking={onOpenBooking} />
       <IdentitySection />
       <ContactSection />

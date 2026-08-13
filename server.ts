@@ -1,3 +1,4 @@
+// Express server with Odoo & Auth proxy handlers
 import dotenv from "dotenv";
 dotenv.config();
 

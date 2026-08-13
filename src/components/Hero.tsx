@@ -1,13 +1,16 @@
 import React from 'react';
 import LucideIcon from './LucideIcon';
 import therapistImage from '../assets/images/capsy_consultation_1781254897566.jpg';
+import AppointmentsPreview from './AppointmentsPreview';
 
 interface HeroProps {
   onOpenBooking: () => void;
   onOpenStressTest: () => void;
+  user?: any;
+  onViewAppointments?: () => void;
 }
 
-export default function Hero({ onOpenBooking, onOpenStressTest }: HeroProps) {
+export default function Hero({ onOpenBooking, onOpenStressTest, user, onViewAppointments }: HeroProps) {
   // Image imported above so Vite includes it in production builds
 
   return (
@@ -84,6 +87,15 @@ export default function Hero({ onOpenBooking, onOpenStressTest }: HeroProps) {
                 <p className="text-[10px] text-brand-gray-text uppercase font-semibold tracking-wide">Accompagnement</p>
               </div>
             </div>
+
+            {/* Aperçu des prochains rendez-vous pour les utilisateurs connectés */}
+            {user && onViewAppointments && (
+              <AppointmentsPreview
+                user={user}
+                onViewAll={onViewAppointments}
+                onOpenBooking={onOpenBooking}
+              />
+            )}
 
           </div>
 

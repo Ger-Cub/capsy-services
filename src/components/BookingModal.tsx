@@ -33,6 +33,11 @@ export default function BookingModal({
   const [preferredTherapist, setPreferredTherapist] = useState('Premier disponible');
   const [format, setFormat] = useState<'presentiel' | 'en_ligne'>('presentiel');
   const [date, setDate] = useState('');
+  // Stable service title for therapist filtering — survives Odoo product list reload
+  const [selectedServiceTitle, setSelectedServiceTitle] = useState<string>(() => {
+    const s = STATIC_SERVICES.find((x) => x.id === (initialServiceId || STATIC_SERVICES[0]?.id));
+    return s?.title || '';
+  });
   const [timeSlot, setTimeSlot] = useState('');
   const [clientName, setClientName] = useState('');
   const [clientEmail, setClientEmail] = useState('');
@@ -52,7 +57,9 @@ export default function BookingModal({
   }, [user, isOpen]);
 
   const sourceServices = servicesList.length > 0 ? servicesList : STATIC_SERVICES;
-  const matchedService = sourceServices.find((s) => String(s.id) === String(serviceId));
+  // matchedService for display — may be undefined if Odoo IDs differ from static IDs
+  const matchedService = sourceServices.find((s) => String(s.id) === String(serviceId))
+    || STATIC_SERVICES.find((s) => String(s.id) === String(serviceId));
 
 
   // Synchronize initial service if changed
@@ -98,6 +105,21 @@ export default function BookingModal({
     return () => controller.abort();
   }, [isOpen]);
 
+  const [odooTherapists, setOdooTherapists] = useState<{ id: number; name: string; avatar: string | null }[]>([]);
+
+  useEffect(() => {
+    if (!isOpen || !selectedServiceTitle) return;
+    const titleParam = `?service_title=${encodeURIComponent(selectedServiceTitle)}`;
+    fetch(`http://localhost:8000/therapists/${titleParam}`)
+      .then((r) => r.json())
+      .then((data) => {
+        if (Array.isArray(data)) {
+          setOdooTherapists(data);
+        }
+      })
+      .catch(() => {});
+  }, [isOpen, selectedServiceTitle]);
+
   // Generate 7 upcoming business days dynamically
   const [availableDates, setAvailableDates] = useState<{ value: string; label: string }[]>([]);
   useEffect(() => {
@@ -127,6 +149,10 @@ export default function BookingModal({
 
   const handleServiceSelect = (id: string) => {
     setServiceId(id);
+    // Resolve title: prefer static match by id, then from Odoo products list
+    const fromStatic = STATIC_SERVICES.find((s) => String(s.id) === String(id));
+    const fromOdoo = servicesList.find((s) => String(s.id) === String(id));
+    setSelectedServiceTitle(fromStatic?.title || fromOdoo?.title || '');
     setStep(2);
   };
 
@@ -173,8 +199,13 @@ export default function BookingModal({
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          appointment: newAppointment,
-          loggedInPartnerId: user?.partner_id || null
+          appointment: {
+            ...newAppointment,
+            format,                           // 'presentiel' | 'en_ligne'
+          },
+          loggedInPartnerId: user?.partner_id || null,
+          loggedInUserId: user?.uid || null,
+          loggedInSessionId: user?.session_id || null,
         })
       });
 
@@ -444,28 +475,59 @@ export default function BookingModal({
 
                   {/* Select Therapist Option */}
                   <div>
-                    <label className="block text-sm font-poppins font-bold text-brand-dark mb-2">
-                      Préférence de praticien
+                    <label className="block text-sm font-poppins font-bold text-brand-dark mb-2.5">
+                      Préférence de praticien (Psychologues Odoo)
                     </label>
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                      {[
-                        { label: 'Premier disponible', desc: 'Orientation la plus rapide' },
-                        ...(matchedService?.therapists?.map(name => ({
-                          label: name,
-                          desc: name.includes('Batenga') ? 'Sénior Clinicien' : name.includes('SHAMAMBA') ? 'Spécialiste TCC' : 'Systémique & Famille'
-                        })) || [])
-                      ].map((therapist) => (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                      <button
+                        type="button"
+                        onClick={() => setPreferredTherapist('Premier disponible')}
+                        className={`p-3.5 rounded-2xl border-2 text-left flex items-center gap-3 transition-all ${preferredTherapist === 'Premier disponible'
+                          ? 'border-brand-wellbeing bg-brand-wellbeing/5 text-brand-wellbeing font-semibold shadow-xs'
+                          : 'border-gray-200 text-brand-gray-text hover:border-gray-300'
+                          }`}
+                      >
+                        <div className="h-10 w-10 rounded-full bg-brand-wellbeing/10 text-brand-wellbeing flex items-center justify-center shrink-0 font-bold">
+                          <LucideIcon name="Zap" className="h-5 w-5" />
+                        </div>
+                        <div>
+                          <p className="text-xs font-poppins font-bold text-brand-dark leading-tight">Premier disponible</p>
+                          <p className="text-[10px] text-brand-gray-text mt-0.5">Orientation la plus rapide</p>
+                        </div>
+                      </button>
+
+                      {(odooTherapists.length > 0
+                        ? odooTherapists.map(t => ({ label: t.name, avatar: t.avatar, desc: 'Psychologue Clinicien' }))
+                        : (matchedService?.therapists?.map(name => ({
+                            label: name,
+                            avatar: null,
+                            desc: name.includes('Batenga') ? 'Sénior Clinicien' : name.includes('SHAMAMBA') ? 'Spécialiste TCC' : 'Psychologue Clinicien'
+                          })) || [])
+                      ).map((therapist) => (
                         <button
                           key={therapist.label}
                           type="button"
                           onClick={() => setPreferredTherapist(therapist.label)}
-                          className={`p-3 rounded-xl border-2 text-left transition-all ${preferredTherapist === therapist.label
-                            ? 'border-brand-wellbeing bg-brand-wellbeing/5 text-brand-wellbeing font-semibold'
-                            : 'border-gray-250 text-brand-gray-text hover:border-gray-300'
+                          className={`p-3.5 rounded-2xl border-2 text-left flex items-center gap-3 transition-all ${preferredTherapist === therapist.label
+                            ? 'border-brand-wellbeing bg-brand-wellbeing/5 text-brand-wellbeing font-semibold shadow-xs'
+                            : 'border-gray-200 text-brand-gray-text hover:border-gray-300'
                             }`}
                         >
-                          <p className="text-[11px] font-poppins font-bold leading-tight">{therapist.label}</p>
-                          <p className="text-[9px] text-brand-gray-text mt-0.5">{therapist.desc}</p>
+                          {therapist.avatar ? (
+                            <img
+                              src={therapist.avatar}
+                              alt={therapist.label}
+                              className="h-10 w-10 rounded-full object-cover shrink-0 ring-2 ring-brand-wellbeing/30 shadow-xs"
+                            />
+                          ) : (
+                            <div className="h-10 w-10 rounded-full bg-brand-wellbeing/10 text-brand-wellbeing font-bold font-poppins text-xs flex items-center justify-center shrink-0 border border-brand-wellbeing/20">
+                              {therapist.label.split(' ').map((n: string) => n[0]).slice(0, 2).join('').toUpperCase()}
+                            </div>
+                          )}
+                          <div className="min-w-0">
+                            <p className="text-xs font-poppins font-bold text-brand-dark leading-tight truncate">{therapist.label}</p>
+                            <p className="text-[10px] text-brand-gray-text mt-0.5 truncate">{therapist.desc}</p>
+                          </div>
                         </button>
                       ))}
                     </div>

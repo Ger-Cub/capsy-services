@@ -61,6 +61,9 @@ export default function Header({
     { name: 'Contact', href: '/contact' },
   ];
 
+  // Lien "Mes rendez-vous" visible uniquement pour les utilisateurs connectés
+  const rdvLink = { name: 'Mes rendez-vous', href: '/mes-rendezvous', icon: 'Calendar' };
+
   const isActiveLink = (href: string) => {
     if (href === '/' && currentPath === '/') return true;
     return currentPath === href;
@@ -90,7 +93,7 @@ export default function Header({
             <Logo size="md" showSubtitle={true} variant={useWhiteTop ? 'white' : 'color'} />
           </a>
 
-          <nav className="hidden lg:flex items-center gap-7">
+          <nav className="hidden lg:flex items-center gap-6">
             {navLinks.map((link) => {
               const active = isActiveLink(link.href);
               return (
@@ -104,6 +107,21 @@ export default function Header({
                 </a>
               );
             })}
+            {/* Lien Mes rendez-vous pour les utilisateurs connectés */}
+            {user && (
+              <a
+                href={rdvLink.href}
+                onClick={onViewAppointments}
+                className={`text-sm font-sans font-semibold transition-colors relative py-1 group flex items-center gap-1.5 ${isActiveLink(rdvLink.href) ? (useWhiteTop ? 'text-white' : 'text-brand-wellbeing') : useWhiteTop ? 'text-white hover:text-white/80' : 'text-brand-dark hover:text-brand-wellbeing'}`}
+              >
+                <LucideIcon name="CalendarDays" className="h-3.5 w-3.5" />
+                {rdvLink.name}
+                {activeAppointmentsCount > 0 && (
+                  <span className="ml-0.5 bg-brand-wellbeing text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full">{activeAppointmentsCount}</span>
+                )}
+                <span className={`absolute bottom-0 left-0 h-0.5 bg-brand-wellbeing transition-all duration-300 ${isActiveLink(rdvLink.href) ? 'w-full' : 'w-0 group-hover:w-full'}`} />
+              </a>
+            )}
           </nav>
 
           <div className="hidden lg:flex items-center gap-3">
@@ -296,6 +314,20 @@ export default function Header({
               {link.name}
             </a>
           ))}
+          {/* Lien Mes rendez-vous en mobile */}
+          {user && (
+            <a
+              href={rdvLink.href}
+              onClick={() => { setMobileMenuOpen(false); onViewAppointments(); }}
+              className="flex items-center gap-2 py-2.5 px-3 rounded-lg text-sm font-medium text-brand-wellbeing bg-brand-wellbeing/5 hover:bg-brand-wellbeing/10 transition-colors"
+            >
+              <LucideIcon name="CalendarDays" className="h-4 w-4" />
+              Mes rendez-vous
+              {activeAppointmentsCount > 0 && (
+                <span className="ml-auto bg-brand-wellbeing text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full">{activeAppointmentsCount}</span>
+              )}
+            </a>
+          )}
           <div className="pt-3 border-t border-gray-100 flex flex-col gap-2">
             <button
               onClick={onOpenBooking}
