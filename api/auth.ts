@@ -5,7 +5,7 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
  * Remplace l'ancienne implémentation XML-RPC par les endpoints JSON-RPC Session.
  */
 
-const ODOO_API_BASE = process.env.ODOO_API_URL || 'http://localhost:8000';
+const ODOO_API_BASE = (process.env.ODOO_API_URL || 'http://localhost:8000').replace(/\/$/, '');
 
 async function callOdooAPI(endpoint: string, body: object): Promise<{ ok: boolean; status: number; data: any }> {
     try {

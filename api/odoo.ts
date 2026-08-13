@@ -28,7 +28,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const ODOO_DB = process.env.ODOO_DB || '';
     const ENV_ODOO_USERNAME = process.env.ODOO_USERNAME || '';
     const ENV_ODOO_PASSWORD = process.env.ODOO_PASSWORD || '';
-    const CAPSY_API_BASE = process.env.ODOO_API_URL || 'http://localhost:8000';
+    const CAPSY_API_BASE = (process.env.ODOO_API_URL || 'http://localhost:8000').replace(/\/$/, '');
 
     if (!ODOO_URL || !ODOO_URL.startsWith('http')) {
         console.error('[Odoo API] Config error: ODOO_URL is missing or invalid:', ODOO_URL);

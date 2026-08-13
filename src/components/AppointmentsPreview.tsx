@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import LucideIcon from './LucideIcon';
+import { getFastApiUrl } from '../config/api';
 
 interface AppointmentsPreviewProps {
   user: any;
@@ -17,7 +18,7 @@ interface MiniAppointment {
   user_id?: [number, string] | false;
 }
 
-const API_BASE = 'http://localhost:8000';
+const API_BASE = getFastApiUrl();
 
 export default function AppointmentsPreview({ user, onViewAll, onOpenBooking }: AppointmentsPreviewProps) {
   const [appointments, setAppointments] = useState<MiniAppointment[]>([]);

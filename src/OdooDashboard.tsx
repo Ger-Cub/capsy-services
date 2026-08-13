@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Logo from './Logo';
+import { getFastApiUrl } from './config/api';
 
 const APPS = [
     { id: "discussion", label: "Discussion", icon: "💬", color: "bg-orange-500" },
@@ -76,7 +77,7 @@ export default function OdooDashboard() {
     const fetchAppData = async (appId: string) => {
         setLoading(true);
         try {
-            const response = await fetch(`http://localhost:8000/${appId}/?limit=10`);
+            const response = await fetch(`${getFastApiUrl()}/${appId}/?limit=10`);
             const result = await response.json();
             setData(result);
         } catch (error) {

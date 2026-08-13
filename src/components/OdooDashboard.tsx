@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import Logo from './Logo';
 
+import { getFastApiUrl } from '../config/api';
+
 // Constante pour l'URL de l'API bridge
-const API_BASE_URL = 'http://localhost:8000';
+const API_BASE_URL = getFastApiUrl();
 
 // Configuration des applications Odoo avec icônes adaptées à la charte CAPSY
 const APPS = [

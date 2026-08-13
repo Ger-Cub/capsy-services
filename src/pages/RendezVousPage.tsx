@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import LucideIcon from '../components/LucideIcon';
+import { getFastApiUrl } from '../config/api';
 
 interface RendezVousPageProps {
   user?: any;
@@ -33,7 +34,7 @@ interface OdooAppointment {
   };
 }
 
-const API_BASE = 'http://localhost:8000';
+const API_BASE = getFastApiUrl();
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; icon: string }> = {
   booked:    { label: 'Confirmé',    color: 'text-emerald-700', bg: 'bg-emerald-50 border-emerald-200',  icon: 'CheckCircle2' },
