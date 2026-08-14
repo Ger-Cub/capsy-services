@@ -4,7 +4,7 @@ import { SERVICES as STATIC_SERVICES } from '../data/staticData';
 import { Appointment } from '../types';
 import LucideIcon from './LucideIcon';
 
-import { getFastApiUrl } from '../config/api';
+import { getTherapistsUrl, getAppointmentsUrl } from '../config/api';
 
 interface BookingModalProps {
   isOpen: boolean;
@@ -112,7 +112,7 @@ export default function BookingModal({
   useEffect(() => {
     if (!isOpen || !selectedServiceTitle) return;
     const titleParam = `?service_title=${encodeURIComponent(selectedServiceTitle)}`;
-    fetch(`${getFastApiUrl()}/therapists/${titleParam}`)
+    fetch(`${getTherapistsUrl()}/${titleParam}`)
       .then((r) => r.json())
       .then((data) => {
         if (Array.isArray(data)) {
@@ -197,7 +197,7 @@ export default function BookingModal({
     try {
       // Try to save to Odoo
       // Post directly to FastAPI backend which uses its .env credentials
-      const response = await fetch(`${getFastApiUrl()}/appointments/create`, {
+      const response = await fetch(getAppointmentsUrl(), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

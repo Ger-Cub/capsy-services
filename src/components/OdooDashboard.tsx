@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import Logo from './Logo';
 
-import { getFastApiUrl } from '../config/api';
+import { getFastApiUrl, getAppointmentsUrl } from '../config/api';
 
-// Constante pour l'URL de l'API bridge
+// Constante pour l'URL de l'API bridge (fallback)
 const API_BASE_URL = getFastApiUrl();
 
 // Configuration des applications Odoo avec icônes adaptées à la charte CAPSY
@@ -101,9 +101,27 @@ export default function OdooDashboard() {
     const fetchAppData = async (appId: string) => {
         setLoading(true);
         try {
-            const response = await fetch(`${API_BASE_URL}/${appId}/?limit=20`);
-            const result = await response.json();
-            setData(result);
+            // Use server-side proxies when available to avoid CORS (production)
+            if (appId === 'appointments') {
+                const resp = await fetch(getAppointmentsUrl());
+                if (!resp.ok) throw new Error('Upstream error');
+                const json = await resp.json();
+                setData(json.appointments || json || []);
+            } else if (appId === 'products' || appId === 'services') {
+                // Use the /api/odoo proxy to list products
+                const resp = await fetch('/api/odoo', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'list_products', params: { limit: 20 } }),
+                });
+                if (!resp.ok) throw new Error('Upstream error');
+                const json = await resp.json();
+                const products = json.products || [];
+                setData(products.map((p: any) => ({ id: p.id, data: p })));
+            } else {
+                // For other apps we either don't proxy or no endpoint exists — keep empty list
+                setData([]);
+            }
         } catch (error) {
             console.error("Erreur de récupération:", error);
             setData([]);

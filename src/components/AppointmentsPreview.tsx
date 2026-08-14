@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import LucideIcon from './LucideIcon';
-import { getFastApiUrl } from '../config/api';
+import { getAppointmentsUrl } from '../config/api';
 
 interface AppointmentsPreviewProps {
   user: any;
@@ -18,7 +18,6 @@ interface MiniAppointment {
   user_id?: [number, string] | false;
 }
 
-const API_BASE = getFastApiUrl();
 
 export default function AppointmentsPreview({ user, onViewAll, onOpenBooking }: AppointmentsPreviewProps) {
   const [appointments, setAppointments] = useState<MiniAppointment[]>([]);
@@ -31,7 +30,7 @@ export default function AppointmentsPreview({ user, onViewAll, onOpenBooking }: 
     if (user.email && user.password) {
       headers['Authorization'] = `Basic ${btoa(`${user.email}:${user.password}`)}`;
     }
-    fetch(`${API_BASE}/appointments/?limit=10&future_only=true`, { headers })
+    fetch(`${getAppointmentsUrl()}/?limit=10&future_only=true`, { headers })
       .then((r) => r.json())
       .then((data: any[]) => {
         const now = new Date();
@@ -56,7 +55,7 @@ export default function AppointmentsPreview({ user, onViewAll, onOpenBooking }: 
       if (!user) return;
       const headers: Record<string, string> = { 'Content-Type': 'application/json' };
       if (user.email && user.password) headers['Authorization'] = `Basic ${btoa(`${user.email}:${user.password}`)}`;
-      fetch(`${API_BASE}/appointments/?limit=10&future_only=true`, { headers })
+      fetch(`${getAppointmentsUrl()}/?limit=10&future_only=true`, { headers })
         .then((r) => r.json())
         .then((data: any[]) => {
           const now = new Date();

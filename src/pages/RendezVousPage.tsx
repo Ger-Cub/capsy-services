@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import LucideIcon from '../components/LucideIcon';
-import { getFastApiUrl } from '../config/api';
+import { getAppointmentsUrl } from '../config/api';
 
 interface RendezVousPageProps {
   user?: any;
@@ -34,7 +34,6 @@ interface OdooAppointment {
   };
 }
 
-const API_BASE = getFastApiUrl();
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; icon: string }> = {
   booked:    { label: 'Confirmé',    color: 'text-emerald-700', bg: 'bg-emerald-50 border-emerald-200',  icon: 'CheckCircle2' },
@@ -200,7 +199,7 @@ export default function RendezVousPage({ user, onOpenBooking, onLogin }: RendezV
         headers['Authorization'] = `Basic ${b64}`;
       }
 
-      const res = await fetch(`${API_BASE}/appointments/?limit=100`, { headers });
+      const res = await fetch(`${getAppointmentsUrl()}/?limit=100`, { headers });
       if (!res.ok) {
         const err = await res.json().catch(() => ({ detail: 'Erreur serveur' }));
         throw new Error(err.detail || 'Impossible de charger les rendez-vous');
