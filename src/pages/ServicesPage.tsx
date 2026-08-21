@@ -17,10 +17,7 @@ export default function ServicesPage({ onOpenBooking }: ServicesPageProps) {
         primaryCtaLabel="Prendre un rendez-vous"
         onPrimaryCta={onOpenBooking}
       />
-      <div className="mt-5">
-        <ServicesGrid onSelectService={onOpenBooking} />
-      </div>
-
+      <ServicesGrid onSelectService={onOpenBooking} />
     </main>
   );
 }

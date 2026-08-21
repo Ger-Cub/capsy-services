@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import LucideIcon from '../components/LucideIcon';
+import PageHero from '../components/PageHero';
 import { getAppointmentsUrl } from '../config/api';
 
 interface RendezVousPageProps {
@@ -240,45 +241,17 @@ export default function RendezVousPage({ user, onOpenBooking, onLogin }: RendezV
   }).length;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-brand-wellbeing/5">
-      {/* Page Hero */}
-      <div className="relative bg-gradient-to-br from-brand-wellbeing to-brand-wellbeing/80 pt-28 pb-12 overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(255,255,255,0.15)_0%,_transparent_70%)]" />
-        <div className="absolute bottom-0 left-0 w-64 h-64 bg-white/5 rounded-full -translate-x-1/2 translate-y-1/2" />
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 relative z-10">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div>
-              <div className="flex items-center gap-2 mb-3">
-                <div className="p-2 bg-white/15 rounded-xl">
-                  <LucideIcon name="CalendarDays" className="h-6 w-6 text-white" />
-                </div>
-                <span className="text-white/80 text-xs font-bold uppercase tracking-widest font-poppins">
-                  Espace personnel
-                </span>
-              </div>
-              <h1 className="text-3xl sm:text-4xl font-poppins font-black text-white leading-tight">
-                Mes Rendez-vous
-              </h1>
-              {user && (
-                <p className="text-white/70 text-sm mt-1 font-sans">
-                  Bonjour <span className="font-bold text-white">{user.name}</span> · {upcomingCount} RDV à venir
-                </p>
-              )}
-            </div>
+    <main className="grow">
+      <PageHero
+        variant="green"
+        eyebrow="Espace personnel"
+        title="Mes Rendez-vous"
+        description={user ? `Bonjour ${user.name} · ${upcomingCount} RDV à venir` : 'Connectez-vous pour consulter vos rendez-vous'}
+        primaryCtaLabel="Nouveau rendez-vous"
+        onPrimaryCta={onOpenBooking}
+      />
 
-            <button
-              onClick={onOpenBooking}
-              className="flex items-center gap-2 px-5 py-3 bg-white text-brand-wellbeing font-bold font-poppins text-sm rounded-2xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all"
-              id="rdv-page-new-booking-btn"
-            >
-              <LucideIcon name="Plus" className="h-4 w-4" />
-              Nouveau rendez-vous
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
 
         {/* Non connecté */}
         {!user && (
@@ -308,28 +281,45 @@ export default function RendezVousPage({ user, onOpenBooking, onLogin }: RendezV
         {/* Connecté */}
         {user && (
           <>
-            {/* Filtres */}
-            <div className="flex items-center gap-2 mb-6 flex-wrap">
-              {(['all', 'upcoming', 'past'] as const).map((f) => (
-                <button
-                  key={f}
-                  onClick={() => setFilter(f)}
-                  className={`px-4 py-2 rounded-xl text-sm font-semibold font-poppins transition-all ${filter === f ? 'bg-brand-wellbeing text-white shadow-md' : 'bg-white text-brand-gray-text border border-gray-200 hover:border-brand-wellbeing/40'}`}
-                >
-                  {f === 'all' ? 'Tous' : f === 'upcoming' ? '📅 À venir' : '⏳ Passés'}
-                  {f === 'all' && <span className="ml-1.5 text-xs opacity-70">({appointments.length})</span>}
-                  {f === 'upcoming' && <span className="ml-1.5 text-xs opacity-70">({upcomingCount})</span>}
-                  {f === 'past' && <span className="ml-1.5 text-xs opacity-70">({appointments.length - upcomingCount})</span>}
-                </button>
-              ))}
+            {/* Filtres style Formations */}
+            <div className="border-b border-gray-200 mb-8">
+              <div className="flex items-center justify-between gap-4 overflow-x-auto no-scrollbar">
+                <div className="flex gap-1 sm:gap-4">
+                  {[
+                    { key: 'all', label: `Tous (${appointments.length})`, icon: 'BookOpen' },
+                    { key: 'upcoming', label: `À venir (${upcomingCount})`, icon: 'Calendar' },
+                    { key: 'past', label: `Passés (${appointments.length - upcomingCount})`, icon: 'History' },
+                  ].map((f) => (
+                    <button
+                      key={f.key}
+                      onClick={() => setFilter(f.key as any)}
+                      className={`relative flex items-center gap-2 px-3 sm:px-4 py-3.5 text-xs font-poppins font-bold transition-all shrink-0 cursor-pointer ${
+                        filter === f.key
+                          ? 'text-brand-wellbeing'
+                          : 'text-brand-gray-text hover:text-brand-dark'
+                      }`}
+                    >
+                      <LucideIcon name={f.icon as any} className="h-4 w-4" />
+                      <span>{f.label}</span>
+                      {filter === f.key && (
+                        <motion.div
+                          layoutId="rdvActiveTabUnderline"
+                          className="absolute bottom-0 left-0 right-0 h-0.5 bg-brand-wellbeing"
+                          transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                        />
+                      )}
+                    </button>
+                  ))}
+                </div>
 
-              <button
-                onClick={fetchAppointments}
-                className="ml-auto p-2 rounded-xl border border-gray-200 bg-white text-brand-gray-text hover:text-brand-wellbeing hover:border-brand-wellbeing/40 transition-all"
-                title="Rafraîchir"
-              >
-                <LucideIcon name="RefreshCw" className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
-              </button>
+                <button
+                  onClick={fetchAppointments}
+                  className="p-2 rounded-xl border border-gray-200 bg-white text-brand-gray-text hover:text-brand-wellbeing hover:border-brand-wellbeing/40 transition-all shrink-0 mb-1"
+                  title="Rafraîchir"
+                >
+                  <LucideIcon name="RefreshCw" className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+                </button>
+              </div>
             </div>
 
             {/* États de chargement / erreur */}
@@ -394,6 +384,6 @@ export default function RendezVousPage({ user, onOpenBooking, onLogin }: RendezV
           </>
         )}
       </div>
-    </div>
+    </main>
   );
 }

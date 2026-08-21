@@ -32,7 +32,7 @@ export default function AboutPage({ onOpenBooking }: AboutPageProps) {
         primaryCtaLabel="Prendre rendez-vous"
         onPrimaryCta={onOpenBooking}
       />
-      <section className="mt-5 py-20 bg-white">
+      <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid gap-10 lg:grid-cols-2 items-start">
             <div className="space-y-6">

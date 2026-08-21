@@ -17,9 +17,7 @@ export default function FaqPage({ onOpenBooking }: FaqPageProps) {
         primaryCtaLabel="Prendre rendez-vous"
         onPrimaryCta={onOpenBooking}
       />
-      <div className="mt-5">
-        <Faqs />
-      </div>
+      <Faqs />
     </main>
   );
 }

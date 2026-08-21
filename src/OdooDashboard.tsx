@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import Logo from './Logo';
+import Logo from './components/Logo';
 import { getFastApiUrl } from './config/api';
 
 const APPS = [

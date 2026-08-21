@@ -26,7 +26,30 @@ const APPS = [
     { id: "elearning", label: "eLearning", icon: "🎓", color: "#008738" },
     { id: "marketing", label: "Marketing Auto.", icon: "📢", color: "#008738" },
     { id: "events", label: "Événements", icon: "🎪", color: "#008738" },
+    { id: "kobotoolbox", label: "KoboToolbox", icon: "📊", color: "#0066CC" },
 ];
+
+// Mapping from app id to Odoo model for generic listing via search_read
+const APP_MODEL_MAP: Record<string, string> = {
+    contacts: 'res.partner',
+    discussion: 'mail.channel',
+    calendar: 'calendar.event',
+    todo: 'todo.task',
+    knowledge: 'knowledge.article',
+    products: 'product.product',
+    services: 'product.product',
+    crm: 'crm.lead',
+    sales: 'sale.order',
+    documents: 'documents.document',
+    project: 'project.task',
+    timesheets: 'account.analytic.line',
+    employees: 'hr.employee',
+    leave: 'hr.leave',
+    inventory: 'stock.quant',
+    elearning: 'website.course',
+    marketing: 'mailing.mailing',
+    events: 'event.event'
+};
 
 // Couleurs de la charte CAPSY
 const COLORS = {
@@ -49,6 +72,8 @@ export default function OdooDashboard() {
     const [showLogin, setShowLogin] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedFilter, setSelectedFilter] = useState('all');
+    const [jsonModalData, setJsonModalData] = useState<any | null>(null);
+    const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
     // Récupération des identifiants Odoo
     useEffect(() => {
@@ -100,30 +125,167 @@ export default function OdooDashboard() {
     // Récupération des données de l'application Odoo
     const fetchAppData = async (appId: string) => {
         setLoading(true);
+        setErrorMsg(null);
+        console.debug(`[OdooDashboard] fetchAppData start for '${appId}'`);
         try {
+            // safe JSON parser for upstream responses
+            const parseJsonSafe = async (resp: Response) => {
+                const ct = resp.headers.get('content-type') || '';
+                if (ct.includes('application/json')) return resp.json();
+                const text = await resp.text();
+                if (!text) throw new Error(`Upstream empty response (status ${resp.status})`);
+                try { return JSON.parse(text); } catch (err) {
+                    console.error('Non-JSON upstream response:', { status: resp.status, headers: Array.from(resp.headers.entries()), body: text });
+                    throw new Error(`Upstream returned non-JSON payload (first 500 chars): ${text.slice(0,500)}`);
+                }
+            };
+
+            // Build an alternate URL pointing directly to the FastAPI backend
+            const buildAltUrl = (path: string) => {
+                try {
+                    // If path is absolute URL, return as-is
+                    if (/^https?:\/\//i.test(path)) return path;
+                        // If path starts with /api or /api/fastapi, strip those prefixes and append to API_BASE_URL
+                        if (path.startsWith('/api/fastapi')) return `${API_BASE_URL}${path.replace(/^\/api\/fastapi/, '')}`;
+                        if (path.startsWith('/api')) return `${API_BASE_URL}${path.replace(/^\/api/, '')}`;
+                    // Otherwise just append to API_BASE_URL
+                    if (path.startsWith('/')) return `${API_BASE_URL}${path}`;
+                    return `${API_BASE_URL}/${path}`;
+                } catch (e) {
+                    return path;
+                }
+            };
+
             // Use server-side proxies when available to avoid CORS (production)
             if (appId === 'appointments') {
-                const resp = await fetch(getAppointmentsUrl());
-                if (!resp.ok) throw new Error('Upstream error');
-                const json = await resp.json();
+                const primary = getAppointmentsUrl();
+                let resp = await fetch(primary);
+                console.debug('[OdooDashboard] fetch primary', primary, 'status', resp.status, 'content-type', resp.headers.get('content-type'));
+                // If HTML returned (dev proxy serving index.html), try direct backend
+                if ((resp.headers.get('content-type') || '').includes('text/html')) {
+                    const alt = buildAltUrl(primary);
+                    console.warn('Received HTML for appointments endpoint; retrying with', alt);
+                    resp = await fetch(alt);
+                    console.debug('[OdooDashboard] fetch alt', alt, 'status', resp.status, 'content-type', resp.headers.get('content-type'));
+                }
+                if (!resp.ok) {
+                    const txt = await resp.text().catch(() => '<no body>');
+                    throw new Error(`Upstream error ${resp.status}: ${txt.slice(0,200)}`);
+                }
+                const json = await parseJsonSafe(resp);
                 setData(json.appointments || json || []);
+            } else if (appId === 'kobotoolbox') {
+                // Ask for asset_id (user may provide or leave blank to use server config)
+                let assetId: string | null = null;
+                try {
+                    assetId = window.prompt('Entrez l\'asset_id KoboToolbox (laisser vide pour config serveur) :', '');
+                } catch (_e) {
+                    assetId = null;
+                }
+                const query = assetId ? `?asset_id=${encodeURIComponent(assetId)}` : '';
+                const path = `/api/fastapi/kobotoolbox${query}`;
+                let resp = await fetch(path);
+                console.debug('[OdooDashboard] fetch primary', path, 'status', resp.status, 'content-type', resp.headers.get('content-type'));
+                if ((resp.headers.get('content-type') || '').includes('text/html')) {
+                    const alt = buildAltUrl(path);
+                    console.warn('Received HTML for kobotoolbox endpoint; retrying with', alt);
+                    resp = await fetch(alt);
+                    console.debug('[OdooDashboard] fetch alt', alt, 'status', resp.status, 'content-type', resp.headers.get('content-type'));
+                }
+                if (!resp.ok) {
+                    const txt = await resp.text().catch(() => '<no body>');
+                    throw new Error(`Upstream error ${resp.status}: ${txt.slice(0,200)}`);
+                }
+                const json = await parseJsonSafe(resp);
+                let items: any[] = [];
+                if (Array.isArray(json)) {
+                    items = json.map((d: any, i: number) => ({ id: i + 1, data: d }));
+                } else if (json && Array.isArray((json as any).results)) {
+                    items = (json as any).results.map((d: any, i: number) => ({ id: i + 1, data: d }));
+                } else if (json && typeof json === 'object') {
+                    // Convert object to key/value rows
+                    items = Object.entries(json).map(([k, v], i) => ({ id: i + 1, data: { key: k, value: v } }));
+                }
+                setData(items);
             } else if (appId === 'products' || appId === 'services') {
                 // Use the /api/odoo proxy to list products
-                const resp = await fetch('/api/odoo', {
+                const path = '/api/odoo';
+                // include user-provided Odoo credentials/instance stored in `creds`
+                const bodyPayloadProducts = {
+                    action: 'list_products',
+                    params: { limit: 20 },
+                    username: creds?.username,
+                    password: creds?.password,
+                    db: creds?.db,
+                    url: creds?.url
+                };
+
+                let resp = await fetch(path, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ action: 'list_products', params: { limit: 20 } }),
+                    body: JSON.stringify(bodyPayloadProducts),
                 });
-                if (!resp.ok) throw new Error('Upstream error');
-                const json = await resp.json();
+                console.debug('[OdooDashboard] fetch primary', path, 'status', resp.status, 'content-type', resp.headers.get('content-type'));
+                if ((resp.headers.get('content-type') || '').includes('text/html')) {
+                    const alt = buildAltUrl(path);
+                    console.warn('Received HTML for odoo proxy; retrying with', alt);
+                    resp = await fetch(alt, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ action: 'list_products', params: { limit: 20 } }),
+                    });
+                    console.debug('[OdooDashboard] fetch alt', alt, 'status', resp.status, 'content-type', resp.headers.get('content-type'));
+                }
+                if (!resp.ok) {
+                    const txt = await resp.text().catch(() => '<no body>');
+                    throw new Error(`Upstream error ${resp.status}: ${txt.slice(0,200)}`);
+                }
+                const json = await parseJsonSafe(resp);
                 const products = json.products || [];
                 setData(products.map((p: any) => ({ id: p.id, data: p })));
+            } else if (APP_MODEL_MAP[appId]) {
+                // Generic model listing via /api/odoo action=search_read
+                const model = APP_MODEL_MAP[appId];
+                const path = '/api/odoo';
+                const bodyPayload = {
+                    action: 'search_read',
+                    params: { model, domain: [], fields: ['id', 'display_name', 'name'], limit: 50 },
+                    username: creds?.username,
+                    password: creds?.password,
+                    db: creds?.db,
+                    url: creds?.url
+                };
+
+                let resp = await fetch(path, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(bodyPayload)
+                });
+                console.debug('[OdooDashboard] fetch primary', path, 'status', resp.status, 'content-type', resp.headers.get('content-type'));
+                if ((resp.headers.get('content-type') || '').includes('text/html')) {
+                    const alt = buildAltUrl(path);
+                    console.warn(`Received HTML for ${appId} generic endpoint; retrying with ${alt}`);
+                    resp = await fetch(alt, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(bodyPayload)
+                    });
+                    console.debug('[OdooDashboard] fetch alt', alt, 'status', resp.status, 'content-type', resp.headers.get('content-type'));
+                }
+                if (!resp.ok) {
+                    const txt = await resp.text().catch(() => '<no body>');
+                    throw new Error(`Upstream error ${resp.status}: ${txt.slice(0,200)}`);
+                }
+                const json = await parseJsonSafe(resp);
+                const records = json.results || json || [];
+                setData(Array.isArray(records) ? records.map((r: any) => ({ id: r.id || Math.floor(Math.random() * 1000000), data: r })) : []);
             } else {
-                // For other apps we either don't proxy or no endpoint exists — keep empty list
+                // No endpoint or mapping for this app — show empty
                 setData([]);
             }
         } catch (error) {
             console.error("Erreur de récupération:", error);
+            setErrorMsg(error?.message ? String(error.message) : 'Erreur de récupération');
             setData([]);
         } finally {
             setLoading(false);
@@ -132,6 +294,7 @@ export default function OdooDashboard() {
 
     // Sélection d'une application
     const selectApp = (app: any) => {
+        console.debug('[OdooDashboard] selectApp', app?.id || app);
         setCurrentApp(app);
         fetchAppData(app.id);
         setSearchQuery('');
@@ -351,6 +514,18 @@ export default function OdooDashboard() {
             </header>
 
             <main className="max-w-7xl mx-auto px-6 py-8">
+                {errorMsg && (
+                    <div className="mb-4 p-3 rounded-lg" style={{ backgroundColor: '#FFF4F4', border: '1px solid #FECACA', color: '#7F1D1D' }}>
+                        <div className="flex items-start justify-between gap-4">
+                            <div className="text-sm">
+                                <strong>Erreur :</strong> {errorMsg}
+                            </div>
+                            <div>
+                                <button onClick={() => setErrorMsg(null)} className="text-sm font-bold" style={{ color: COLORS.primary }}>Fermer</button>
+                            </div>
+                        </div>
+                    </div>
+                )}
                 {!currentApp ? (
                     // Vue Dashboard
                     <>
@@ -479,7 +654,14 @@ export default function OdooDashboard() {
                                                             #{item.id}
                                                         </td>
                                                         <td className="px-6 py-3 font-medium" style={{ color: COLORS.primaryDark }}>
-                                                            {item.data?.display_name || item.data?.name || "Sans nom"}
+                                                            {item.data?.display_name || item.data?.name || (() => {
+                                                                // For Kobo results, provide a short summary (first string field)
+                                                                if (item.data && typeof item.data === 'object') {
+                                                                    const keys = Object.keys(item.data).filter(k => typeof item.data[k] === 'string' && item.data[k].length > 0);
+                                                                    if (keys.length > 0) return String(item.data[keys[0]]).slice(0,60);
+                                                                }
+                                                                return "Sans nom";
+                                                            })()}
                                                         </td>
                                                         <td className="px-6 py-3">
                                                             <span className="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider inline-flex items-center gap-1.5" style={{ 
@@ -491,9 +673,14 @@ export default function OdooDashboard() {
                                                             </span>
                                                         </td>
                                                         <td className="px-6 py-3 text-right">
-                                                            <button className="text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity" style={{ color: COLORS.primary }}>
-                                                                Modifier
-                                                            </button>
+                                                            <div className="flex items-center justify-end gap-2">
+                                                                <button onClick={() => { setJsonModalData(item.data); }} className="text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity" style={{ color: COLORS.primary }}>
+                                                                    Détails
+                                                                </button>
+                                                                <button className="text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity" style={{ color: COLORS.primary }}>
+                                                                    Modifier
+                                                                </button>
+                                                            </div>
                                                         </td>
                                                     </tr>
                                                 ))
@@ -548,6 +735,30 @@ export default function OdooDashboard() {
                     </div>
                 </div>
             </footer>
+            {jsonModalData && (
+                <JsonPreviewModal data={jsonModalData} onClose={() => setJsonModalData(null)} />
+            )}
         </div>
     );
 }
+
+// JSON modal rendering (outside default export to keep file simple)
+export function JsonPreviewModal({ data, onClose }: { data: any; onClose: () => void }) {
+    if (!data) return null;
+    const text = JSON.stringify(data, null, 2);
+    return (
+        <div className="fixed inset-0 z-200 flex items-center justify-center p-4 bg-black/60" onClick={(e) => e.currentTarget === e.target && onClose()}>
+            <div className="bg-white rounded-lg w-full max-w-3xl max-h-[80vh] overflow-auto p-4">
+                <div className="flex items-center justify-between mb-2">
+                    <h3 className="font-bold">Détails</h3>
+                    <button onClick={onClose} className="text-sm text-gray-600">Fermer</button>
+                </div>
+                <pre className="whitespace-pre-wrap text-xs" style={{ fontFamily: 'monospace' }}>{text}</pre>
+            </div>
+        </div>
+    );
+}
+
+// Render JSON modal when set
+// (Placed here to avoid changing the default export structure above)
+const _maybeRenderJsonModal = (data: any, onClose: () => void) => data ? <JsonPreviewModal data={data} onClose={onClose} /> : null;

@@ -16,6 +16,8 @@ import FaqPage from './pages/FaqPage';
 import GovernancePage from './pages/GovernancePage';
 import ContactPage from './pages/ContactPage';
 import FormationsPage from './pages/FormationsPage';
+import ActualitesPage from './pages/ActualitesPage';
+import ActualiteDetailPage from './pages/ActualiteDetailPage';
 import ContactSection from './components/ContactSection';
 import RendezVousPage from './pages/RendezVousPage';
 
@@ -154,6 +156,9 @@ export default function App() {
 
   // Page routes
   const isFormations = pathname === '/formations' || pathname.startsWith('/formations/');
+  const isActualites = pathname === '/actualites';
+  const actualiteMatch = pathname.match(/^\/actualites\/(.+)$/);
+  const actualiteSlug = actualiteMatch ? actualiteMatch[1] : undefined;
   const isServices = pathname === '/services';
   const isAPropos = pathname === '/a-propos';
   const isFaq = pathname === '/faq';
@@ -187,6 +192,10 @@ export default function App() {
     <GovernancePage onOpenBooking={handleOpenBooking} />
   ) : isContact ? (
     <ContactPage onOpenBooking={handleOpenBooking} />
+  ) : actualiteSlug ? (
+    <ActualiteDetailPage slug={actualiteSlug} />
+  ) : isActualites ? (
+    <ActualitesPage onOpenBooking={handleOpenBooking} />
   ) : isFormations ? (
     <FormationsPage certifId={certifId} onOpenBooking={handleOpenBooking} />
   ) : (

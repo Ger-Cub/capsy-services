@@ -17,9 +17,7 @@ export default function ContactPage({ onOpenBooking }: ContactPageProps) {
         primaryCtaLabel="Prendre rendez-vous"
         onPrimaryCta={onOpenBooking}
       />
-      <div className="mt-5">
-        <ContactSection />
-      </div>
+      <ContactSection />
     </main>
   );
 }

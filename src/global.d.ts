@@ -10,3 +10,9 @@ declare module '*.svg' {
   export default src;
 }
 declare module '*.webp';
+
+// Vite's import.meta.glob helpers (basic typing to satisfy tsc during dev)
+interface ImportMeta {
+  glob: (pattern: string, options?: any) => Record<string, string> | Record<string, { [k: string]: any }>;
+  globEager?: (pattern: string, options?: any) => Record<string, any>;
+}

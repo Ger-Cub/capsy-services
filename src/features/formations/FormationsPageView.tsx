@@ -819,7 +819,7 @@ export default function FormationsPageView({ certifId, onOpenBooking }: Formatio
                 onPrimaryCta={onOpenBooking}
             />
 
-            <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
                 <div className="flex border-b border-gray-200 gap-1 sm:gap-4 overflow-x-auto no-scrollbar">
                     {[
                         { key: 'all', label: `Toutes (${counts.all})`, icon: 'BookOpen' },
@@ -850,7 +850,7 @@ export default function FormationsPageView({ certifId, onOpenBooking }: Formatio
             </div>
 
             {/* Formations Grid */}
-            <div id="formations" className="max-w-10xl mx-auto px-4 sm:px-6 lg:px-8 pb-16 pt-3.5">
+            <div id="formations" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16 pt-3.5">
                 {filtered.length > 0 ? (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
                         {filtered.map((f) => (

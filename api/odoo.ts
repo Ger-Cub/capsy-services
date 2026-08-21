@@ -24,11 +24,20 @@ const callOdoo = (path: string, method: string, params: any[], odooUrl: string):
 };
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-    const ODOO_URL = process.env.ODOO_URL || '';
-    const ODOO_DB = process.env.ODOO_DB || '';
+    // Environment fallbacks; prefer credentials and instance info sent in request body
     const ENV_ODOO_USERNAME = process.env.ODOO_USERNAME || '';
     const ENV_ODOO_PASSWORD = process.env.ODOO_PASSWORD || '';
     const CAPSY_API_BASE = (process.env.ODOO_API_URL || 'http://localhost:8000').replace(/\/$/, '');
+
+    // Allow client to supply `url` and `db` in the request body so the frontend
+    // can use the logged-in user's instance and database instead of server env vars.
+    const ODOO_URL = (req.body && req.body.url) ? String(req.body.url) : (process.env.ODOO_URL || '');
+    const ODOO_DB = (req.body && req.body.db) ? String(req.body.db) : (process.env.ODOO_DB || '');
+
+    if (!ODOO_URL || !ODOO_URL.startsWith('http')) {
+        console.error('[Odoo API] Config error: ODOO_URL is missing or invalid:', ODOO_URL);
+        return res.status(500).json({ error: 'Configuration Odoo incomplète (url manquante). Veuillez fournir `url` et `db` dans le corps de la requête ou configurer les variables d\'environnement.' });
+    }
 
     if (!ODOO_URL || !ODOO_URL.startsWith('http')) {
         console.error('[Odoo API] Config error: ODOO_URL is missing or invalid:', ODOO_URL);
@@ -233,6 +242,25 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                 ], ODOO_URL);
             }
             return res.status(200).json({ products });
+        }
+
+        // Generic search_read for listing model records from Odoo
+        if (action === 'search_read') {
+            const { model, domain = [], fields = [], limit = 50, order } = params || {};
+            if (!model) return res.status(400).json({ error: 'Missing model parameter for search_read' });
+            console.log(`[Odoo API] search_read model=${model} limit=${limit}`);
+            let records: any;
+            if (!xmlrpcMode) {
+                records = await callSession(model, 'search_read', [domain], { fields, limit, order });
+            } else {
+                records = await callOdoo('/xmlrpc/2/object', 'execute_kw', [
+                    ODOO_DB, uid, passwordToUse,
+                    model, 'search_read',
+                    [domain],
+                    { fields, limit, order }
+                ], ODOO_URL);
+            }
+            return res.status(200).json({ results: records });
         }
 
         return res.status(400).json({ error: 'Action non supportée' });
