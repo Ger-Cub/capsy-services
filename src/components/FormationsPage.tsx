@@ -125,7 +125,7 @@ function StatusBadge({ status, variant = 'default' }: { status: Formation['statu
         },
         à_venir: {
             label: 'À venir',
-            cls: variant === 'header' ? 'bg-emerald-400/25 text-emerald-100 border-emerald-300/40' : 'bg-emerald-50 text-emerald-700 border-emerald-200',
+            cls: variant === 'header' ? 'bg-brand-confidence/30 text-white border-brand-confidence/50' : 'bg-brand-confidence/20 text-brand-dark border-brand-confidence/40',
         },
     };
     const { label, cls } = map[status];
@@ -178,9 +178,9 @@ function CertificateModal({
                     <div className="flex items-center gap-2">
                         <button
                             onClick={handlePrint}
-                            className="flex items-center gap-1.5 px-4 py-2 bg-brand-wellbeing text-white rounded-xl text-xs font-bold font-poppins hover:bg-brand-wellbeing/90 transition-all no-print"
+                            className="flex items-center gap-1.5 px-4 py-2 bg-brand-confidence text-brand-dark rounded-xl text-xs font-bold font-poppins hover:bg-brand-confidence/90 transition-all no-print"
                         >
-                            <LucideIcon name="Download" className="h-3.5 w-3.5" />
+                            <LucideIcon name="Download" className="h-3.5 w-3.5 text-brand-dark" />
                             Télécharger
                         </button>
                         <button
@@ -200,7 +200,7 @@ function CertificateModal({
                         style={{ fontFamily: 'serif' }}
                     >
                         {/* Green left decorative stripe */}
-                        <div className="absolute left-0 top-0 h-full w-12 bg-gradient-to-b from-brand-darkgreen via-brand-wellbeing to-brand-confidence opacity-90" />
+                        <div className="absolute left-0 top-0 h-full w-12 bg-gradient-to-b from-brand-dark via-brand-darkgreen to-brand-confidence opacity-90" />
 
                         {/* Content area */}
                         <div className="absolute inset-0 left-12 flex flex-col px-4 sm:px-8 py-3 sm:py-5 text-brand-dark">
@@ -346,16 +346,16 @@ function CertificateVerificationView({ certifId }: { certifId: string }) {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-brand-darkgreen to-brand-wellbeing flex items-center justify-center p-4">
+        <div className="min-h-screen bg-gradient-to-br from-brand-dark via-brand-dark to-brand-darkgreen flex items-center justify-center p-4">
             <motion.div
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 className="bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden"
             >
                 {/* Header */}
-                <div className="bg-gradient-to-r from-brand-darkgreen to-brand-wellbeing p-6 text-white text-center">
-                    <div className="h-16 w-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-3">
-                        <LucideIcon name="ShieldCheck" className="h-8 w-8 text-white" />
+                <div className="bg-brand-dark p-6 text-white text-center border-b border-white/10">
+                    <div className="h-16 w-16 bg-brand-confidence/20 border border-brand-confidence/40 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <LucideIcon name="ShieldCheck" className="h-8 w-8 text-brand-confidence" />
                     </div>
                     <h1 className="font-poppins font-black text-xl">Certificat Authentique</h1>
                     <p className="text-white/80 text-sm mt-1">Vérification réussie — CAPSY SERVICES</p>
@@ -365,8 +365,8 @@ function CertificateVerificationView({ certifId }: { certifId: string }) {
                 <div className="p-6 space-y-5">
                     {/* Participant card */}
                     <div className="bg-brand-gray-light rounded-2xl p-5 text-center">
-                        <div className="h-14 w-14 bg-brand-wellbeing/10 border-2 border-brand-wellbeing rounded-full flex items-center justify-center mx-auto mb-3">
-                            <LucideIcon name="GraduationCap" className="h-7 w-7 text-brand-wellbeing" />
+                        <div className="h-14 w-14 bg-brand-confidence/20 border-2 border-brand-confidence/40 rounded-full flex items-center justify-center mx-auto mb-3">
+                            <LucideIcon name="GraduationCap" className="h-7 w-7 text-brand-dark" />
                         </div>
                         <p className="font-poppins font-black text-brand-dark text-lg">{foundParticipant.name}</p>
                         <p className="text-brand-gray-text text-sm">{foundParticipant.title}</p>
@@ -396,9 +396,9 @@ function CertificateVerificationView({ certifId }: { certifId: string }) {
                     <div className="flex gap-3">
                         <button
                             onClick={() => setShowCert(true)}
-                            className="flex-1 flex items-center justify-center gap-2 py-3 bg-brand-wellbeing text-white rounded-xl text-sm font-bold font-poppins hover:bg-brand-wellbeing/90 transition-all"
+                            className="flex-1 flex items-center justify-center gap-2 py-3 bg-brand-confidence text-brand-dark rounded-xl text-sm font-bold font-poppins hover:bg-brand-confidence/90 transition-all"
                         >
-                            <LucideIcon name="Download" className="h-4 w-4" />
+                            <LucideIcon name="Download" className="h-4 w-4 text-brand-dark" />
                             Voir le certificat
                         </button>
                         <a
@@ -436,8 +436,8 @@ function CertificateVerificationView({ certifId }: { certifId: string }) {
 function DetailRow({ icon, label, value }: { icon: string; label: string; value: string }) {
     return (
         <div className="flex items-center gap-3">
-            <div className="h-8 w-8 bg-brand-wellbeing/10 rounded-lg flex items-center justify-center shrink-0">
-                <LucideIcon name={icon} className="h-4 w-4 text-brand-wellbeing" />
+            <div className="h-8 w-8 bg-brand-confidence/20 border border-brand-confidence/40 rounded-lg flex items-center justify-center shrink-0">
+                <LucideIcon name={icon} className="h-4 w-4 text-brand-dark" />
             </div>
             <div>
                 <p className="text-[10px] text-brand-gray-text uppercase tracking-wider font-poppins">{label}</p>
@@ -470,7 +470,7 @@ function ParticipantsList({
                     placeholder="Rechercher un participant..."
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-wellbeing/30 focus:border-brand-wellbeing transition-all"
+                    className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-confidence/40 focus:border-brand-confidence transition-all"
                 />
             </div>
 
@@ -481,10 +481,10 @@ function ParticipantsList({
                         initial={{ opacity: 0, x: -10 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: idx * 0.02 }}
-                        className="flex items-center justify-between gap-3 p-3 bg-white border border-gray-100 rounded-xl hover:border-brand-wellbeing/30 hover:shadow-sm transition-all group"
+                        className="flex items-center justify-between gap-3 p-3 bg-white border border-gray-100 rounded-xl hover:border-brand-confidence hover:shadow-sm transition-all group"
                     >
                         <div className="flex items-center gap-3 min-w-0">
-                            <div className="h-8 w-8 rounded-full bg-brand-wellbeing/10 flex items-center justify-center shrink-0 font-poppins font-bold text-brand-wellbeing text-xs">
+                            <div className="h-8 w-8 rounded-full bg-brand-confidence/20 border border-brand-confidence/40 flex items-center justify-center shrink-0 font-poppins font-bold text-brand-dark text-xs">
                                 {String(idx + 1).padStart(2, '0')}
                             </div>
                             <div className="min-w-0">
@@ -494,7 +494,7 @@ function ParticipantsList({
                         </div>
                         <button
                             onClick={() => onViewCertificate(p)}
-                            className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 bg-brand-wellbeing/5 hover:bg-brand-wellbeing text-brand-wellbeing hover:text-white rounded-lg text-[11px] font-bold font-poppins transition-all"
+                            className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 bg-brand-confidence/20 hover:bg-brand-confidence text-brand-dark border border-brand-confidence/40 rounded-lg text-[11px] font-bold font-poppins transition-all"
                             title="Voir le certificat"
                         >
                             <LucideIcon name="Award" className="h-3.5 w-3.5" />
@@ -529,7 +529,7 @@ function FormationCard({
             whileHover={{ y: -1 }}
             transition={{ duration: 0 }}
             onClick={onSelect}
-            className="bg-white rounded-2xl border border-gray-150 shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer overflow-hidden group"
+            className="bg-white rounded-2xl border border-gray-150 shadow-sm hover:shadow-lg hover:border-brand-confidence transition-all duration-300 cursor-pointer overflow-hidden group"
         >
             <div className="h-44 bg-brand-gray-light border-b border-gray-100 relative overflow-hidden flex items-center justify-center">
                 {formation.imageUrl ? (
@@ -539,8 +539,8 @@ function FormationCard({
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                     />
                 ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-linear-to-br from-brand-wellbeing/5 via-brand-gray-light to-brand-wellbeing/10 p-6 relative">
-                        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(0,140,60,0.12),_transparent_40%)]" />
+                    <div className="w-full h-full flex items-center justify-center bg-linear-to-br from-brand-confidence/10 via-brand-gray-light to-brand-confidence/20 p-6 relative">
+                        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(145,252,163,0.25),_transparent_40%)]" />
                         <img
                             src={logoFull}
                             alt="CAPSY SERVICES"
@@ -548,11 +548,11 @@ function FormationCard({
                         />
                     </div>
                 )}
-                <div className="absolute top-3 left-3 rounded-full bg-white/90 text-brand-wellbeing p-2 shadow-sm backdrop-blur-xs transition-colors group-hover:bg-brand-wellbeing group-hover:text-white">
+                <div className="absolute top-3 left-3 rounded-full bg-white/90 text-brand-dark p-2 shadow-sm backdrop-blur-xs transition-colors group-hover:bg-brand-confidence group-hover:text-brand-dark border border-brand-confidence/30">
                     <LucideIcon name="BookOpen" className="h-4 w-4" />
                 </div>
                 <div className="absolute bottom-3 left-3">
-                    <span className={`inline-flex items-center gap-2 text-[9px] uppercase tracking-widest font-bold px-3 py-1 rounded-full shadow-xs backdrop-blur-xs ${formation.status === 'passée' ? 'bg-slate-100/90 text-slate-700' : formation.status === 'en_cours' ? 'bg-amber-50/90 text-amber-800' : 'bg-emerald-50/90 text-emerald-800'}`}>
+                    <span className={`inline-flex items-center gap-2 text-[9px] uppercase tracking-widest font-bold px-3 py-1 rounded-full shadow-xs backdrop-blur-xs ${formation.status === 'passée' ? 'bg-slate-100/90 text-slate-700' : formation.status === 'en_cours' ? 'bg-amber-50/90 text-amber-800' : 'bg-brand-confidence/20 text-brand-dark border border-brand-confidence/40'}`}>
                         {formation.status === 'passée' ? 'Terminée' : formation.status === 'en_cours' ? 'En cours' : 'À venir'}
                     </span>
                 </div>
@@ -560,7 +560,7 @@ function FormationCard({
 
             <div className="p-6 space-y-4">
                 <div className="flex items-start gap-4">
-                    <div className="rounded-3xl bg-brand-wellbeing/10 text-brand-wellbeing p-3 shrink-0 group-hover:bg-brand-wellbeing group-hover:text-white transition-colors">
+                    <div className="rounded-3xl bg-brand-confidence/20 text-brand-dark border border-brand-confidence/40 p-3 shrink-0 group-hover:bg-brand-confidence group-hover:text-brand-dark transition-colors">
                         <LucideIcon name="GraduationCap" className="h-5 w-5" />
                     </div>
                     <div className="min-w-0">
@@ -594,7 +594,7 @@ function FormationCard({
                         e.stopPropagation();
                         onSelect();
                     }}
-                    className="flex-1 py-2.5 px-4 bg-brand-gray-light hover:bg-neutral-200 text-[var(--color-brand-wellbeing)] text-xs font-bold font-poppins rounded-xl transition-colors cursor-pointer"
+                    className="flex-1 py-2.5 px-4 bg-brand-confidence/20 hover:bg-brand-confidence text-brand-dark text-xs font-bold font-poppins rounded-xl border border-brand-confidence/40 transition-colors cursor-pointer"
                 >
                     Voir détails
                 </button>
@@ -638,10 +638,10 @@ function FormationDetail({
                     className="relative w-full max-w-3xl bg-white rounded-2xl shadow-2xl overflow-hidden z-10 flex flex-col max-h-[90vh]"
                 >
                     {/* Header */}
-                    <div className="p-6 bg-brand-wellbeing text-white flex items-center justify-between border-b border-white/10 shrink-0">
+                    <div className="p-6 bg-brand-dark text-white flex items-center justify-between border-b border-white/10 shrink-0">
                         <div className="flex items-center gap-3.5 min-w-0 pr-2">
-                            <div className="p-2.5 bg-white/10 rounded-xl shrink-0">
-                                <LucideIcon name="GraduationCap" className="h-6 w-6 text-white" />
+                            <div className="p-2.5 bg-brand-confidence/20 border border-brand-confidence/40 rounded-xl shrink-0 text-brand-confidence">
+                                <LucideIcon name="GraduationCap" className="h-6 w-6 text-brand-confidence" />
                             </div>
                             <div className="min-w-0">
                                 <div className="flex items-center gap-2 mb-1">
@@ -652,15 +652,15 @@ function FormationDetail({
                                 </h3>
                                 <div className="flex flex-wrap gap-3 mt-1 text-xs text-white/80 font-sans">
                                     <span className="flex items-center gap-1">
-                                        <LucideIcon name="Calendar" className="h-3.5 w-3.5 text-white/90" />
+                                        <LucideIcon name="Calendar" className="h-3.5 w-3.5 text-brand-confidence" />
                                         {formation.dateRange}
                                     </span>
                                     <span className="flex items-center gap-1">
-                                        <LucideIcon name="Clock" className="h-3.5 w-3.5 text-white/90" />
+                                        <LucideIcon name="Clock" className="h-3.5 w-3.5 text-brand-confidence" />
                                         {formation.duration}
                                     </span>
                                     <span className="flex items-center gap-1">
-                                        <LucideIcon name="MapPin" className="h-3.5 w-3.5 text-white/90" />
+                                        <LucideIcon name="MapPin" className="h-3.5 w-3.5 text-brand-confidence" />
                                         {formation.location}
                                     </span>
                                 </div>
@@ -685,8 +685,8 @@ function FormationDetail({
                             <button
                                 key={tab.key}
                                 onClick={() => setActiveTab(tab.key as any)}
-                                className={`relative flex items-center gap-1.5 px-3 py-3.5 text-xs font-poppins font-bold transition-all ${activeTab === tab.key
-                                    ? 'text-brand-wellbeing'
+                                className={`relative flex items-center gap-1.5 px-3 py-3.5 text-xs font-poppins font-bold transition-all cursor-pointer ${activeTab === tab.key
+                                    ? 'text-brand-dark'
                                     : 'text-brand-gray-text hover:text-brand-dark'
                                     }`}
                             >
@@ -696,7 +696,7 @@ function FormationDetail({
                                 {activeTab === tab.key && (
                                     <motion.div
                                         layoutId="modalActiveTabUnderline"
-                                        className="absolute bottom-0 left-0 right-0 h-0.5 bg-brand-wellbeing"
+                                        className="absolute bottom-0 left-0 right-0 h-0.5 bg-brand-confidence"
                                         transition={{ type: 'spring', stiffness: 380, damping: 30 }}
                                     />
                                 )}
@@ -712,13 +712,13 @@ function FormationDetail({
 
                                 <div>
                                     <h4 className="font-poppins font-bold text-brand-dark text-sm mb-3 flex items-center gap-2">
-                                        <LucideIcon name="Target" className="h-4 w-4 text-brand-wellbeing" />
+                                        <LucideIcon name="Target" className="h-4 w-4 text-brand-confidence" />
                                         Compétences développées
                                     </h4>
                                     <ul className="space-y-2">
                                         {formation.competences.map((c, i) => (
                                             <li key={i} className="flex items-start gap-2.5 text-sm text-brand-dark">
-                                                <LucideIcon name="CheckCircle2" className="h-4 w-4 text-brand-wellbeing mt-0.5 shrink-0" />
+                                                <LucideIcon name="CheckCircle2" className="h-4 w-4 text-brand-confidence mt-0.5 shrink-0" />
                                                 {c}
                                             </li>
                                         ))}
@@ -727,14 +727,14 @@ function FormationDetail({
 
                                 <div>
                                     <h4 className="font-poppins font-bold text-brand-dark text-sm mb-3 flex items-center gap-2">
-                                        <LucideIcon name="Users" className="h-4 w-4 text-brand-wellbeing" />
+                                        <LucideIcon name="Users" className="h-4 w-4 text-brand-confidence" />
                                         Formateurs & Signataires
                                     </h4>
                                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                                         {formation.signataires.map((s) => (
                                             <div key={s.name} className="bg-brand-gray-light rounded-xl p-3 text-center">
-                                                <div className="h-9 w-9 bg-brand-wellbeing/10 rounded-full flex items-center justify-center mx-auto mb-2">
-                                                    <LucideIcon name="User" className="h-4 w-4 text-brand-wellbeing" />
+                                                <div className="h-9 w-9 bg-brand-confidence/20 border border-brand-confidence/40 rounded-full flex items-center justify-center mx-auto mb-2">
+                                                    <LucideIcon name="User" className="h-4 w-4 text-brand-dark" />
                                                 </div>
                                                 <p className="font-poppins font-bold text-brand-dark text-[10px] leading-tight">{s.name}</p>
                                                 <p className="text-[9px] text-brand-gray-text mt-0.5">{s.role}</p>
@@ -745,12 +745,12 @@ function FormationDetail({
 
                                 <div>
                                     <h4 className="font-poppins font-bold text-brand-dark text-sm mb-2 flex items-center gap-2">
-                                        <LucideIcon name="Handshake" className="h-4 w-4 text-brand-wellbeing" />
+                                        <LucideIcon name="Handshake" className="h-4 w-4 text-brand-confidence" />
                                         Partenaires
                                     </h4>
                                     <div className="flex gap-2 flex-wrap">
                                         {formation.partners.map((p) => (
-                                            <span key={p} className="px-3 py-1.5 bg-brand-wellbeing/5 text-brand-wellbeing rounded-lg text-xs font-poppins font-bold border border-brand-wellbeing/15">
+                                            <span key={p} className="px-3 py-1.5 bg-brand-confidence/20 text-brand-dark rounded-lg text-xs font-poppins font-bold border border-brand-confidence/40">
                                                 {p}
                                             </span>
                                         ))}
@@ -769,8 +769,8 @@ function FormationDetail({
                                     formation.modules.map((m, i) => (
                                         <div key={i} className="flex items-center justify-between p-4 bg-brand-gray-light rounded-xl">
                                             <div className="flex items-center gap-3">
-                                                <div className="h-9 w-9 bg-brand-wellbeing/10 rounded-lg flex items-center justify-center">
-                                                    <LucideIcon name="BookOpen" className="h-4 w-4 text-brand-wellbeing" />
+                                                <div className="h-9 w-9 bg-brand-confidence/20 border border-brand-confidence/40 rounded-lg flex items-center justify-center">
+                                                    <LucideIcon name="BookOpen" className="h-4 w-4 text-brand-dark" />
                                                 </div>
                                                 <p className="font-semibold text-brand-dark text-sm">{m.title}</p>
                                             </div>
@@ -778,9 +778,9 @@ function FormationDetail({
                                                 <a
                                                     href={m.url}
                                                     download
-                                                    className="flex items-center gap-1.5 px-3 py-1.5 bg-brand-wellbeing text-white rounded-lg text-xs font-bold font-poppins hover:bg-brand-wellbeing/90 transition-all"
+                                                    className="flex items-center gap-1.5 px-3 py-1.5 bg-brand-confidence text-brand-dark rounded-lg text-xs font-bold font-poppins hover:bg-brand-confidence/90 transition-all"
                                                 >
-                                                    <LucideIcon name="Download" className="h-3.5 w-3.5" />
+                                                    <LucideIcon name="Download" className="h-3.5 w-3.5 text-brand-dark" />
                                                     Télécharger
                                                 </a>
                                             ) : (
@@ -847,7 +847,7 @@ export default function FormationsPage({ certifId, onOpenBooking }: FormationsPa
                 onPrimaryCta={onOpenBooking}
             />
 
-            <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
                 <div className="flex border-b border-gray-200 gap-1 sm:gap-4 overflow-x-auto no-scrollbar">
                     {[
                         { key: 'all', label: `Toutes (${counts.all})`, icon: 'BookOpen' },
@@ -859,7 +859,7 @@ export default function FormationsPage({ certifId, onOpenBooking }: FormationsPa
                             key={f.key}
                             onClick={() => setFilterStatus(f.key as any)}
                             className={`relative flex items-center gap-2 px-3 sm:px-4 py-3.5 text-xs font-poppins font-bold transition-all shrink-0 cursor-pointer ${filterStatus === f.key
-                                ? 'text-brand-wellbeing'
+                                ? 'text-brand-dark'
                                 : 'text-brand-gray-text hover:text-brand-dark'
                                 }`}
                         >
@@ -868,7 +868,7 @@ export default function FormationsPage({ certifId, onOpenBooking }: FormationsPa
                             {filterStatus === f.key && (
                                 <motion.div
                                     layoutId="pageActiveTabUnderline"
-                                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-brand-wellbeing"
+                                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-brand-confidence"
                                     transition={{ type: 'spring', stiffness: 380, damping: 30 }}
                                 />
                             )}

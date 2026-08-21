@@ -27,9 +27,9 @@ export default function Hero({ onOpenBooking, onOpenStressTest, user, onViewAppo
           <div className="lg:col-span-6 space-y-6 text-left" id="hero-text-container">
 
             {/* Status tagline and RDC emphasis */}
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-brand-wellbeing/10 border border-brand-wellbeing/15 shadow-2xs">
-              <span className="flex h-2 w-2 rounded-full bg-brand-wellbeing animate-pulse" />
-              <span className="text-[10px] sm:text-xs font-bold font-poppins text-brand-wellbeing uppercase tracking-widest">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-brand-confidence/20 border border-brand-confidence/40 shadow-2xs">
+              <span className="flex h-2 w-2 rounded-full bg-brand-confidence animate-pulse" />
+              <span className="text-[10px] sm:text-xs font-bold font-poppins text-brand-dark uppercase tracking-widest">
                 Capsy Services — RDC
               </span>
             </div>

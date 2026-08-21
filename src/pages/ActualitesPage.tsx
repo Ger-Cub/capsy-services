@@ -23,7 +23,7 @@ export default function ActualitesPage({ onOpenBooking }: Props) {
       <section className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
         <div className="space-y-6">
           {items.map((item) => (
-            <article key={item.id} className="p-5 bg-white border border-gray-150 rounded-2xl hover:shadow-md transition-all">
+            <article key={item.id} className="p-5 bg-white border border-gray-150 hover:border-brand-confidence rounded-2xl hover:shadow-md transition-all">
               <a href={`/actualites/${item.slug}`} className="block">
                 <div className="text-xs text-brand-gray-text font-poppins uppercase tracking-widest mb-2">{item.date}</div>
                 <h2 className="text-xl font-poppins font-bold text-brand-dark leading-tight">{item.title}</h2>

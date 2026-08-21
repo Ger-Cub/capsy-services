@@ -17,11 +17,13 @@ export default function HomePage({ onOpenBooking, onOpenStressTest, user, onView
     <main className="grow">
       <Hero onOpenBooking={onOpenBooking} onOpenStressTest={onOpenStressTest} user={user} onViewAppointments={onViewAppointments} />
       <SupportTypesSection onOpenBooking={onOpenBooking} />
-      <IdentitySection />
+      <IdentitySection compact />
       <section className="max-w-7xl mx-auto py-16 px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <span className="text-[10px] font-bold uppercase tracking-widest text-brand-green font-poppins">PUBLICATIONS</span>
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-brand-confidence/20 border border-brand-confidence/40 mb-1">
+              <span className="text-[10px] font-bold uppercase tracking-widest text-brand-dark font-poppins">PUBLICATIONS</span>
+            </div>
             <h2 className="text-2xl sm:text-3xl font-poppins font-black text-brand-dark mt-1">Dernières Actualités</h2>
           </div>
           <a href="/actualites" className="hidden sm:inline-flex items-center gap-1.5 text-xs font-bold font-poppins text-brand-wellbeing hover:underline">
@@ -34,7 +36,7 @@ export default function HomePage({ onOpenBooking, onOpenStressTest, user, onView
             <a
               key={item.id}
               href={`/actualites/${item.slug}`}
-              className="bg-white p-6 rounded-2xl border border-gray-150 hover:border-brand-wellbeing/40 hover:shadow-md transition-all duration-300 flex flex-col justify-between group"
+              className="bg-white p-6 rounded-2xl border border-gray-150 hover:border-brand-confidence hover:shadow-md transition-all duration-300 flex flex-col justify-between group"
             >
               <div className="space-y-3">
                 <span className="text-xs text-brand-gray-text font-poppins font-medium">{item.date}</span>

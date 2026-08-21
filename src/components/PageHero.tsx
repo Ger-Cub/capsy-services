@@ -33,9 +33,9 @@ export default function PageHero({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           <div className="lg:col-span-6 space-y-6 text-left">
-            <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full ${isGreen ? 'bg-white/15 text-white border border-white/20' : 'bg-brand-wellbeing/10 border border-brand-wellbeing/15 text-brand-wellbeing'} shadow-2xs`}>
-              <span className={`flex h-2 w-2 rounded-full ${isGreen ? 'bg-white' : 'bg-brand-wellbeing'} animate-pulse`} />
-              <span className={`text-[10px] sm:text-xs font-bold font-poppins uppercase tracking-widest ${isGreen ? 'text-white' : 'text-brand-wellbeing'}`}>
+            <div className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full ${isGreen ? 'bg-brand-confidence/20 text-brand-confidence border border-brand-confidence/40' : 'bg-brand-confidence/20 border border-brand-confidence/40 text-brand-dark'} shadow-2xs`}>
+              <span className={`flex h-2 w-2 rounded-full ${isGreen ? 'bg-brand-confidence' : 'bg-brand-wellbeing'} animate-pulse`} />
+              <span className={`text-[10px] sm:text-xs font-bold font-poppins uppercase tracking-widest ${isGreen ? 'text-brand-confidence' : 'text-brand-dark'}`}>
                 {eyebrow}
               </span>
             </div>

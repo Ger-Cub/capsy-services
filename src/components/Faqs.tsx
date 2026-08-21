@@ -16,7 +16,9 @@ export default function Faqs() {
         
         {/* Title Alignment */}
         <div className="text-center max-w-2xl mx-auto mb-14">
-          <span className="text-[10px] font-bold uppercase tracking-widest text-brand-green">FAQ — VOUS SOUHAITEZ COMPRENDRE ?</span>
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-brand-confidence/20 border border-brand-confidence/40 mb-2">
+            <span className="text-[10px] font-bold uppercase tracking-widest text-brand-dark">FAQ — VOUS SOUHAITEZ COMPRENDRE ?</span>
+          </div>
           <h2 className="text-3xl font-poppins font-black text-brand-dark mt-1">
             Questions Fréquentes
           </h2>
@@ -32,7 +34,7 @@ export default function Faqs() {
             return (
               <div
                 key={idx}
-                className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-xs transition-all hover:border-gray-300"
+                className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-xs transition-all hover:border-brand-confidence"
               >
                 {/* Header Toggle Clicker */}
                 <button

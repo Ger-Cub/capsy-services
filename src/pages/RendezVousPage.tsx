@@ -91,10 +91,10 @@ function AppointmentCard({ appt, index }: { appt: OdooAppointment; index: number
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.06 }}
-      className={`bg-white rounded-2xl border shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden ${isPast ? 'opacity-70' : ''}`}
+      className={`bg-white rounded-2xl border border-gray-150 hover:border-brand-confidence shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden ${isPast ? 'opacity-70' : ''}`}
     >
       {/* Top accent bar */}
-      <div className={`h-1.5 w-full ${statusKey === 'booked' ? 'bg-gradient-to-r from-emerald-400 to-emerald-600' : statusKey === 'cancelled' ? 'bg-rose-400' : 'bg-gradient-to-r from-brand-wellbeing to-brand-wellbeing/60'}`} />
+      <div className={`h-1.5 w-full ${statusKey === 'booked' ? 'bg-gradient-to-r from-brand-wellbeing to-brand-confidence' : statusKey === 'cancelled' ? 'bg-rose-400' : 'bg-gradient-to-r from-brand-wellbeing to-brand-confidence'}`} />
 
       <div className="p-5">
         <div className="flex items-start justify-between gap-3 mb-4">
@@ -304,7 +304,7 @@ export default function RendezVousPage({ user, onOpenBooking, onLogin }: RendezV
                       {filter === f.key && (
                         <motion.div
                           layoutId="rdvActiveTabUnderline"
-                          className="absolute bottom-0 left-0 right-0 h-0.5 bg-brand-wellbeing"
+                          className="absolute bottom-0 left-0 right-0 h-0.5 bg-brand-confidence"
                           transition={{ type: 'spring', stiffness: 380, damping: 30 }}
                         />
                       )}

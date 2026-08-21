@@ -26,10 +26,12 @@ export default function ContactSection() {
   return (
     <section className="py-20 bg-white" id="contact">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
+
         {/* Title Alignment */}
         <div className="text-center max-w-2xl mx-auto mb-16">
-          <span className="text-[10px] font-bold uppercase tracking-widest text-brand-green">CAPSY ACCUEIL</span>
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-brand-confidence/20 border border-brand-confidence/40 mb-2">
+            <span className="text-[10px] font-bold uppercase tracking-widest text-brand-dark">CAPSY ACCUEIL</span>
+          </div>
           <h2 className="text-3xl sm:text-4xl font-poppins font-black text-brand-wellbeing tracking-tight mt-1">
             Contactez Notre Centre
           </h2>
@@ -40,12 +42,12 @@ export default function ContactSection() {
 
         {/* Info Grid Split */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-stretch font-sans">
-          
+
           {/* Column Left: Contact specifics */}
           <div className="lg:col-span-5 space-y-8 flex flex-col justify-between" id="contact-info-list">
-            
+
             <div className="space-y-6">
-              
+
               {/* Address detail - Goma & Kinshasa */}
               <div className="flex gap-4">
                 <div className="p-3 bg-brand-wellbeing/10 text-brand-wellbeing rounded-xl shrink-0 h-12 w-12 flex items-center justify-center">
@@ -108,8 +110,8 @@ export default function ContactSection() {
                 <div>
                   <h4 className="font-poppins font-bold text-brand-dark text-base">Heures d'Ouverture</h4>
                   <p className="text-sm text-brand-gray-text mt-1">
-                    Lundi - Vendredi : 08h00 - 17h00<br />
-                    Samedi : 09h00 - 13h00 (Urgences uniquement)<br />
+                    Lundi -Sur re Vendredi : 08h00 - 16h00<br />
+                    Samedi : Sur rendez-vous<br />
                     Dimanche : Fermé
                   </p>
                 </div>
@@ -147,7 +149,7 @@ export default function ContactSection() {
             {/* Action Messaging card */}
             <div className="bg-brand-gray-light rounded-2xl p-6 sm:p-8 border border-gray-150">
               <h4 className="font-poppins font-bold text-brand-wellbeing text-lg mb-4">Écrivez-nous un message</h4>
-              
+
               <form onSubmit={handleMessageSubmit} className="space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
@@ -190,7 +192,7 @@ export default function ContactSection() {
                     <LucideIcon name="Lock" className="h-3.5 w-3.5 text-brand-green" />
                     Strictement confidentiel sous chiffrement
                   </p>
-                  
+
                   <button
                     type="submit"
                     className="px-6 py-2.5 bg-brand-wellbeing hover:bg-brand-wellbeing/90 text-white font-bold font-poppins rounded-xl text-xs flex items-center gap-2 transition-all shadow-md cursor-pointer"
@@ -211,9 +213,9 @@ export default function ContactSection() {
 
             {/* Real Interactive Map using Leaflet pointing at Goma: -1.6815, 29.2306 */}
             <div className="h-64 bg-brand-dark/15 rounded-2xl relative overflow-hidden border border-gray-200 shadow-inner z-10 group">
-              <LeafletMap 
-                lat={-1.6815} 
-                lng={29.2306} 
+              <LeafletMap
+                lat={-1.6815}
+                lng={29.2306}
                 zoom={16}
                 title="CAPSY Services (Goma)"
                 address="N°18, av. Des écoles, Q. Les Volcans, Goma, RDC"

@@ -36,7 +36,9 @@ export default function AboutPage({ onOpenBooking }: AboutPageProps) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid gap-10 lg:grid-cols-2 items-start">
             <div className="space-y-6">
-              <span className="text-[10px] uppercase tracking-widest text-brand-green font-bold">Présentation</span>
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-brand-confidence/20 border border-brand-confidence/40">
+                <span className="text-[10px] uppercase tracking-widest text-brand-dark font-bold">Présentation</span>
+              </div>
               <h2 className="text-3xl font-poppins font-black text-brand-dark">Notre mission au service du bien-être</h2>
               <p className="text-sm leading-relaxed text-brand-gray-text font-sans">
                 CAPSY SERVICES accompagne les personnes, les familles et les structures vers une meilleure résilience psychologique. Nous travaillons avec des psychologues, des thérapeutes et des professionnels de la santé mentale pour offrir un soutien accessible, discret et adapté.
@@ -46,13 +48,13 @@ export default function AboutPage({ onOpenBooking }: AboutPageProps) {
               </p>
             </div>
             <div className="space-y-6">
-              <div className="rounded-3xl border border-gray-150 bg-brand-gray-light p-8 shadow-sm">
+              <div className="rounded-3xl border border-gray-150 hover:border-brand-confidence bg-brand-gray-light p-8 shadow-sm transition-all">
                 <h3 className="text-xl font-poppins font-black text-brand-wellbeing">Notre organisation</h3>
                 <p className="mt-4 text-sm text-brand-gray-text leading-relaxed">
                   Une équipe basée à Goma et Kinshasa, animée par des valeurs de respect, d’inclusion et de professionnalisme. Nous intervenons auprès des individus, des institutions et des populations vulnérables.
                 </p>
               </div>
-              <div className="rounded-3xl border border-gray-150 bg-brand-wellbeing/5 p-8 shadow-sm">
+              <div className="rounded-3xl border border-gray-150 hover:border-brand-confidence bg-brand-wellbeing/5 p-8 shadow-sm transition-all">
                 <h3 className="text-xl font-poppins font-black text-brand-dark">Notre engagement</h3>
                 <p className="mt-4 text-sm text-brand-gray-text leading-relaxed">
                   Offrir un accompagnement humain sans concession sur la qualité, avec des tarifs transparents et une éthique qui protège les bénéficiaires à chaque étape.
@@ -65,12 +67,14 @@ export default function AboutPage({ onOpenBooking }: AboutPageProps) {
       <section className="py-20 bg-brand-gray-light">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <span className="text-[10px] uppercase tracking-widest text-brand-green font-bold">Notre approche</span>
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-brand-confidence/20 border border-brand-confidence/40">
+              <span className="text-[10px] uppercase tracking-widest text-brand-dark font-bold">Notre approche</span>
+            </div>
             <h2 className="text-3xl font-poppins font-black text-brand-dark mt-3">Une méthode claire et structurée</h2>
           </div>
           <div className="grid gap-6 lg:grid-cols-3">
             {APPROACH.map((item) => (
-              <div key={item.title} className="rounded-3xl bg-white border border-gray-150 p-8 shadow-sm hover:shadow-lg transition-all">
+              <div key={item.title} className="rounded-3xl bg-white border border-gray-150 hover:border-brand-confidence p-8 shadow-sm hover:shadow-lg transition-all">
                 <h3 className="text-xl font-poppins font-bold text-brand-wellbeing mb-3">{item.title}</h3>
                 <p className="text-sm text-brand-gray-text leading-relaxed">{item.description}</p>
               </div>

@@ -103,7 +103,7 @@ export default function Header({
                   className={`text-sm font-sans font-semibold transition-colors relative py-1 group ${active ? (useWhiteTop ? 'text-white' : 'text-brand-wellbeing') : useWhiteTop ? 'text-white hover:text-white/80' : 'text-brand-dark hover:text-brand-wellbeing'}`}
                 >
                   {link.name}
-                  <span className={`absolute bottom-0 left-0 h-0.5 bg-brand-wellbeing transition-all duration-300 ${active ? 'w-full' : 'w-0 group-hover:w-full'}`} />
+                  <span className={`absolute bottom-0 left-0 h-0.5 bg-brand-confidence transition-all duration-300 ${active ? 'w-full' : 'w-0 group-hover:w-full'}`} />
                 </a>
               );
             })}
@@ -119,7 +119,7 @@ export default function Header({
                 {activeAppointmentsCount > 0 && (
                   <span className="ml-0.5 bg-brand-wellbeing text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full">{activeAppointmentsCount}</span>
                 )}
-                <span className={`absolute bottom-0 left-0 h-0.5 bg-brand-wellbeing transition-all duration-300 ${isActiveLink(rdvLink.href) ? 'w-full' : 'w-0 group-hover:w-full'}`} />
+                <span className={`absolute bottom-0 left-0 h-0.5 bg-brand-confidence transition-all duration-300 ${isActiveLink(rdvLink.href) ? 'w-full' : 'w-0 group-hover:w-full'}`} />
               </a>
             )}
           </nav>

@@ -12,7 +12,7 @@ const TECHNICAL_POLES = [
     title: 'Pôle Thérapies Spécialisées',
     icon: 'Brain',
     color: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-    iconBg: 'bg-emerald-100 text-emerald-700',
+    iconBg: 'bg-brand-confidence/20 text-brand-dark',
     items: [
       'Évaluation psychologique structurée',
       'Thérapies individuelles et de groupe',
@@ -24,7 +24,7 @@ const TECHNICAL_POLES = [
     title: 'Pôle Recherche et Innovation',
     icon: 'Microscope',
     color: 'bg-blue-50 text-blue-700 border-blue-200',
-    iconBg: 'bg-blue-100 text-blue-700',
+    iconBg: 'bg-brand-confidence/20 text-brand-dark',
     items: [
       'Documentation des pratiques et capitalisation d’expériences',
       'Production de données probantes en santé mentale et psychosociale',
@@ -36,7 +36,7 @@ const TECHNICAL_POLES = [
     title: 'Pôle Administration et Finances',
     icon: 'Building2',
     color: 'bg-purple-50 text-purple-700 border-purple-200',
-    iconBg: 'bg-purple-100 text-purple-700',
+    iconBg: 'bg-brand-confidence/20 text-brand-dark',
     items: [
       'Gestion financière transparente et traçable',
       'Application rigoureuse des procédures internes et d’audit',
@@ -48,7 +48,7 @@ const TECHNICAL_POLES = [
     title: 'Pôle Intervention Communautaire',
     icon: 'Users',
     color: 'bg-amber-50 text-amber-700 border-amber-200',
-    iconBg: 'bg-amber-100 text-amber-700',
+    iconBg: 'bg-brand-confidence/20 text-brand-dark',
     items: [
       'Actions de prévention et de sensibilisation de masse',
       'Mécanismes communautaires de référencement et d’alerte',
@@ -270,7 +270,7 @@ export default function GovernancePage({ onOpenBooking }: GovernancePageProps) {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: idx * 0.1 }}
-                className="bg-white rounded-3xl p-7 border border-gray-200 shadow-xs hover:shadow-md transition-all space-y-4"
+                className="bg-white rounded-3xl p-7 border border-gray-200 shadow-xs hover:shadow-md hover:border-brand-confidence/40 transition-all space-y-4"
               >
                 <div className="flex items-center gap-3">
                   <div className={`p-3 rounded-2xl ${pole.iconBg}`}>
@@ -284,7 +284,7 @@ export default function GovernancePage({ onOpenBooking }: GovernancePageProps) {
                 <ul className="space-y-2.5">
                   {pole.items.map((item, i) => (
                     <li key={i} className="flex items-start gap-2.5 text-xs text-brand-dark leading-relaxed">
-                      <LucideIcon name="ChevronRight" className="h-4 w-4 text-brand-wellbeing shrink-0 mt-0.5" />
+                      <LucideIcon name="ChevronRight" className="h-4 w-4 text-brand-confidence shrink-0 mt-0.5" />
                       <span>{item}</span>
                     </li>
                   ))}
@@ -308,7 +308,7 @@ export default function GovernancePage({ onOpenBooking }: GovernancePageProps) {
 
           <div className="grid gap-8 md:grid-cols-3">
             <div className="bg-emerald-50/50 rounded-3xl p-8 border border-emerald-100 space-y-4">
-              <div className="h-10 w-10 rounded-xl bg-brand-green text-white flex items-center justify-center">
+              <div className="h-10 w-10 rounded-xl bg-brand-confidence text-brand-dark flex items-center justify-center">
                 <LucideIcon name="Users" className="h-5 w-5" />
               </div>
               <h3 className="text-lg font-bold font-poppins text-brand-dark">Approche Communautaire</h3>
@@ -321,7 +321,7 @@ export default function GovernancePage({ onOpenBooking }: GovernancePageProps) {
             </div>
 
             <div className="bg-blue-50/50 rounded-3xl p-8 border border-blue-100 space-y-4">
-              <div className="h-10 w-10 rounded-xl bg-blue-600 text-white flex items-center justify-center">
+              <div className="h-10 w-10 rounded-xl bg-brand-confidence text-brand-dark flex items-center justify-center">
                 <LucideIcon name="Heart" className="h-5 w-5" />
               </div>
               <h3 className="text-lg font-bold font-poppins text-brand-dark">Développement Social</h3>
@@ -334,7 +334,7 @@ export default function GovernancePage({ onOpenBooking }: GovernancePageProps) {
             </div>
 
             <div className="bg-purple-50/50 rounded-3xl p-8 border border-purple-100 space-y-4">
-              <div className="h-10 w-10 rounded-xl bg-purple-600 text-white flex items-center justify-center">
+              <div className="h-10 w-10 rounded-xl bg-brand-confidence text-brand-dark flex items-center justify-center">
                 <LucideIcon name="Handshake" className="h-5 w-5" />
               </div>
               <h3 className="text-lg font-bold font-poppins text-brand-dark">Réseaux Partenariaux</h3>
@@ -354,34 +354,34 @@ export default function GovernancePage({ onOpenBooking }: GovernancePageProps) {
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(0,140,60,0.25),_transparent_50%)]" />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-12">
           <div className="text-center max-w-3xl mx-auto space-y-3">
-            <span className="text-xs uppercase tracking-widest text-brand-green font-bold font-poppins">Standard & Éthique</span>
-            <h2 className="text-2xl sm:text-4xl font-poppins font-black text-white">Qualité, Éthique & Protection des Bénéficiaires</h2>
+            <span className="text-xs uppercase tracking-widest text-brand-confidence font-bold font-poppins">Standard &amp; Éthique</span>
+            <h2 className="text-2xl sm:text-4xl font-poppins font-black text-white">Qualité, Éthique &amp; Protection des Bénéficiaires</h2>
             <p className="text-sm text-white/70 leading-relaxed">
-              Nos engagements s’inscrivent rigoureusement dans les principes internationaux de bonne gouvernance (OCDE 2015) et les directives de l'OMS.
+              Nos engagements s'inscrivent rigoureusement dans les principes internationaux de bonne gouvernance (OCDE 2015) et les directives de l'OMS.
             </p>
           </div>
 
           <div className="grid gap-6 md:grid-cols-2">
             <div className="bg-white/5 border border-white/10 rounded-3xl p-8 space-y-4 backdrop-blur-xs">
               <div className="flex items-center gap-3">
-                <LucideIcon name="Award" className="h-6 w-6 text-brand-green" />
+                <LucideIcon name="Award" className="h-6 w-6 text-brand-confidence" />
                 <h3 className="text-xl font-bold font-poppins text-white">Assurance Qualité</h3>
               </div>
               <ul className="space-y-3 text-xs text-white/80 leading-relaxed">
                 <li className="flex items-start gap-2">
-                  <LucideIcon name="Check" className="h-4 w-4 text-brand-green shrink-0 mt-0.5" />
-                  <span>Protocoles d’intervention standardisés et rigoureusement contextualisés.</span>
+                  <LucideIcon name="Check" className="h-4 w-4 text-brand-confidence shrink-0 mt-0.5" />
+                  <span>Protocoles d'intervention standardisés et rigoureusement contextualisés.</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <LucideIcon name="Check" className="h-4 w-4 text-brand-green shrink-0 mt-0.5" />
+                  <LucideIcon name="Check" className="h-4 w-4 text-brand-confidence shrink-0 mt-0.5" />
                   <span>Supervision clinique régulière et systématique de l'ensemble des praticiens.</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <LucideIcon name="Check" className="h-4 w-4 text-brand-green shrink-0 mt-0.5" />
+                  <LucideIcon name="Check" className="h-4 w-4 text-brand-confidence shrink-0 mt-0.5" />
                   <span>Évaluation continue des pratiques, des retours patients et des résultats cliniques.</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <LucideIcon name="Check" className="h-4 w-4 text-brand-green shrink-0 mt-0.5" />
+                  <LucideIcon name="Check" className="h-4 w-4 text-brand-confidence shrink-0 mt-0.5" />
                   <span>Audits internes et externes périodiques sur la conformité des soins.</span>
                 </li>
               </ul>
@@ -389,24 +389,24 @@ export default function GovernancePage({ onOpenBooking }: GovernancePageProps) {
 
             <div className="bg-white/5 border border-white/10 rounded-3xl p-8 space-y-4 backdrop-blur-xs">
               <div className="flex items-center gap-3">
-                <LucideIcon name="Lock" className="h-6 w-6 text-brand-green" />
+                <LucideIcon name="Lock" className="h-6 w-6 text-brand-confidence" />
                 <h3 className="text-xl font-bold font-poppins text-white">Protection des Bénéficiaires</h3>
               </div>
               <ul className="space-y-3 text-xs text-white/80 leading-relaxed">
                 <li className="flex items-start gap-2">
-                  <LucideIcon name="Check" className="h-4 w-4 text-brand-green shrink-0 mt-0.5" />
+                  <LucideIcon name="Check" className="h-4 w-4 text-brand-confidence shrink-0 mt-0.5" />
                   <span>Stricte confidentialité des échanges, dossiers cliniques et données médicales.</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <LucideIcon name="Check" className="h-4 w-4 text-brand-green shrink-0 mt-0.5" />
+                  <LucideIcon name="Check" className="h-4 w-4 text-brand-confidence shrink-0 mt-0.5" />
                   <span>Mécanisme sécurisé et confidentiel de gestion des plaintes et feedbacks.</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <LucideIcon name="Check" className="h-4 w-4 text-brand-green shrink-0 mt-0.5" />
-                  <span>Politique de tolérance zéro et prévention contre l’exploitation et les abus (PEAS).</span>
+                  <LucideIcon name="Check" className="h-4 w-4 text-brand-confidence shrink-0 mt-0.5" />
+                  <span>Politique de tolérance zéro et prévention contre l'exploitation et les abus (PEAS).</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <LucideIcon name="Check" className="h-4 w-4 text-brand-green shrink-0 mt-0.5" />
+                  <LucideIcon name="Check" className="h-4 w-4 text-brand-confidence shrink-0 mt-0.5" />
                   <span>Approche centrée sur la dignité humaine, le consentement libre et les droits fondamentaux.</span>
                 </li>
               </ul>
@@ -435,7 +435,7 @@ export default function GovernancePage({ onOpenBooking }: GovernancePageProps) {
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="text-2xl font-black font-poppins text-brand-wellbeing">{s.step}</span>
-                    <div className="p-2.5 bg-brand-wellbeing/10 text-brand-wellbeing rounded-xl group-hover:bg-brand-wellbeing group-hover:text-white transition-colors">
+                    <div className="p-2.5 bg-brand-wellbeing/10 text-brand-wellbeing rounded-xl group-hover:bg-brand-confidence group-hover:text-brand-dark transition-colors">
                       <LucideIcon name={s.icon} className="h-5 w-5" />
                     </div>
                   </div>

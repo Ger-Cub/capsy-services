@@ -24,24 +24,24 @@ export default function Footer({ onOpenBooking }: FooterProps) {
             </p>
             <div className="pt-2 text-xs text-white/60 space-y-1.5 font-sans">
               <p className="flex items-center gap-1.5 hover:text-white transition-colors">
-                <LucideIcon name="Mail" className="h-3.5 w-3.5 text-brand-green" />
+                <LucideIcon name="Mail" className="h-3.5 w-3.5 text-brand-confidence" />
                 <span>contact@capsy-rdc.org</span>
               </p>
               <p className="flex items-center gap-1.5 hover:text-white transition-colors">
-                <LucideIcon name="Phone" className="h-3.5 w-3.5 text-brand-green" />
+                <LucideIcon name="Phone" className="h-3.5 w-3.5 text-brand-confidence" />
                 <span>+243 997 707 312</span>
               </p>
               <p className="flex items-start gap-1.5">
-                <LucideIcon name="MapPin" className="h-3.5 w-3.5 text-brand-green shrink-0 mt-0.5" />
-                <span>Goma : N°18, av. Des écoles, Q. Les Volcans, RDC<br />
-                  Kinshasa : N°63, av. Kabinda, Q. Boyoma, RDC</span>
+                <LucideIcon name="MapPin" className="h-3.5 w-3.5 text-brand-confidence shrink-0 mt-0.5" />
+                <span><span className="text-brand-confidence">Goma</span> : N°18, av. Des écoles, Q. Les Volcans, RDC<br />
+                  <span className="text-brand-confidence">Kinshasa</span> : N°63, av. Kabinda, Q. Boyoma, RDC</span>
               </p>
             </div>
           </div>
 
           {/* Quick Navigate columns */}
           <div className="md:col-span-3 space-y-4">
-            <h4 className="font-poppins font-bold text-sm uppercase tracking-wider text-brand-green">Accès Rapide</h4>
+            <h4 className="font-poppins font-bold text-sm uppercase tracking-wider text-brand-confidence">Accès Rapide</h4>
             <ul className="space-y-2 text-xs sm:text-sm text-white/70 font-sans">
               <li>
                 <a href="/services" className="hover:text-brand-green transition-colors">Services</a>
@@ -66,13 +66,13 @@ export default function Footer({ onOpenBooking }: FooterProps) {
 
           {/* Prompt Booking column */}
           <div className="md:col-span-4 space-y-4">
-            <h4 className="font-poppins font-bold text-sm uppercase tracking-wider text-brand-green">Besoin d'aide ?</h4>
+            <h4 className="font-poppins font-bold text-sm uppercase tracking-wider text-brand-confidence">Besoin d'aide ?</h4>
             <p className="text-xs text-white/70 leading-relaxed font-sans">
               N'attendez pas de vous sentir submergé(e). Soumettez votre demande de consultation en quelques instants de façon sécurisée.
             </p>
             <button
               onClick={onOpenBooking}
-              className="w-full sm:w-auto py-2.5 px-5 bg-brand-wellbeing hover:bg-brand-wellbeing/90 text-white text-xs font-bold font-poppins rounded-xl flex items-center justify-center gap-1.5 transition-all shadow-md cursor-pointer"
+              className="w-full sm:w-auto py-2.5 px-5 bg-brand-confidence hover:bg-brand-confidence/90 text-brand-dark text-xs font-bold font-poppins rounded-xl flex items-center justify-center gap-1.5 transition-all shadow-md cursor-pointer"
               id="footer-inline-booking-btn"
             >
               <LucideIcon name="Calendar" className="h-4 w-4" />
@@ -85,15 +85,15 @@ export default function Footer({ onOpenBooking }: FooterProps) {
         {/* Dynamic sliding, aligned brand values indicator ticker block */}
         <div className="py-6 border-b border-white/10 flex flex-wrap gap-4 items-center justify-center text-[10px] sm:text-xs font-poppins font-bold text-white/80 uppercase tracking-widest select-none">
           <span>Écoute</span>
-          <span className="h-1.5 w-1.5 bg-brand-green rounded-full" />
+          <span className="h-1.5 w-1.5 bg-brand-confidence rounded-full" />
           <span>Bienveillance</span>
-          <span className="h-1.5 w-1.5 bg-brand-green rounded-full" />
+          <span className="h-1.5 w-1.5 bg-brand-confidence rounded-full" />
           <span>Confidentialité</span>
-          <span className="h-1.5 w-1.5 bg-brand-green rounded-full" />
+          <span className="h-1.5 w-1.5 bg-brand-confidence rounded-full" />
           <span>Professionnalisme</span>
-          <span className="h-1.5 w-1.5 bg-brand-green rounded-full" />
+          <span className="h-1.5 w-1.5 bg-brand-confidence rounded-full" />
           <span>Respect</span>
-          <span className="h-1.5 w-1.5 bg-brand-green rounded-full" />
+          <span className="h-1.5 w-1.5 bg-brand-confidence rounded-full" />
           <span>Innovation</span>
         </div>
 
@@ -107,8 +107,8 @@ export default function Footer({ onOpenBooking }: FooterProps) {
             <span>&bull;</span>
             <a href="#" className="hover:text-white transition-colors">Politique de confidentialité</a>
             <span>&bull;</span>
-            <span className="text-brand-green flex items-center gap-1 font-semibold">
-              <span className="h-2 w-2 rounded-full bg-brand-green animate-ping" />
+            <span className="text-brand-confidence flex items-center gap-1 font-semibold">
+              <span className="h-2 w-2 rounded-full bg-brand-confidence animate-ping" />
               Goma & Kinshasa, RDC
             </span>
           </div>
