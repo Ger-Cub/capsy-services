@@ -8,8 +8,8 @@ import { FORMATIONS } from '../../data/formationsData';
 import type { Formation, Participant } from './types';
 
 // Load certificate image and PDF assets (Vite import)
-const certImages = import.meta.glob('../../assets/images/*.png', { eager: true, as: 'url' }) as Record<string, string>;
-const certPdfs = import.meta.glob('../../assets/documents/certificats/*.pdf', { eager: true, as: 'url' }) as Record<string, string>;
+const certImages = import.meta.glob('../../assets/images/*.png', { eager: true, query: '?url', import: 'default' }) as Record<string, string>;
+const certPdfs = import.meta.glob('../../assets/documents/certificats/*.pdf', { eager: true, query: '?url', import: 'default' }) as Record<string, string>;
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 

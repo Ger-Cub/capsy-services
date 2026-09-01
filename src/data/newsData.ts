@@ -1,3 +1,8 @@
+import tccgCloture1 from '../assets/images/news/tccg-cloture-1.jpg';
+import tccgCloture2 from '../assets/images/news/tccg-cloture-2.jpg';
+import ecoleAtelier1 from '../assets/images/news/ecole-atelier-1.jpg';
+import ecoleAtelier2 from '../assets/images/news/ecole-atelier-2.jpg';
+
 export interface NewsMedia {
   type: 'image' | 'video' | 'embed';
   src: string;
@@ -30,8 +35,8 @@ export const NEWS: NewsItem[] = [
     excerpt: "La formation des Psychologues Facilitateurs en TCC-G s'est achevée avec succès à Goma. Retour sur les moments forts.",
     content: `La formation intensive organisée par le Centre d'Assistance Psychologique (CAPSY SERVICES) en partenariat avec HEAL AFRICA/STAR-RDC s'est terminée le 3 juillet 2026. Les participants ont complété 24 heures de formation pratique et théorique, connaissent désormais le protocole TCC-G et ont reçu des certificats.\n\nPrincipales activités : sessions pratiques, supervision clinique, et évaluation finale. Les certificats portent le préfixe TCCG-2026.`,
     media: [
-      { type: 'image', src: '../../../src/assets/images/news/tccg-cloture-1.jpg', alt: 'Photo de groupe - formation TCCG', caption: 'Participants et formateurs après la cérémonie de clôture' },
-      { type: 'image', src: '../../../src/assets/images/news/tccg-cloture-2.jpg', alt: 'Atelier pratique', caption: 'Mise en situation lors d’une séance de groupe' },
+      { type: 'image', src: tccgCloture1, alt: 'Photo de groupe - formation TCCG', caption: 'Participants et formateurs après la cérémonie de clôture' },
+      { type: 'image', src: tccgCloture2, alt: 'Atelier pratique', caption: 'Mise en situation lors d’une séance de groupe' },
     ],
     tags: ['formation', 'TCC-G', 'Goma', 'CAPSY'],
     authors: [{ name: 'CAPSY SERVICES', role: 'Organisation' }],
@@ -49,8 +54,8 @@ export const NEWS: NewsItem[] = [
     excerpt: "CAPSY a mené une activité communautaire de sensibilisation en santé mentale auprès d'élèves et enseignants.",
     content: `Le 15 juin 2026, une équipe de CAPSY SERVICES est intervenue dans trois écoles de la ville pour animer des ateliers de sensibilisation sur la santé mentale des enfants et des adolescents. L'objectif était d'informer les enseignants sur la détection précoce et les techniques de soutien psychosocial simple.\n\nInterventions : présentations, jeux pédagogiques et distribution de fiches pratiques pour enseignants.`,
     media: [
-      { type: 'image', src: '../../src/assets/images/news/ecole-atelier-1.jpg', alt: 'Atelier en classe', caption: 'Jeux pédagogiques utilisés pour expliquer le stress' },
-      { type: 'image', src: '../../src/assets/images/news/ecole-atelier-2.jpg', alt: 'Remise de fiches', caption: 'Distribution de fiches aux enseignants' },
+      { type: 'image', src: ecoleAtelier1, alt: 'Atelier en classe', caption: 'Jeux pédagogiques utilisés pour expliquer le stress' },
+      { type: 'image', src: ecoleAtelier2, alt: 'Remise de fiches', caption: 'Distribution de fiches aux enseignants' },
     ],
     tags: ['communauté', 'écoles', 'sensibilisation'],
     authors: [{ name: 'Marie N.', role: 'Chargée de programme' }],

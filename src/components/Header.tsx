@@ -58,7 +58,7 @@ export default function Header({
     { name: 'Formations', href: '/formations' },
     { name: 'FAQ', href: '/faq' },
     { name: 'Gouvernance', href: '/gouvernance' },
-    { name: 'Contact', href: '/contact' },
+    { name: 'Actualités', href: '/actualites' },
   ];
 
   // Lien "Mes rendez-vous" visible uniquement pour les utilisateurs connectés

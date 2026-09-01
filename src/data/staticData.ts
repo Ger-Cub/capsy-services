@@ -1,4 +1,13 @@
 import { Service, Value, Question } from '../types';
+import seanceIndivImg from '../assets/images_site/Seance_psychologique_individuelle.png';
+import psychotherapieIndivImg from '../assets/images_site/Psychotherapie_individuelle.png';
+import therapieFamilialeImg from '../assets/images_site/Therapie_familiale.png';
+import therapieFamiliale2Img from '../assets/images_site/Therapie_familiale_2.png';
+import evalEnfantsImg from '../assets/images_site/Evaluation_psychologique_enfants_ados_2.png';
+import evalAdultesImg from '../assets/images_site/Evaluation_psyhonoligique_adulte.png';
+import accompEnfantsImg from '../assets/images_site/Accompagnement_enfants_ados.png';
+import postIncidentImg from '../assets/images_site/Post-incident_critique_individuel.png';
+import supervisionImg from '../assets/images_site/Supersion_clinique_individuelle.png';
 
 export const SERVICES: Service[] = [
   {
@@ -16,7 +25,7 @@ export const SERVICES: Service[] = [
     duree: '60 minutes',
     modalite: 'Au bureau CAPSY ou en ligne',
     quandLutiliser: 'Quand on se sent dépassé, triste, anxieux, qu’on n’arrive plus à gérer un souci familial, professionnel ou personnel.',
-    imageUrl: '../src/assets/images_site/Seance_psychologique_individuelle.png'
+    imageUrl: seanceIndivImg
   },
   {
     id: 'psychotherapie',
@@ -33,7 +42,7 @@ export const SERVICES: Service[] = [
     duree: '60 minutes',
     modalite: 'Présentiel ou en ligne',
     quandLutiliser: 'Traumatisme (VBG, guerre, accident), anxiété chronique, crises émotionnelles, souvenirs envahissants, difficultés relationnelles profondes.',
-    imageUrl: '../src/assets/images_site/Psychotherapie_individuelle.png'
+    imageUrl: psychotherapieIndivImg
   },
   {
     id: 'famille',
@@ -50,7 +59,7 @@ export const SERVICES: Service[] = [
     duree: '60–75 minutes',
     modalite: 'Au bureau CAPSY uniquement',
     quandLutiliser: 'Tensions constantes, jalousie démesurée, manque d’écoute, violences psychologiques, familles sous pression économique ou sécuritaire (contexte fréquent en RDC).',
-    imageUrl: '../src/assets/images_site/Therapie_familiale.png'
+    imageUrl: therapieFamilialeImg
   },
   {
     id: 'famille',
@@ -67,7 +76,7 @@ export const SERVICES: Service[] = [
     duree: '75–90 minutes',
     modalite: 'Au bureau CAPSY uniquement',
     quandLutiliser: 'Tensions parents-enfants, problèmes de comportement scolaire, ruptures de dialogue, déchirements lors de recompositions familiales, stress de précarité ou d’insécurité.',
-    imageUrl: '../src/assets/images_site/Therapie_familiale_2.png'
+    imageUrl: therapieFamiliale2Img
   },
   {
     id: 'evaluation_enfants',
@@ -84,7 +93,7 @@ export const SERVICES: Service[] = [
     duree: 'Variable (1 à 2 séances complètes)',
     modalite: 'Au bureau CAPSY uniquement',
     quandLutiliser: 'Baisse inexpliquée des résultats scolaires, agitation excessive, retrait relationnel, traumatisme post-déplacement ou deuil, violences vécues.',
-    imageUrl: '../src/assets/images_site/Evaluation_psychologique_enfants_ados_2.png'
+    imageUrl: evalEnfantsImg
   },
   {
     id: 'evaluation_adultes',
@@ -101,7 +110,7 @@ export const SERVICES: Service[] = [
     duree: 'Variable selon les indicateurs recherchés',
     modalite: 'Au bureau CAPSY',
     quandLutiliser: 'Burn-out professionnel, séquelles de psycho-traumatismes, baisse de performances au travail, indécisions lourdes, fatigue cognitive chronique.',
-    imageUrl: '../src/assets/images_site/Evaluation_psyhonoligique_adulte.png'
+    imageUrl: evalAdultesImg
   },
   {
     id: 'accompagnement_enfants',
@@ -118,7 +127,7 @@ export const SERVICES: Service[] = [
     duree: '60 minutes',
     modalite: 'Au bureau CAPSY',
     quandLutiliser: 'Colères récurrentes, phobies, repli sur soi, difficultés à l’école, traumatismes liés au déplacement sécuritaire en RDC, harcèlement.',
-    imageUrl: '../src/assets/images_site/Accompagnement_enfants_ados.png'
+    imageUrl: accompEnfantsImg
   },
   {
     id: 'post_incident',
@@ -135,7 +144,7 @@ export const SERVICES: Service[] = [
     duree: '1 à 1,5 heure',
     modalite: 'Bureau CAPSY ou en ligne',
     quandLutiliser: 'Vol, hold-up, agression violente directe, mort subite d’un collègue, crash, catastrophe naturelle ou crise en zone de conflit.',
-    imageUrl: '../src/assets/images_site/Post-incident_critique_individuel.png'
+    imageUrl: postIncidentImg
   },
   {
     id: 'supervision',
@@ -152,7 +161,7 @@ export const SERVICES: Service[] = [
     duree: '60 minutes',
     modalite: 'Bureau CAPSY ou en ligne',
     quandLutiliser: 'Sentiment d’impasse sur un suivi thérapeutique, dilemme déontologique aigu, surcharge ou saturation émotionnelle ressentie.',
-    imageUrl: '../src/assets/images_site/Supersion_clinique_individuelle.png'
+    imageUrl: supervisionImg
   }
 ];
 
