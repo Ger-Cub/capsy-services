@@ -62,12 +62,22 @@ export const NEWS: NewsItem[] = [
   {
     id: 'news-2026-annonce-formation-ouverte',
     title: "Nouvelle session — Formation courte : Techniques de prise en charge en urgence psychologique",
-    slug: 'annonce-formation-urgence-2026',
+    slug: 'annonce-formation-star-rdc-2026',
     date: '2026-08-01',
     excerpt: "Inscrivez-vous à la prochaine session courte sur la prise en charge en situation d'urgence psychologique.",
-    content: `CAPSY SERVICES propose une session de 16 heures destinée aux intervenants humanitaires et cliniciens souhaitant renforcer leurs compétences en prise en charge psychologique d'urgence. La formation couvre l'évaluation rapide, interventions brèves et référencements.\n\nDate : 10–11 Septembre 2026. Lieu : Goma. Places limitées. Pour s'inscrire, contactez contact@capsyservices.org.`,
+    content: `STAR-RDC : rendre les soins de santé mentale accessibles à tous en République démocratique du Congo 🇨🇩\n\n
+\n\n
+Le projet STAR-RDC s’engage pour renforcer l’accès à un accompagnement psychologique de qualité, adapté aux réalités des communautés.
+\n\n
+Mis en œuvre par HEAL AFRICA, en partenariat avec Capsy, le programme s’appuie sur des protocoles scientifiques validés afin de former 77 acteurs clés de la communauté — responsables civils, mobilisateurs et psychothérapeutes.
+\n\n
+À travers cette initiative, 180 groupes de thérapie cognitivo-comportementale (TCCG) seront déployés et 180 bénéficiaires bénéficieront également d’un accompagnement individuel personnalisé de 6 séances.
+\n\n
+🌱 Une approche communautaire, scientifique et humaine pour faire de la santé mentale une priorité accessible à tous.
+\n\n
+Découvrez en images la vision et l’impact du projet STAR-RDC.`,
     media: [
-      { type: 'embed', src: 'https://www.youtube.com/embed/dQw4w9WgXcQ', caption: "Présentation de la formation (vidéo)" },
+      { type: 'embed', src: 'https://www.youtube.com/embed/ptCSb3X3Ur4?si=tM8IA1dHEuOqwuZe', caption: "Rétour en image sur le projet STAR-RDC (vidéo)" },
     ],
     tags: ['formation', 'annonce', 'urgence'],
     authors: [{ name: 'CAPSY Formation', role: 'Coordination' }],

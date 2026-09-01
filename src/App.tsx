@@ -1,25 +1,27 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import BookingModal from './components/BookingModal';
-import Chatbot from './components/Chatbot';
 import LoginModal from './components/LoginModal';
 import UserProfilePage from './components/UserProfilePage';
-import OdooDashboard from './components/OdooDashboard';
 import ToastContainer from './components/Toast';
 import HomePage from './pages/HomePage';
-import StressTest from './components/StressTest';
 import { AnimatePresence, motion } from 'motion/react';
-import ServicesPage from './pages/ServicesPage';
-import AboutPage from './pages/AboutPage';
-import FaqPage from './pages/FaqPage';
-import GovernancePage from './pages/GovernancePage';
-import ContactPage from './pages/ContactPage';
-import FormationsPage from './pages/FormationsPage';
-import ActualitesPage from './pages/ActualitesPage';
-import ActualiteDetailPage from './pages/ActualiteDetailPage';
-import ContactSection from './components/ContactSection';
-import RendezVousPage from './pages/RendezVousPage';
+
+// Lazy-load heavy or infrequently-used components to reduce initial bundle
+const Chatbot = React.lazy(() => import('./components/Chatbot'));
+const OdooDashboard = React.lazy(() => import('./components/OdooDashboard'));
+const StressTest = React.lazy(() => import('./components/StressTest'));
+const ServicesPage = React.lazy(() => import('./pages/ServicesPage'));
+const AboutPage = React.lazy(() => import('./pages/AboutPage'));
+const FaqPage = React.lazy(() => import('./pages/FaqPage'));
+const GovernancePage = React.lazy(() => import('./pages/GovernancePage'));
+const ContactPage = React.lazy(() => import('./pages/ContactPage'));
+const FormationsPage = React.lazy(() => import('./pages/FormationsPage'));
+const ActualitesPage = React.lazy(() => import('./pages/ActualitesPage'));
+const ActualiteDetailPage = React.lazy(() => import('./pages/ActualiteDetailPage'));
+const ContactSection = React.lazy(() => import('./components/ContactSection'));
+const RendezVousPage = React.lazy(() => import('./pages/RendezVousPage'));
 
 export default function App() {
   const [bookingOpen, setBookingOpen] = useState(false);
@@ -169,13 +171,19 @@ export default function App() {
   const certifId = certifMatch ? certifMatch[1] : undefined;
 
   if (isDashboard) {
-    return <OdooDashboard />;
+    return (
+      <Suspense fallback={<div className="h-screen w-screen flex items-center justify-center">Chargement...</div>}>
+        <OdooDashboard />
+      </Suspense>
+    );
   }
 
   if (isFullScreenChat) {
     return (
       <div className="h-screen w-screen overflow-hidden bg-white">
-        <Chatbot onOpenBooking={handleOpenBooking} isFullScreen={true} />
+        <Suspense fallback={<div className="h-full w-full flex items-center justify-center">Chargement du chat...</div>}>
+          <Chatbot onOpenBooking={handleOpenBooking} isFullScreen={true} />
+        </Suspense>
       </div>
     );
   }
@@ -215,7 +223,9 @@ export default function App() {
       />
 
       <main className="grow">
-        {currentPageContent}
+        <Suspense fallback={<div className="w-full py-12 flex items-center justify-center">Chargement...</div>}>
+          {currentPageContent}
+        </Suspense>
       </main>
 
       <Footer onOpenBooking={() => handleOpenBooking('')} />
@@ -232,7 +242,9 @@ export default function App() {
         user={user}
       />
 
-      <Chatbot onOpenBooking={handleOpenBooking} />
+      <Suspense fallback={null}>
+        <Chatbot onOpenBooking={handleOpenBooking} />
+      </Suspense>
 
       <ToastContainer />
 
@@ -259,7 +271,9 @@ export default function App() {
               className="w-full max-w-3xl overflow-hidden"
               onClick={(e) => e.stopPropagation()}
             >
-              <StressTest onOpenBooking={handleOpenStressBooking} />
+              <Suspense fallback={<div className="p-6">Chargement...</div>}>
+                <StressTest onOpenBooking={handleOpenStressBooking} />
+              </Suspense>
             </motion.div>
           </motion.div>
         )}

@@ -16,6 +16,19 @@ export default defineConfig(() => {
       'process.env.ODOO_API_URL': JSON.stringify(process.env.ODOO_API_URL),
       'process.env.APP_URL': JSON.stringify(process.env.APP_URL),
     },
+    build: {
+      // keep assets smaller and split vendor code for better caching
+      assetsInlineLimit: 4096,
+      rollupOptions: {
+        output: {
+          manualChunks(id: string) {
+            if (id.includes('node_modules')) {
+              return 'vendor';
+            }
+          },
+        },
+      },
+    },
     server: {
       // HMR is disabled in AI Studio via DISABLE_HMR env var.
       // Do not modifyâfile watching is disabled to prevent flickering during agent edits.

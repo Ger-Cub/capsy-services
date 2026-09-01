@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, Suspense } from 'react';
 import LucideIcon from './LucideIcon';
-import LeafletMap from './LeafletMap';
+const LeafletMap = React.lazy(() => import('./LeafletMap'));
 
 export default function ContactSection() {
   const [formName, setFormName] = useState('');
@@ -213,13 +213,15 @@ export default function ContactSection() {
 
             {/* Real Interactive Map using Leaflet pointing at Goma: -1.6815, 29.2306 */}
             <div className="h-64 bg-brand-dark/15 rounded-2xl relative overflow-hidden border border-gray-200 shadow-inner z-10 group">
-              <LeafletMap
-                lat={-1.6815}
-                lng={29.2306}
-                zoom={16}
-                title="CAPSY Services (Goma)"
-                address="N°18, av. Des écoles, Q. Les Volcans, Goma, RDC"
-              />
+              <Suspense fallback={<div className="h-full w-full flex items-center justify-center">Chargement de la carte...</div>}>
+                <LeafletMap
+                  lat={-1.6815}
+                  lng={29.2306}
+                  zoom={16}
+                  title="CAPSY Services (Goma)"
+                  address="N°18, av. Des écoles, Q. Les Volcans, Goma, RDC"
+                />
+              </Suspense>
               <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-xs px-2.5 py-1 rounded-lg text-[9px] font-bold font-poppins uppercase tracking-wider text-brand-wellbeing z-20 select-none shadow-2xs pointer-events-none">
                 📍 Goma : -1.6815, 29.2306
               </div>
