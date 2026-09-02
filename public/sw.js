@@ -1,5 +1,5 @@
-const CACHE_NAME = 'capsy-cache-v2';
-const URLS_TO_CACHE = ['/', '/index.html', '/manifest.webmanifest'];
+const CACHE_NAME = 'capsy-cache-v3';
+const URLS_TO_CACHE = ['/', '/manifest.webmanifest'];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
@@ -18,15 +18,28 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
 
+  // Network-first strategy for HTML navigation to ensure fresh index.html after deployments
+  if (event.request.mode === 'navigate') {
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => {
+          if (response && response.status === 200) {
+            const copy = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put('/index.html', copy));
+          }
+          return response;
+        })
+        .catch(() => {
+          return caches.match('/index.html') || caches.match('/');
+        })
+    );
+    return;
+  }
+
+  // Cache-first strategy for static assets
   event.respondWith(
     caches.match(event.request).then((response) => {
-      return response || fetch(event.request).catch((err) => {
-        // Fallback to index.html ONLY for navigation requests
-        if (event.request.mode === 'navigate') {
-          return caches.match('/index.html');
-        }
-        throw err;
-      });
+      return response || fetch(event.request);
     })
   );
 });
