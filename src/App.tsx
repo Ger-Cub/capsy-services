@@ -5,6 +5,7 @@ import BookingModal from './components/BookingModal';
 import LoginModal from './components/LoginModal';
 import UserProfilePage from './components/UserProfilePage';
 import ToastContainer from './components/Toast';
+import PageLoader from './components/PageLoader';
 import HomePage from './pages/HomePage';
 import { AnimatePresence, motion } from 'motion/react';
 
@@ -22,6 +23,22 @@ const ActualitesPage = React.lazy(() => import('./pages/ActualitesPage'));
 const ActualiteDetailPage = React.lazy(() => import('./pages/ActualiteDetailPage'));
 const ContactSection = React.lazy(() => import('./components/ContactSection'));
 const RendezVousPage = React.lazy(() => import('./pages/RendezVousPage'));
+
+// Preload route chunks silently in the background after initial render
+const preloadAllRoutes = () => {
+  const routes = [
+    () => import('./pages/ServicesPage'),
+    () => import('./pages/AboutPage'),
+    () => import('./pages/FaqPage'),
+    () => import('./pages/GovernancePage'),
+    () => import('./pages/ContactPage'),
+    () => import('./pages/FormationsPage'),
+    () => import('./pages/ActualitesPage'),
+    () => import('./pages/RendezVousPage'),
+    () => import('./components/Chatbot'),
+  ];
+  routes.forEach((fn) => fn());
+};
 
 export default function App() {
   const [bookingOpen, setBookingOpen] = useState(false);
@@ -47,6 +64,8 @@ export default function App() {
 
   useEffect(() => {
     refreshAppointmentsCount();
+    // Preload lazy routes shortly after initial render for instant page switches
+    const timer = setTimeout(preloadAllRoutes, 1000);
 
     const handleLocationChange = () => {
       setCurrentLocation({
@@ -114,6 +133,7 @@ export default function App() {
     document.addEventListener('click', handleGlobalClick);
 
     return () => {
+      clearTimeout(timer);
       window.removeEventListener('popstate', handleLocationChange);
       window.removeEventListener('locationchange', handleLocationChange);
       document.removeEventListener('click', handleGlobalClick);
@@ -223,8 +243,18 @@ export default function App() {
       />
 
       <main className="grow">
-        <Suspense fallback={<div className="w-full py-12 flex items-center justify-center">Chargement...</div>}>
-          {currentPageContent}
+        <Suspense fallback={<PageLoader />}>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={pathname}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.22, ease: [0.25, 1, 0.5, 1] }}
+            >
+              {currentPageContent}
+            </motion.div>
+          </AnimatePresence>
         </Suspense>
       </main>
 
