@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  // Existing
   User,
   Heart,
   Users,
@@ -56,10 +57,52 @@ import {
   QrCode,
   ArrowLeft,
   UserCircle,
-  Mail
+  Mail,
+  // Previously missing — navigation & arrows
+  ArrowRight,
+  // Previously missing — auth
+  AlertTriangle,
+  LogIn,
+  LogOut,
+  UserPlus,
+  LockKeyhole,
+  // Previously missing — calendar / appointments
+  CalendarCheck,
+  CalendarPlus,
+  CalendarX2,
+  // Previously missing — status
+  CheckCheck,
+  CheckCircle,
+  XCircle,
+  History,
+  // Previously missing — UI
+  Eye,
+  Loader2,
+  LayoutDashboard,
+  CreditCard,
+  Scale,
+  Zap,
+  // Previously missing — content
+  FileText,
+  Video,
+  // Previously missing — people / professions
+  UserRound,
+  Stethoscope,
+  // Previously missing — data / stats
+  Activity,
+  LineChart,
+  BrainCircuit,
+  Brain,
+  Microscope,
+  LifeBuoy,
+  // Previously missing — org / social
+  Building2,
+  Share2,
+  ClipboardCheck,
 } from 'lucide-react';
 
 const iconMap = {
+  // Existing
   User,
   Heart,
   Users,
@@ -116,7 +159,40 @@ const iconMap = {
   QrCode,
   ArrowLeft,
   UserCircle,
-  Mail
+  Mail,
+  // Added
+  ArrowRight,
+  AlertTriangle,
+  LogIn,
+  LogOut,
+  UserPlus,
+  LockKeyhole,
+  CalendarCheck,
+  CalendarPlus,
+  CalendarX2,
+  CheckCheck,
+  CheckCircle,
+  XCircle,
+  History,
+  Eye,
+  Loader2,
+  LayoutDashboard,
+  CreditCard,
+  Scale,
+  Zap,
+  FileText,
+  Video,
+  UserRound,
+  Stethoscope,
+  Activity,
+  LineChart,
+  BrainCircuit,
+  Brain,
+  Microscope,
+  LifeBuoy,
+  Building2,
+  Share2,
+  ClipboardCheck,
 };
 
 export type IconName = keyof typeof iconMap;
