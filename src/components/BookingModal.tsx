@@ -212,7 +212,7 @@ export default function BookingModal({
       });
 
       if (!response.ok) {
-        let errorMsg = 'Erreur lors de la synchronisation Odoo';
+        let errorMsg: any = 'Erreur lors de la synchronisation Odoo';
         try {
           const errorData = await response.json();
           errorMsg = errorData.error || errorData.detail || errorData.message || errorMsg;
@@ -222,7 +222,14 @@ export default function BookingModal({
             if (text) errorMsg = text;
           } catch (_e) {}
         }
-        throw new Error(errorMsg);
+        if (typeof errorMsg === 'object') {
+          if (Array.isArray(errorMsg)) {
+            errorMsg = errorMsg.map((err: any) => err.msg || JSON.stringify(err)).join(', ');
+          } else {
+            errorMsg = JSON.stringify(errorMsg);
+          }
+        }
+        throw new Error(String(errorMsg));
       }
 
       const data = await response.json();
