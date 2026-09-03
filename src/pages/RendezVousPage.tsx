@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import LucideIcon from '../components/LucideIcon';
 import PageHero from '../components/PageHero';
 import { getAppointmentsUrl } from '../config/api';
+import AppointmentDetailsModal, { AppointmentDetailsData } from '../components/AppointmentDetailsModal';
 
 interface RendezVousPageProps {
   user?: any;
@@ -63,7 +64,7 @@ function formatOdooDate(dateStr: string): { date: string; time: string; isPast: 
   }
 }
 
-function AppointmentCard({ appt, index }: { appt: OdooAppointment; index: number }) {
+function AppointmentCard({ appt, index, onSelect }: { appt: OdooAppointment; index: number; onSelect: (data: any) => void }) {
   const { data } = appt;
   const statusKey = typeof data.appointment_status === 'string' ? data.appointment_status : 'default';
   const status = getStatusConfig(data.appointment_status);
@@ -91,7 +92,8 @@ function AppointmentCard({ appt, index }: { appt: OdooAppointment; index: number
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.06 }}
-      className={`bg-white rounded-2xl border border-gray-150 hover:border-brand-confidence shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden ${isPast ? 'opacity-70' : ''}`}
+      onClick={() => onSelect(data)}
+      className={`group bg-white rounded-2xl border border-gray-150 hover:border-brand-wellbeing shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden cursor-pointer ${isPast ? 'opacity-70' : ''}`}
     >
       {/* Top accent bar */}
       <div className={`h-1.5 w-full ${statusKey === 'booked' ? 'bg-gradient-to-r from-brand-wellbeing to-brand-confidence' : statusKey === 'cancelled' ? 'bg-rose-400' : 'bg-gradient-to-r from-brand-wellbeing to-brand-confidence'}`} />
@@ -99,11 +101,11 @@ function AppointmentCard({ appt, index }: { appt: OdooAppointment; index: number
       <div className="p-5">
         <div className="flex items-start justify-between gap-3 mb-4">
           <div className="flex items-center gap-3 min-w-0">
-            <div className="p-2.5 bg-brand-wellbeing/10 rounded-xl shrink-0">
+            <div className="p-2.5 bg-brand-wellbeing/10 rounded-xl shrink-0 group-hover:bg-brand-wellbeing/20 transition-colors">
               <LucideIcon name="CalendarCheck" className="h-5 w-5 text-brand-wellbeing" />
             </div>
             <div className="min-w-0">
-              <h3 className="font-poppins font-bold text-brand-dark text-sm leading-tight line-clamp-2">
+              <h3 className="font-poppins font-bold text-brand-dark text-sm leading-tight line-clamp-2 group-hover:text-brand-wellbeing transition-colors">
                 {serviceTitle}
               </h3>
               {appointmentTypeName && (
@@ -144,7 +146,17 @@ function AppointmentCard({ appt, index }: { appt: OdooAppointment; index: number
         </div>
 
         {/* Action buttons */}
-        <div className="mt-4 flex flex-col gap-2">
+        <div className="mt-4 flex flex-col gap-2" onClick={(e) => e.stopPropagation()}>
+          {/* Details modal trigger button */}
+          <button
+            type="button"
+            onClick={() => onSelect(data)}
+            className="w-full flex items-center justify-center gap-2 py-2 px-4 bg-brand-wellbeing/10 hover:bg-brand-wellbeing/20 text-brand-wellbeing text-xs font-bold font-poppins rounded-xl transition-all border border-brand-wellbeing/20"
+          >
+            <LucideIcon name="Eye" className="h-4 w-4" />
+            Consulter les détails du RDV
+          </button>
+
           {/* Video call link */}
           {data.videocall_location && data.videocall_location !== 'false' && (
             <a
@@ -186,6 +198,7 @@ export default function RendezVousPage({ user, onOpenBooking, onLogin }: RendezV
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState<'all' | 'upcoming' | 'past'>('upcoming');
+  const [selectedAppointment, setSelectedAppointment] = useState<AppointmentDetailsData | null>(null);
 
   const fetchAppointments = useCallback(async () => {
     if (!user) return;
@@ -294,8 +307,8 @@ export default function RendezVousPage({ user, onOpenBooking, onLogin }: RendezV
                       key={f.key}
                       onClick={() => setFilter(f.key as any)}
                       className={`relative flex items-center gap-2 px-3 sm:px-4 py-3.5 text-xs font-poppins font-bold transition-all shrink-0 cursor-pointer ${filter === f.key
-                          ? 'text-brand-wellbeing'
-                          : 'text-brand-gray-text hover:text-brand-dark'
+                        ? 'text-brand-wellbeing'
+                        : 'text-brand-gray-text hover:text-brand-dark'
                         }`}
                     >
                       <LucideIcon name={f.icon as any} className="h-4 w-4" />
@@ -375,7 +388,12 @@ export default function RendezVousPage({ user, onOpenBooking, onLogin }: RendezV
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 <AnimatePresence>
                   {filtered.map((appt, i) => (
-                    <AppointmentCard key={appt.id} appt={appt} index={i} />
+                    <AppointmentCard
+                      key={appt.id}
+                      appt={appt}
+                      index={i}
+                      onSelect={(data) => setSelectedAppointment(data)}
+                    />
                   ))}
                 </AnimatePresence>
               </div>
@@ -383,6 +401,12 @@ export default function RendezVousPage({ user, onOpenBooking, onLogin }: RendezV
           </>
         )}
       </div>
+
+      <AppointmentDetailsModal
+        isOpen={!!selectedAppointment}
+        onClose={() => setSelectedAppointment(null)}
+        appointment={selectedAppointment}
+      />
     </main>
   );
 }
