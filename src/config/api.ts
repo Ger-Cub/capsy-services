@@ -43,7 +43,7 @@ export const getAppointmentsUrl = (): string => {
   if (base === '') {
     return '/api/appointments-list';
   }
-  return `${base}/appointments`;
+  return `${base}/appointments/create`;
 };
 
 /**
