@@ -200,7 +200,7 @@ export default function RendezVousPage({ user, onOpenBooking, onLogin }: RendezV
         headers['Authorization'] = `Basic ${b64}`;
       }
 
-      const res = await fetch(`${getAppointmentsUrl()}/?limit=100`, { headers });
+      const res = await fetch(`${getAppointmentsUrl()}/?limit=100&mine_only=true`, { headers });
       if (!res.ok) {
         const err = await res.json().catch(() => ({ detail: 'Erreur serveur' }));
         throw new Error(err.detail || 'Impossible de charger les rendez-vous');

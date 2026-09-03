@@ -22,11 +22,27 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         if (req.method === 'GET') {
             const limit = req.query.limit || '10';
             const futureOnly = req.query.future_only || 'false';
-            const params = new URLSearchParams({ limit: String(limit), future_only: String(futureOnly) });
+            const mineOnly = req.query.mine_only || 'false';
+            const partnerId = req.query.partner_id || '';
+            
+            const params = new URLSearchParams({
+                limit: String(limit),
+                future_only: String(futureOnly),
+                mine_only: String(mineOnly),
+            });
+            if (partnerId) params.append('partner_id', String(partnerId));
+
+            const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+            if (req.headers.authorization) {
+                headers['Authorization'] = req.headers.authorization;
+            }
+            if (req.headers['x-session-id']) {
+                headers['X-Session-ID'] = String(req.headers['x-session-id']);
+            }
 
             const upstream = await fetch(`${FASTAPI_BASE}/appointments/?${params.toString()}`, {
                 method: 'GET',
-                headers: { 'Content-Type': 'application/json' },
+                headers,
             });
 
             const data = await upstream.json();

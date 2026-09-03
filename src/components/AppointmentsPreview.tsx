@@ -30,7 +30,7 @@ export default function AppointmentsPreview({ user, onViewAll, onOpenBooking }: 
     if (user.email && user.password) {
       headers['Authorization'] = `Basic ${btoa(`${user.email}:${user.password}`)}`;
     }
-    fetch(`${getAppointmentsUrl()}/?limit=10&future_only=true`, { headers })
+    fetch(`${getAppointmentsUrl()}/?limit=10&future_only=true&mine_only=true`, { headers })
       .then((r) => r.json())
       .then((data: any[]) => {
         const now = new Date();
@@ -55,7 +55,7 @@ export default function AppointmentsPreview({ user, onViewAll, onOpenBooking }: 
       if (!user) return;
       const headers: Record<string, string> = { 'Content-Type': 'application/json' };
       if (user.email && user.password) headers['Authorization'] = `Basic ${btoa(`${user.email}:${user.password}`)}`;
-      fetch(`${getAppointmentsUrl()}/?limit=10&future_only=true`, { headers })
+      fetch(`${getAppointmentsUrl()}/?limit=10&future_only=true&mine_only=true`, { headers })
         .then((r) => r.json())
         .then((data: any[]) => {
           const now = new Date();
