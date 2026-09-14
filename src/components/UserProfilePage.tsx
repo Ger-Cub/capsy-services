@@ -101,7 +101,7 @@ export default function UserProfilePage({ user, onClose, onLogout }: UserProfile
                                 className="w-full py-3 px-4 bg-brand-wellbeing hover:bg-brand-wellbeing/95 text-white rounded-xl font-bold font-poppins text-sm flex items-center justify-center gap-2 transition-all shadow-lg"
                             >
                                 <LucideIcon name="LayoutDashboard" className="h-4 w-4" />
-                                <span>🚀 Ouvrir Dashboard Odoo</span>
+                                <span>Tableau de bord</span>
                             </a>
                         </div>
 

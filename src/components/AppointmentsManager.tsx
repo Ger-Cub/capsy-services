@@ -56,11 +56,11 @@ export default function AppointmentsManager({
           const cleanDesc = stripHtml(rawDesc);
 
           // Regex extraction from the clean text
-          const therapistMatch = cleanDesc.match(/Therapist:\s*([^\n]*)/i);
+          const therapistMatch = cleanDesc.match(/Therapist:\s*([^\n]*)/i) || cleanDesc.match(/Praticien assigné\s*([^\n]*)/i);
           const notesMatch = cleanDesc.match(/Notes:\s*([\s\S]*?)($|\n[A-Z][a-z]+:)/i);
           const clientPhoneMatch = cleanDesc.match(/Phone:\s*([^\n]*)/i);
 
-          // If we found therapist with extra junk (like "Organisé par"), clean it
+          // If we found therapist with extra junk (like "Organisé par" or "Praticien"), clean it
           let therapist = therapistMatch ? therapistMatch[1].trim() : '';
           if (therapist.includes('Organisé par')) {
             therapist = therapist.split('Organisé par')[0].trim();
