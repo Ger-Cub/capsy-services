@@ -95,7 +95,7 @@ export default function UserProfilePage({ user, onClose, onLogout }: UserProfile
                         </div>
 
                         {/* Actions */}
-                        <div className="px-8 mt-6 mb-2">
+                        {/* <div className="px-8 mt-6 mb-2">
                             <a
                                 href="/?dashboard=true"
                                 className="w-full py-3 px-4 bg-brand-wellbeing hover:bg-brand-wellbeing/95 text-white rounded-xl font-bold font-poppins text-sm flex items-center justify-center gap-2 transition-all shadow-lg"
@@ -103,7 +103,7 @@ export default function UserProfilePage({ user, onClose, onLogout }: UserProfile
                                 <LucideIcon name="LayoutDashboard" className="h-4 w-4" />
                                 <span>Tableau de bord</span>
                             </a>
-                        </div>
+                        </div> */}
 
                         <div className="px-8 mt-4 mb-8 flex flex-col sm:flex-row gap-3">
                             <a
