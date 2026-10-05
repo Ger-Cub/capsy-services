@@ -22,7 +22,7 @@ export default function Chatbot({ onOpenBooking, isFullScreen = false }: Chatbot
       return saved ? JSON.parse(saved) : [
         {
           role: 'model',
-          text: "Bonjour ! Je suis **CAPSY**, votre conseiller virtuel d'écoute et d'orientation 💚.\n\nJe suis là pour vous accompagner de manière confidentielle et sans jugement. Vous pouvez :\n- Réaliser un **test interactif de votre niveau de stress** 📊.\n- Vous informer sur nos **services de psychothérapie et nos tarifs** 💼.\n- Faciliter la **prise de rendez-vous** avec un de nos cliniciens 📅.\n\nComment puis-je vous aider aujourd'hui ?",
+          text: "Bonjour ! Je suis **CAPSY**, votre conseiller virtuel d'orientation 💚.\n\nJe peux vous aider à trouver une information ou demander un rendez-vous. Je ne pose pas de diagnostic et je ne remplace pas une consultation avec un psychologue. Merci de ne pas partager ici des informations personnelles sensibles.\n\nComment puis-je vous aider aujourd'hui ?",
           isWelcome: true
         }
       ];
@@ -30,7 +30,7 @@ export default function Chatbot({ onOpenBooking, isFullScreen = false }: Chatbot
       return [
         {
           role: 'model',
-          text: "Bonjour ! Je suis **CAPSY**, votre conseiller virtuel d'écoute et d'orientation 💚.\n\nJe suis là pour vous accompagner de manière confidentielle et sans jugement. Vous pouvez :\n- Réaliser un **test interactif de votre niveau de stress** 📊.\n- Vous informer sur nos **services de psychothérapie et nos tarifs** 💼.\n- Faciliter la **prise de rendez-vous** avec un de nos cliniciens 📅.\n\nComment puis-je vous aider aujourd'hui ?",
+          text: "Bonjour ! Je suis **CAPSY**, votre conseiller virtuel d'orientation 💚.\n\nJe peux vous aider à trouver une information ou demander un rendez-vous. Je ne pose pas de diagnostic et je ne remplace pas une consultation avec un psychologue. Merci de ne pas partager ici des informations personnelles sensibles.\n\nComment puis-je vous aider aujourd'hui ?",
           isWelcome: true
         }
       ];
@@ -45,7 +45,7 @@ export default function Chatbot({ onOpenBooking, isFullScreen = false }: Chatbot
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const clinicians = [
-    { name: 'Jacques Batenga', role: 'Psychologue Clinicien Principal' },
+    { name: 'Jacques Kambale Batenga', role: 'Psychologue Clinicien Principal' },
     { name: 'Josué Kasereka Shamamba', role: 'Psychologue Praticien' },
     { name: 'Samuel Kasereka Musisiva', role: 'Psychologue & Superviseur' }
   ];

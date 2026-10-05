@@ -30,7 +30,7 @@ export default function SupportTypesSection({ onOpenBooking }: SupportTypesSecti
             <ul className="space-y-3 text-sm text-brand-dark">
               <li>• Entretien privé et sécurisé</li>
               <li>• Suivi sur-mesure selon votre histoire</li>
-              <li>• Intervention rapide en cas de crise</li>
+              <li>• Orientation vers une réponse adaptée selon la situation et les disponibilités du service</li>
             </ul>
             <button
               onClick={onOpenBooking}

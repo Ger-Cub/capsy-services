@@ -15,6 +15,8 @@ import FaqPage from './pages/FaqPage';
 import GovernancePage from './pages/GovernancePage';
 import ContactPage from './pages/ContactPage';
 import FormationsPage from './pages/FormationsPage';
+import MentionsLegalesPage from './pages/MentionsLegalesPage';
+import ConfidentialitePage from './pages/ConfidentialitePage';
 import ContactSection from './components/ContactSection';
 
 export default function App() {
@@ -155,6 +157,8 @@ export default function App() {
   const isFaq = pathname === '/faq';
   const isGouvernance = pathname === '/gouvernance';
   const isContact = pathname === '/contact';
+  const isMentionsLegales = pathname === '/mentions-legales';
+  const isConfidentialite = pathname === '/confidentialite';
   const certifMatch = pathname.match(/^\/formations\/certificat\/(.+)$/);
   const certifId = certifMatch ? certifMatch[1] : undefined;
 
@@ -180,6 +184,10 @@ export default function App() {
     <GovernancePage onOpenBooking={handleOpenBooking} />
   ) : isContact ? (
     <ContactPage onOpenBooking={handleOpenBooking} />
+  ) : isMentionsLegales ? (
+    <MentionsLegalesPage onOpenBooking={handleOpenBooking} />
+  ) : isConfidentialite ? (
+    <ConfidentialitePage onOpenBooking={handleOpenBooking} />
   ) : isFormations ? (
     <FormationsPage certifId={certifId} onOpenBooking={handleOpenBooking} />
   ) : (

@@ -103,9 +103,9 @@ export default function Footer({ onOpenBooking }: FooterProps) {
             &copy; {currentYear} CAPSY SERVICES. Tous droits réservés. Centre d'Assistance Psychologique (RDC).
           </p>
           <div className="flex gap-4">
-            <a href="#" className="hover:text-white transition-colors">Mentions légales</a>
+            <a href="/mentions-legales" className="hover:text-white transition-colors">Mentions légales</a>
             <span>&bull;</span>
-            <a href="#" className="hover:text-white transition-colors">Politique de confidentialité</a>
+            <a href="/confidentialite" className="hover:text-white transition-colors">Politique de confidentialité</a>
             <span>&bull;</span>
             <span className="text-brand-green flex items-center gap-1 font-semibold">
               <span className="h-2 w-2 rounded-full bg-brand-green animate-ping" />

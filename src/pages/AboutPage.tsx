@@ -13,7 +13,7 @@ const APPROACH = [
   },
   {
     title: 'Ethique et qualité',
-    description: 'La bienveillance, la confidentialité et le respect du bénéficiaire guident chacune de nos actions cliniques.',
+    description: 'La bienveillance, la confidentialité et le respect de la personne accompagnée guident chacune de nos actions cliniques.',
   },
 ];
 
@@ -39,10 +39,10 @@ export default function AboutPage({ onOpenBooking }: AboutPageProps) {
               <span className="text-[10px] uppercase tracking-widest text-brand-green font-bold">Présentation</span>
               <h2 className="text-3xl font-poppins font-black text-brand-dark">Notre mission au service du bien-être</h2>
               <p className="text-sm leading-relaxed text-brand-gray-text font-sans">
-                CAPSY SERVICES accompagne les personnes, les familles et les structures vers une meilleure résilience psychologique. Nous travaillons avec des psychologues, des thérapeutes et des professionnels de la santé mentale pour offrir un soutien accessible, discret et adapté.
+                CAPSY Services est la marque de services du Centre d’Assistance Psychologique, CAPSY SARL, institution privée congolaise engagée dans la santé mentale, le soutien psychosocial, la formation et l’innovation.
               </p>
               <p className="text-sm leading-relaxed text-brand-gray-text font-sans">
-                Nous croyons que chaque consultation doit être un espace sécurisé où l’écoute, la qualité et l’éthique sont garanties. Notre objectif est de permettre à chacun de retrouver de la sérénité dans sa vie personnelle et professionnelle.
+                Nous accompagnons les personnes, les familles et les structures vers une meilleure résilience psychologique. Nous travaillons avec des psychologues, des thérapeutes et des professionnels de la santé mentale pour offrir un soutien accessible, discret et adapté.
               </p>
             </div>
             <div className="space-y-6">
@@ -55,7 +55,7 @@ export default function AboutPage({ onOpenBooking }: AboutPageProps) {
               <div className="rounded-3xl border border-gray-150 bg-brand-wellbeing/5 p-8 shadow-sm">
                 <h3 className="text-xl font-poppins font-black text-brand-dark">Notre engagement</h3>
                 <p className="mt-4 text-sm text-brand-gray-text leading-relaxed">
-                  Offrir un accompagnement humain sans concession sur la qualité, avec des tarifs transparents et une éthique qui protège les bénéficiaires à chaque étape.
+                  Offrir un accompagnement humain sans concession sur la qualité, avec des tarifs transparents et une éthique qui protège les personnes accompagnées à chaque étape.
                 </p>
               </div>
             </div>

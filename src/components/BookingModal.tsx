@@ -292,11 +292,19 @@ export default function BookingModal({
                       </button>
                     ))}
                   </div>
-                  <div className="bg-brand-gray-light p-3.5 rounded-xl flex gap-3 text-xs text-brand-gray-text leading-relaxed border border-gray-200 mt-2">
-                    <LucideIcon name="ShieldCheck" className="h-5 w-5 text-brand-wellbeing shrink-0 mt-0.5" />
-                    <p>
-                      Tous nos suivis sont strictement confidentiels et soumis au secret professionnel absolu. Votre sécurité psychologique est préservée.
-                    </p>
+                  <div className="space-y-2 mt-3">
+                    <div className="bg-brand-gray-light p-3.5 rounded-xl flex gap-3 text-xs text-brand-gray-text leading-relaxed border border-gray-200">
+                      <LucideIcon name="Info" className="h-5 w-5 text-brand-wellbeing shrink-0 mt-0.5" />
+                      <p>
+                        Cette demande permet de solliciter un rendez-vous. Elle ne constitue pas une consultation, un diagnostic ni une prise en charge d’urgence.
+                      </p>
+                    </div>
+                    <div className="p-3 rounded-xl bg-amber-50/80 border border-amber-200/80 flex items-start gap-2.5 text-xs text-amber-900 leading-relaxed">
+                      <LucideIcon name="AlertTriangle" className="h-4 w-4 text-amber-600 shrink-0 mt-0.5" />
+                      <p>
+                        <strong className="font-semibold">Urgence :</strong> En cas de danger immédiat, de risque de violence ou d’urgence médicale, contactez les services d’urgence disponibles dans votre zone ou rendez-vous dans la structure de santé la plus proche. CAPSY ne remplace pas les services d’urgence.
+                      </p>
+                    </div>
                   </div>
                 </motion.div>
               )}
@@ -498,10 +506,10 @@ export default function BookingModal({
                       />
                     </div>
 
-                    <div className="bg-green-50 p-3 rounded-lg border border-green-200 flex gap-2.5 text-xs text-brand-gray-text font-medium leading-relaxed">
-                      <LucideIcon name="Lock" className="h-4.5 w-4.5 text-brand-green shrink-0 mt-0.5" />
+                    <div className="bg-brand-gray-light p-3 rounded-xl border border-gray-200 flex gap-2.5 text-xs text-brand-gray-text font-medium leading-relaxed">
+                      <LucideIcon name="ShieldCheck" className="h-4.5 w-4.5 text-brand-green shrink-0 mt-0.5" />
                       <p>
-                        Vos informations sont stockées localement et cryptées cliniquement de bout en bout. Aucun tiers n'a accès à ces données.
+                        Les échanges sont traités de manière confidentielle, conformément au secret professionnel, à notre politique de confidentialité et aux limites prévues par la loi et la protection des personnes.
                       </p>
                     </div>
 
@@ -586,7 +594,7 @@ export default function BookingModal({
                   {/* Actions */}
                   <div className="flex flex-col sm:flex-row gap-2.5 justify-center pt-2 max-w-md mx-auto">
                     <a
-                      href={`https://wa.me/243971234567?text=Bonjour%20Capsy%20Services%2C%20je%20viens%20de%20soumettre%20une%20demande%20de%20rendez-vous%20sur%20votre%20site.%20Mon%20N%C2%B0%20de%20suivi%20est%20${createdAppointment.id}.%20Merci!`}
+                      href={`https://wa.me/243997707312?text=Bonjour%20Capsy%20Services%2C%20je%20viens%20de%20soumettre%20une%20demande%20de%20rendez-vous%20sur%20votre%20site.%20Mon%20N%C2%B0%20de%20suivi%20est%20${createdAppointment.id}.%20Merci!`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="flex-1 py-3 px-4 bg-[#25D366] hover:bg-[#20ba56] text-white font-bold font-poppins rounded-xl flex items-center justify-center gap-2 transition-all shadow-md cursor-pointer text-sm"

@@ -70,14 +70,14 @@ export default function Hero({ onOpenBooking, onOpenStressTest }: HeroProps) {
             </div>
 
             {/* Quick trust metrics */}
-            <div className="pt-6 border-t border-gray-100 grid grid-cols-3 gap-4">
-              <div>
-                <p className="text-xl sm:text-2xl font-bold font-poppins text-brand-wellbeing">100%</p>
-                <p className="text-[10px] text-brand-gray-text uppercase font-semibold tracking-wide">Confidentiel</p>
+            <div className="pt-6 border-t border-gray-100 grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="sm:col-span-1">
+                <p className="text-xs sm:text-sm font-bold font-poppins text-brand-wellbeing leading-snug">Accompagnement confidentiel</p>
+                <p className="text-[10px] text-brand-gray-text font-medium leading-tight mt-0.5">et respectueux de votre vie privée</p>
               </div>
               <div>
                 <p className="text-xl sm:text-2xl font-bold font-poppins text-brand-wellbeing">Goma</p>
-                <p className="text-[10px] text-brand-gray-text uppercase font-semibold tracking-wide">Cabinet Medical</p>
+                <p className="text-[10px] text-brand-gray-text uppercase font-semibold tracking-wide">Cabinet Médical</p>
               </div>
               <div>
                 <p className="text-xl sm:text-2xl font-bold font-poppins text-brand-wellbeing">Direct</p>
