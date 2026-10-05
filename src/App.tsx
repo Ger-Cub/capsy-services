@@ -23,6 +23,8 @@ const ActualitesPage = React.lazy(() => import('./pages/ActualitesPage'));
 const ActualiteDetailPage = React.lazy(() => import('./pages/ActualiteDetailPage'));
 const ContactSection = React.lazy(() => import('./components/ContactSection'));
 const RendezVousPage = React.lazy(() => import('./pages/RendezVousPage'));
+const MentionsLegalesPage = React.lazy(() => import('./pages/MentionsLegalesPage'));
+const ConfidentialitePage = React.lazy(() => import('./pages/ConfidentialitePage'));
 
 // Preload route chunks silently in the background after initial render
 const preloadAllRoutes = () => {
@@ -36,6 +38,8 @@ const preloadAllRoutes = () => {
     () => import('./pages/ActualitesPage'),
     () => import('./pages/RendezVousPage'),
     () => import('./components/Chatbot'),
+    () => import('./pages/MentionsLegalesPage'),
+    () => import('./pages/ConfidentialitePage'),
   ];
   routes.forEach((fn) => fn());
 };
@@ -187,6 +191,8 @@ export default function App() {
   const isGouvernance = pathname === '/gouvernance';
   const isContact = pathname === '/contact';
   const isRendezVous = pathname === '/mes-rendezvous';
+  const isMentionsLegales = pathname === '/mentions-legales';
+  const isConfidentialite = pathname === '/confidentialite';
   const certifMatch = pathname.match(/^\/formations\/certificat\/(.+)$/);
   const certifId = certifMatch ? certifMatch[1] : undefined;
 
@@ -224,6 +230,10 @@ export default function App() {
     <ActualiteDetailPage slug={actualiteSlug} />
   ) : isActualites ? (
     <ActualitesPage onOpenBooking={handleOpenBooking} />
+  ) : isMentionsLegales ? (
+    <MentionsLegalesPage onOpenBooking={handleOpenBooking} />
+  ) : isConfidentialite ? (
+    <ConfidentialitePage onOpenBooking={handleOpenBooking} />
   ) : isFormations ? (
     <FormationsPage certifId={certifId} onOpenBooking={handleOpenBooking} />
   ) : (

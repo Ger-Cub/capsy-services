@@ -40,7 +40,7 @@ export default function SupportTypesSection({ onOpenBooking }: SupportTypesSecti
               </li>
               <li className="flex items-center gap-2">
                 <span className="h-1.5 w-1.5 rounded-full bg-brand-confidence shrink-0"></span>
-                <span>Intervention rapide en cas de crise</span>
+                <span>Orientation vers une réponse adaptée selon la situation et les disponibilités du service</span>
               </li>
             </ul>
             <button

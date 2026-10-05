@@ -76,7 +76,7 @@ export default function Faqs() {
             <LucideIcon name="Info" className="h-5 w-5" />
           </div>
           <p className="text-xs text-brand-dark leading-relaxed font-medium">
-            Une question spécifique qui ne figure pas ici ? Aucun problème. Contactez notre accueil via WhatsApp au <span className="font-bold text-brand-green">+243 97 123 4567</span>. Nous vous répondrons en toute bienveillance.
+            Une question spécifique qui ne figure pas ici ? Aucun problème. Contactez notre accueil via WhatsApp au <span className="font-bold text-brand-green">+243 997 707 312</span>. Nous vous répondrons en toute bienveillance.
           </p>
         </div>
 

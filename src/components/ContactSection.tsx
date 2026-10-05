@@ -40,6 +40,14 @@ export default function ContactSection() {
           </p>
         </div>
 
+        {/* Emergency Alert Callout (N°11) */}
+        <div className="mb-10 max-w-4xl mx-auto p-4 sm:p-5 rounded-2xl bg-amber-50/80 border border-amber-200/80 flex items-start gap-3.5 text-amber-900">
+          <LucideIcon name="AlertTriangle" className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
+          <p className="text-xs sm:text-sm leading-relaxed">
+            <strong className="font-semibold">Urgence :</strong> En cas de danger immédiat, de risque de violence ou d’urgence médicale, contactez les services d’urgence disponibles dans votre zone ou rendez-vous dans la structure de santé la plus proche. CAPSY ne remplace pas les services d’urgence.
+          </p>
+        </div>
+
         {/* Info Grid Split */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-stretch font-sans">
 
@@ -109,36 +117,30 @@ export default function ContactSection() {
                 </div>
                 <div>
                   <h4 className="font-poppins font-bold text-brand-dark text-base">Heures d'Ouverture</h4>
-                  <p className="text-sm text-brand-gray-text mt-1">
-                    Lundi -Sur re Vendredi : 08h00 - 16h00<br />
-                    Samedi : Sur rendez-vous<br />
-                    Dimanche : Fermé
+                  <p className="text-sm text-brand-gray-text mt-1 leading-relaxed">
+                    Lundi au vendredi : 08 h 00 à 16 h 00<br />
+                    Samedi : sur rendez-vous<br />
+                    Dimanche : fermé
                   </p>
                 </div>
               </div>
 
             </div>
 
-            {/* Social handles list card mirroring Image 1 footer */}
+            {/* Social handles list card */}
             <div className="bg-brand-gray-light p-5 rounded-2xl border border-gray-150 space-y-3">
-              <p className="text-xs font-bold text-brand-dark uppercase tracking-wider font-poppins">Suivez-nous sur les réseaux</p>
+              <p className="text-xs font-bold text-brand-dark uppercase tracking-wider font-poppins">Réseaux & Messagerie</p>
               <div className="flex gap-2.5">
-                {[
-                  { icon: 'Facebook', href: '#', label: 'Capsy Services Facebook', color: 'hover:bg-brand-wellbeing hover:text-white' },
-                  { icon: 'Instagram', href: '#', label: 'Capsy Services Instagram', color: 'hover:bg-pink-600 hover:text-white' },
-                  { icon: 'MessageSquareShare', href: 'https://wa.me/243997707312', label: 'WhatsApp direct link', color: 'hover:bg-green-600 hover:text-white bg-brand-green/20 text-brand-green' },
-                  { icon: 'Send', href: '#', label: 'Telegram channel', color: 'hover:bg-brand-wellbeing hover:text-white' },
-                  { icon: 'Linkedin', href: '#', label: 'LinkedIn corporate handle', color: 'hover:bg-brand-dark hover:text-white' }
-                ].map((social, sIdx) => (
-                  <a
-                    key={sIdx}
-                    href={social.href}
-                    title={social.label}
-                    className={`h-9 w-9 bg-white text-brand-dark rounded-full flex items-center justify-center border border-gray-250 transition-all ${social.color}`}
-                  >
-                    <LucideIcon name={social.icon} className="h-4.5 w-4.5" />
-                  </a>
-                ))}
+                <a
+                  href="https://wa.me/243997707312"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title="WhatsApp CAPSY (+243 997 707 312)"
+                  className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#25D366] hover:bg-[#20ba56] text-white rounded-xl text-xs font-bold font-poppins transition-all shadow-xs"
+                >
+                  <LucideIcon name="MessageSquareShare" className="h-4 w-4" />
+                  <span>WhatsApp direct (+243 997 707 312)</span>
+                </a>
               </div>
             </div>
 
@@ -185,17 +187,20 @@ export default function ContactSection() {
                     placeholder="Dites-nous comment nous pouvons vous orienter..."
                     className="w-full p-3 bg-white border border-gray-200 rounded-xl text-brand-dark text-sm outline-none focus:border-brand-wellbeing transition-colors resize-none"
                   />
+                  <p className="text-[11px] text-brand-gray-text mt-1.5 leading-relaxed">
+                    Pour votre sécurité, ne décrivez pas ici votre situation personnelle en détail. Ce formulaire sert à demander une information ou un rendez-vous.
+                  </p>
                 </div>
 
-                <div className="flex justify-between items-center pt-2">
-                  <p className="text-[10px] text-brand-gray-text flex items-center gap-1">
-                    <LucideIcon name="Lock" className="h-3.5 w-3.5 text-brand-green" />
-                    Strictement confidentiel sous chiffrement
+                <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-3 pt-2">
+                  <p className="text-[11px] text-brand-gray-text flex items-center gap-1.5">
+                    <LucideIcon name="ShieldCheck" className="h-4 w-4 text-brand-green shrink-0" />
+                    <span>Les informations transmises sont traitées conformément à notre politique de confidentialité.</span>
                   </p>
 
                   <button
                     type="submit"
-                    className="px-6 py-2.5 bg-brand-wellbeing hover:bg-brand-wellbeing/90 text-white font-bold font-poppins rounded-xl text-xs flex items-center gap-2 transition-all shadow-md cursor-pointer"
+                    className="px-6 py-2.5 bg-brand-wellbeing hover:bg-brand-wellbeing/90 text-white font-bold font-poppins rounded-xl text-xs flex items-center justify-center gap-2 transition-all shadow-md cursor-pointer shrink-0"
                   >
                     <LucideIcon name="Send" className="h-3.5 w-3.5 text-brand-green" />
                     <span>Envoyer le Message</span>
