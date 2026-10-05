@@ -1,4 +1,11 @@
 User-agent: *
 Allow: /
 
-Sitemap: /sitemap.xml
+# Exclure les pages privées / non indexables
+Disallow: /mes-rendezvous
+Disallow: /chat
+Disallow: /dashboard
+Disallow: /api/
+
+# Sitemap
+Sitemap: https://www.capsy-rdc.org/sitemap.xml

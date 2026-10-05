@@ -146,6 +146,46 @@ app.post("/api/auth", async (req, res) => {
   return authHandler(req as any, res as any);
 });
 
+// --- Server-side 301 redirects for legacy URLs ---
+const SERVER_REDIRECTS: Record<string, string> = {
+  '/our-services':     '/services',
+  '/services-list':    '/services',
+  '/service':          '/services',
+  '/psychologie':      '/services',
+  '/apropos':          '/a-propos',
+  '/about':            '/a-propos',
+  '/about-us':         '/a-propos',
+  '/a-propos-de-nous': '/a-propos',
+  '/qui-sommes-nous':  '/a-propos',
+  '/contactus':        '/contact',
+  '/contact-us':       '/contact',
+  '/nous-contacter':   '/contact',
+  '/rendez-vous':      '/mes-rendezvous',
+  '/prendre-rdv':      '/mes-rendezvous',
+  '/reservation':      '/mes-rendezvous',
+  '/booking':          '/mes-rendezvous',
+  '/faqs':             '/faq',
+  '/questions':        '/faq',
+  '/team':             '/gouvernance',
+  '/equipe':           '/gouvernance',
+  '/formation':        '/formations',
+  '/training':         '/formations',
+  '/academy':          '/formations',
+  '/news':             '/actualites',
+  '/blog':             '/actualites',
+  '/home':             '/',
+  '/index':            '/',
+  '/index.html':       '/',
+};
+
+app.use((req, res, next) => {
+  const target = SERVER_REDIRECTS[req.path] ?? SERVER_REDIRECTS[req.path.replace(/\/$/, '')];
+  if (target) {
+    return res.redirect(301, target);
+  }
+  next();
+});
+
 // Serve static files or use Vite dev server
 if (process.env.NODE_ENV !== "production") {
   (async () => {

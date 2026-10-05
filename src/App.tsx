@@ -8,6 +8,40 @@ import ToastContainer from './components/Toast';
 import PageLoader from './components/PageLoader';
 import HomePage from './pages/HomePage';
 import { AnimatePresence, motion } from 'motion/react';
+import { applySeoMeta, PAGE_SEO } from './hooks/useSeoMeta';
+
+// --- Legacy URL redirect map (anciens chemins → nouveaux) ---
+const LEGACY_REDIRECTS: Record<string, string> = {
+  '/our-services':        '/services',
+  '/services-list':       '/services',
+  '/service':             '/services',
+  '/psychologie':         '/services',
+  '/apropos':             '/a-propos',
+  '/about':               '/a-propos',
+  '/about-us':            '/a-propos',
+  '/a-propos-de-nous':    '/a-propos',
+  '/qui-sommes-nous':     '/a-propos',
+  '/contactus':           '/contact',
+  '/contact-us':          '/contact',
+  '/nous-contacter':      '/contact',
+  '/rendez-vous':         '/mes-rendezvous',
+  '/prendre-rdv':         '/mes-rendezvous',
+  '/reservation':         '/mes-rendezvous',
+  '/booking':             '/mes-rendezvous',
+  '/faqs':                '/faq',
+  '/questions':           '/faq',
+  '/team':                '/gouvernance',
+  '/equipe':              '/gouvernance',
+  '/formation':           '/formations',
+  '/training':            '/formations',
+  '/academy':             '/formations',
+  '/news':                '/actualites',
+  '/blog':                '/actualites',
+  '/home':                '/',
+  '/index':               '/',
+  '/index.html':          '/',
+};
+
 
 // Lazy-load heavy or infrequently-used components to reduce initial bundle
 const Chatbot = React.lazy(() => import('./components/Chatbot'));
@@ -72,11 +106,31 @@ export default function App() {
     const timer = setTimeout(preloadAllRoutes, 1000);
 
     const handleLocationChange = () => {
+      const rawPathname = window.location.pathname;
+
+      // --- 1. Legacy URL redirects (client-side 301 equivalent) ---
+      const redirectTarget = LEGACY_REDIRECTS[rawPathname.toLowerCase()] ??
+        LEGACY_REDIRECTS[rawPathname.toLowerCase().replace(/\/$/, '')];
+      if (redirectTarget) {
+        window.history.replaceState({}, '', redirectTarget);
+        window.dispatchEvent(new Event('locationchange'));
+        return;
+      }
+
+      // --- 2. Update routing state ---
       setCurrentLocation({
         pathname: window.location.pathname,
         search: window.location.search,
       });
 
+      // --- 3. Apply SEO meta tags for this page ---
+      const seoKey = window.location.pathname === '/' ? '/'
+        : Object.keys(PAGE_SEO).find(k => window.location.pathname.startsWith(k) && k !== '/')
+        ?? '/';
+      const seoOpts = PAGE_SEO[seoKey] ?? PAGE_SEO['/'];
+      applySeoMeta(seoOpts);
+
+      // --- 4. Handle ?booking= query param ---
       const params = new URLSearchParams(window.location.search);
       const bookingParam = params.get('booking');
       if (bookingParam) {
