@@ -43,40 +43,24 @@ const LEGACY_REDIRECTS: Record<string, string> = {
 };
 
 
-// Lazy-load heavy or infrequently-used components to reduce initial bundle
+// Import core pages directly for instant, zero-delay SPA navigation without loading spinners
+import ServicesPage from './pages/ServicesPage';
+import AboutPage from './pages/AboutPage';
+import FaqPage from './pages/FaqPage';
+import GovernancePage from './pages/GovernancePage';
+import ContactPage from './pages/ContactPage';
+import FormationsPage from './pages/FormationsPage';
+import ActualitesPage from './pages/ActualitesPage';
+import ActualiteDetailPage from './pages/ActualiteDetailPage';
+import RendezVousPage from './pages/RendezVousPage';
+import MentionsLegalesPage from './pages/MentionsLegalesPage';
+import ConfidentialitePage from './pages/ConfidentialitePage';
+
+// Lazy-load only heavy or infrequently used standalone components to optimize initial bundle
 const Chatbot = React.lazy(() => import('./components/Chatbot'));
 const OdooDashboard = React.lazy(() => import('./components/OdooDashboard'));
 const StressTest = React.lazy(() => import('./components/StressTest'));
-const ServicesPage = React.lazy(() => import('./pages/ServicesPage'));
-const AboutPage = React.lazy(() => import('./pages/AboutPage'));
-const FaqPage = React.lazy(() => import('./pages/FaqPage'));
-const GovernancePage = React.lazy(() => import('./pages/GovernancePage'));
-const ContactPage = React.lazy(() => import('./pages/ContactPage'));
-const FormationsPage = React.lazy(() => import('./pages/FormationsPage'));
-const ActualitesPage = React.lazy(() => import('./pages/ActualitesPage'));
-const ActualiteDetailPage = React.lazy(() => import('./pages/ActualiteDetailPage'));
-const ContactSection = React.lazy(() => import('./components/ContactSection'));
-const RendezVousPage = React.lazy(() => import('./pages/RendezVousPage'));
-const MentionsLegalesPage = React.lazy(() => import('./pages/MentionsLegalesPage'));
-const ConfidentialitePage = React.lazy(() => import('./pages/ConfidentialitePage'));
 
-// Preload route chunks silently in the background after initial render
-const preloadAllRoutes = () => {
-  const routes = [
-    () => import('./pages/ServicesPage'),
-    () => import('./pages/AboutPage'),
-    () => import('./pages/FaqPage'),
-    () => import('./pages/GovernancePage'),
-    () => import('./pages/ContactPage'),
-    () => import('./pages/FormationsPage'),
-    () => import('./pages/ActualitesPage'),
-    () => import('./pages/RendezVousPage'),
-    () => import('./components/Chatbot'),
-    () => import('./pages/MentionsLegalesPage'),
-    () => import('./pages/ConfidentialitePage'),
-  ];
-  routes.forEach((fn) => fn());
-};
 
 export default function App() {
   const [bookingOpen, setBookingOpen] = useState(false);
@@ -102,8 +86,6 @@ export default function App() {
 
   useEffect(() => {
     refreshAppointmentsCount();
-    // Preload lazy routes shortly after initial render for instant page switches
-    const timer = setTimeout(preloadAllRoutes, 1000);
 
     const handleLocationChange = () => {
       const rawPathname = window.location.pathname;
@@ -117,10 +99,12 @@ export default function App() {
         return;
       }
 
-      // --- 2. Update routing state ---
-      setCurrentLocation({
-        pathname: window.location.pathname,
-        search: window.location.search,
+      // --- 2. Update routing state with non-blocking transition ---
+      React.startTransition(() => {
+        setCurrentLocation({
+          pathname: window.location.pathname,
+          search: window.location.search,
+        });
       });
 
       // --- 3. Apply SEO meta tags for this page ---
@@ -191,7 +175,6 @@ export default function App() {
     document.addEventListener('click', handleGlobalClick);
 
     return () => {
-      clearTimeout(timer);
       window.removeEventListener('popstate', handleLocationChange);
       window.removeEventListener('locationchange', handleLocationChange);
       document.removeEventListener('click', handleGlobalClick);
