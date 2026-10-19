@@ -50,6 +50,8 @@ export default function BookingModal({
   const [createdAppointment, setCreatedAppointment] = useState<Appointment | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [servicesList, setServicesList] = useState<any[]>([]);
+  const [isLoadingServices, setIsLoadingServices] = useState(false);
+  const [isLoadingTherapists, setIsLoadingTherapists] = useState(false);
 
   // Pre-fill user data if logged in
   useEffect(() => {
@@ -67,17 +69,18 @@ export default function BookingModal({
 
   // Synchroniser le service sélectionné si initialServiceId change
   useEffect(() => {
-    if (initialServiceId) {
-      const match = sourceServices.find((s) =>
-        String(s.id) === String(initialServiceId) ||
-        (s.title && s.title.toLowerCase().includes(initialServiceId.toLowerCase()))
-      );
-      if (match) {
-        setServiceId(match.id);
-        setSelectedServiceTitle(match.title);
-      } else {
-        setServiceId(initialServiceId);
-      }
+    const sid = typeof initialServiceId === 'string' ? initialServiceId : '';
+    if (!sid) return;
+    const sidLower = sid.toLowerCase();
+    const match = sourceServices.find((s) =>
+      String(s.id) === sid ||
+      (s.title && s.title.toLowerCase().includes(sidLower))
+    );
+    if (match) {
+      setServiceId(match.id);
+      setSelectedServiceTitle(match.title);
+    } else {
+      setServiceId(sid);
     }
   }, [initialServiceId, sourceServices]);
 
@@ -85,6 +88,7 @@ export default function BookingModal({
   useEffect(() => {
     if (!isOpen) return;
     const controller = new AbortController();
+    setIsLoadingServices(true);
     (async () => {
       try {
         const resp = await fetch(`${getAppointmentTypesUrl()}?limit=50`, {
@@ -140,11 +144,13 @@ export default function BookingModal({
           setServicesList(mapped);
 
           // Si un initialServiceId était demandé, faire correspondre intelligemment
+          const initSid = typeof initialServiceId === 'string' ? initialServiceId : '';
           let matched = null;
-          if (initialServiceId) {
+          if (initSid) {
+            const initSidLower = initSid.toLowerCase();
             matched = mapped.find((m: any) =>
-              String(m.id) === String(initialServiceId) ||
-              m.title.toLowerCase().includes(initialServiceId.toLowerCase())
+              String(m.id) === initSid ||
+              m.title.toLowerCase().includes(initSidLower)
             );
           }
 
@@ -160,6 +166,8 @@ export default function BookingModal({
         if (err.name !== 'AbortError') {
           console.debug('Unable to fetch appointment types from Odoo, using static SERVICES fallback');
         }
+      } finally {
+        setIsLoadingServices(false);
       }
     })();
     return () => controller.abort();
@@ -184,6 +192,7 @@ export default function BookingModal({
     }
     const queryString = params.toString() ? `?${params.toString()}` : '';
 
+    setIsLoadingTherapists(true);
     fetch(`${getTherapistsUrl()}${queryString}`)
       .then((r) => r.json())
       .then((data) => {
@@ -200,6 +209,9 @@ export default function BookingModal({
       })
       .catch((err) => {
         console.warn('Erreur chargement thérapeutes Odoo:', err);
+      })
+      .finally(() => {
+        setIsLoadingTherapists(false);
       });
   }, [isOpen, serviceId, selectedServiceTitle, sourceServices]);
 
@@ -447,36 +459,48 @@ export default function BookingModal({
                     Quel type d'accompagnement recherchez-vous aujourd'hui ?
                   </p>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3" id="service-selector">
-                    {sourceServices.map((s) => (
-                      <button
-                        key={s.id}
-                        type="button"
-                        onClick={() => handleServiceSelect(s.id)}
-                        className={`p-4 rounded-xl border-2 text-left transition-all hover:bg-neutral-50 flex flex-col justify-between h-full ${serviceId === s.id
-                          ? 'border-brand-green bg-green-50/20 shadow-sm'
-                          : 'border-gray-200'
-                          }`}
-                      >
-                        <div className="flex items-center gap-3 mb-2">
-                          <div className={`p-2 rounded-lg ${serviceId === s.id ? 'bg-brand-green text-white' : 'bg-brand-gray-light text-brand-wellbeing'}`}>
-                            <LucideIcon name={s.iconName} className="h-5 w-5" />
+                    {isLoadingServices
+                      ? Array.from({ length: 4 }).map((_, i) => (
+                          <div key={i} className="p-4 rounded-xl border-2 border-gray-100 bg-gray-50 animate-pulse flex flex-col gap-2 h-28">
+                            <div className="flex items-center gap-3">
+                              <div className="h-9 w-9 rounded-lg bg-gray-200 shrink-0" />
+                              <div className="h-4 w-2/3 rounded-md bg-gray-200" />
+                            </div>
+                            <div className="h-3 w-full rounded-md bg-gray-100 mt-1" />
+                            <div className="h-3 w-4/5 rounded-md bg-gray-100" />
                           </div>
-                          <span className="font-poppins font-bold text-brand-dark text-sm leading-tight">
-                            {s.title}
-                          </span>
-                        </div>
-                        <p className="text-xs text-brand-gray-text line-clamp-2 mt-1">
-                          {s.shortDescription}
-                        </p>
-                        {serviceId === s.id && (
-                          <div className="flex justify-end w-full mt-3">
-                            <span className="text-brand-green text-xs font-semibold flex items-center gap-1">
-                              Sélectionné <LucideIcon name="Check" className="h-3.5 w-3.5" strokeWidth={3} />
-                            </span>
-                          </div>
-                        )}
-                      </button>
-                    ))}
+                        ))
+                      : sourceServices.map((s) => (
+                          <button
+                            key={s.id}
+                            type="button"
+                            onClick={() => handleServiceSelect(s.id)}
+                            className={`p-4 rounded-xl border-2 text-left transition-all hover:bg-neutral-50 flex flex-col justify-between h-full ${serviceId === s.id
+                              ? 'border-brand-green bg-green-50/20 shadow-sm'
+                              : 'border-gray-200'
+                              }`}
+                          >
+                            <div className="flex items-center gap-3 mb-2">
+                              <div className={`p-2 rounded-lg ${serviceId === s.id ? 'bg-brand-green text-white' : 'bg-brand-gray-light text-brand-wellbeing'}`}>
+                                <LucideIcon name={s.iconName} className="h-5 w-5" />
+                              </div>
+                              <span className="font-poppins font-bold text-brand-dark text-sm leading-tight">
+                                {s.title}
+                              </span>
+                            </div>
+                            <p className="text-xs text-brand-gray-text line-clamp-2 mt-1">
+                              {s.shortDescription}
+                            </p>
+                            {serviceId === s.id && (
+                              <div className="flex justify-end w-full mt-3">
+                                <span className="text-brand-green text-xs font-semibold flex items-center gap-1">
+                                  Sélectionné <LucideIcon name="Check" className="h-3.5 w-3.5" strokeWidth={3} />
+                                </span>
+                              </div>
+                            )}
+                          </button>
+                        ))
+                    }
                   </div>
                   <div className="space-y-2 mt-3">
                     <div className="bg-brand-gray-light p-3.5 rounded-xl flex gap-3 text-xs text-brand-gray-text leading-relaxed border border-gray-200">
@@ -597,41 +621,53 @@ export default function BookingModal({
                         </div>
                       </button>
 
-                      {(odooTherapists.length > 0
-                        ? odooTherapists.map(t => ({ label: t.name, avatar: t.avatar, desc: 'Psychologue Clinicien' }))
-                        : (matchedService?.therapists?.map(name => ({
-                            label: name,
-                            avatar: null,
-                            desc: name.includes('Batenga') ? 'Sénior Clinicien' : name.includes('SHAMAMBA') ? 'Spécialiste TCC' : 'Psychologue Clinicien'
-                          })) || [])
-                      ).map((therapist) => (
-                        <button
-                          key={therapist.label}
-                          type="button"
-                          onClick={() => setPreferredTherapist(therapist.label)}
-                          className={`p-3.5 rounded-2xl border-2 text-left flex items-center gap-3 transition-all ${preferredTherapist === therapist.label
-                            ? 'border-brand-wellbeing bg-brand-wellbeing/5 text-brand-wellbeing font-semibold shadow-xs'
-                            : 'border-gray-200 text-brand-gray-text hover:border-gray-300'
-                            }`}
-                        >
-                          {therapist.avatar ? (
-                            <img
-                              src={therapist.avatar}
-                              alt={therapist.label}
-                              className="h-10 w-10 rounded-full object-cover shrink-0 ring-2 ring-brand-wellbeing/30 shadow-xs"
-                            />
-                          ) : (
-                            <div className="h-10 w-10 rounded-full bg-brand-wellbeing/10 text-brand-wellbeing font-bold font-poppins text-xs flex items-center justify-center shrink-0 border border-brand-wellbeing/20">
-                              {therapist.label.split(' ').map((n: string) => n[0]).slice(0, 2).join('').toUpperCase()}
+                      {isLoadingTherapists
+                        ? Array.from({ length: 3 }).map((_, i) => (
+                            <div key={i} className="p-3.5 rounded-2xl border-2 border-gray-100 bg-gray-50 animate-pulse flex items-center gap-3">
+                              <div className="h-10 w-10 rounded-full bg-gray-200 shrink-0" />
+                              <div className="flex flex-col gap-1.5 flex-1">
+                                <div className="h-3 w-3/4 rounded-md bg-gray-200" />
+                                <div className="h-2.5 w-1/2 rounded-md bg-gray-100" />
+                              </div>
                             </div>
-                          )}
-                          <div className="min-w-0">
-                            <p className="text-xs font-poppins font-bold text-brand-dark leading-tight truncate">{therapist.label}</p>
-                            <p className="text-[10px] text-brand-gray-text mt-0.5 truncate">{therapist.desc}</p>
-                          </div>
-                        </button>
-                      ))}
+                          ))
+                        : (odooTherapists.length > 0
+                            ? odooTherapists.map(t => ({ label: t.name, avatar: t.avatar, desc: 'Psychologue Clinicien' }))
+                            : (matchedService?.therapists?.map(name => ({
+                                label: name,
+                                avatar: null,
+                                desc: name.includes('Batenga') ? 'Sénior Clinicien' : name.includes('SHAMAMBA') ? 'Spécialiste TCC' : 'Psychologue Clinicien'
+                              })) || [])
+                          ).map((therapist) => (
+                            <button
+                              key={therapist.label}
+                              type="button"
+                              onClick={() => setPreferredTherapist(therapist.label)}
+                              className={`p-3.5 rounded-2xl border-2 text-left flex items-center gap-3 transition-all ${preferredTherapist === therapist.label
+                                ? 'border-brand-wellbeing bg-brand-wellbeing/5 text-brand-wellbeing font-semibold shadow-xs'
+                                : 'border-gray-200 text-brand-gray-text hover:border-gray-300'
+                                }`}
+                            >
+                              {therapist.avatar ? (
+                                <img
+                                  src={therapist.avatar}
+                                  alt={therapist.label}
+                                  className="h-10 w-10 rounded-full object-cover shrink-0 ring-2 ring-brand-wellbeing/30 shadow-xs"
+                                />
+                              ) : (
+                                <div className="h-10 w-10 rounded-full bg-brand-wellbeing/10 text-brand-wellbeing font-bold font-poppins text-xs flex items-center justify-center shrink-0 border border-brand-wellbeing/20">
+                                  {therapist.label.split(' ').map((n: string) => n[0]).slice(0, 2).join('').toUpperCase()}
+                                </div>
+                              )}
+                              <div className="min-w-0">
+                                <p className="text-xs font-poppins font-bold text-brand-dark leading-tight truncate">{therapist.label}</p>
+                                <p className="text-[10px] text-brand-gray-text mt-0.5 truncate">{therapist.desc}</p>
+                              </div>
+                            </button>
+                          ))
+                      }
                     </div>
+
                   </div>
                 </motion.div>
               )}
