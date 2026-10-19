@@ -35,6 +35,8 @@ export interface Appointment {
   preferredTherapist: string;
   status: 'confirmé' | 'en_attente' | 'annulé';
   createdAt: string;
+  appointmentTypeId?: number;
+  format?: 'presentiel' | 'en_ligne';
 }
 
 export interface Question {

@@ -8,6 +8,9 @@ import { createServer as createViteServer } from "vite";
 import { GoogleGenAI } from "@google/genai";
 import odooHandler from "./api/odoo";
 import authHandler from "./api/auth";
+import appointmentTypesHandler from "./api/appointment-types";
+import therapistsHandler from "./api/therapists";
+import appointmentsListHandler from "./api/appointments-list";
 
 const app = express();
 app.use(express.json());
@@ -144,6 +147,21 @@ app.post("/api/odoo", async (req, res) => {
 // Auth API route
 app.post("/api/auth", async (req, res) => {
   return authHandler(req as any, res as any);
+});
+
+// Appointment Types API route (Odoo module Rendez-vous)
+app.all("/api/appointment-types", async (req, res) => {
+  return appointmentTypesHandler(req as any, res as any);
+});
+
+// Therapists API route
+app.all("/api/therapists", async (req, res) => {
+  return therapistsHandler(req as any, res as any);
+});
+
+// Appointments List / Create API route
+app.all("/api/appointments-list", async (req, res) => {
+  return appointmentsListHandler(req as any, res as any);
 });
 
 // --- Server-side 301 redirects for legacy URLs ---

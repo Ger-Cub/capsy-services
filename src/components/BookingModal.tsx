@@ -4,7 +4,7 @@ import { SERVICES as STATIC_SERVICES } from '../data/staticData';
 import { Appointment } from '../types';
 import LucideIcon from './LucideIcon';
 
-import { getTherapistsUrl, getAppointmentsUrl } from '../config/api';
+import { getTherapistsUrl, getAppointmentsUrl, getAppointmentTypesUrl } from '../config/api';
 
 interface BookingModalProps {
   isOpen: boolean;
@@ -14,13 +14,14 @@ interface BookingModalProps {
   user?: any;
 }
 
+// Horaires de consultation : de 09h00 à 16h00
 const TIME_SLOTS = [
-  '08h30 - 09h30',
-  '10h00 - 11h00',
-  '11h30 - 12h30',
-  '14h00 - 15h00',
-  '15h30 - 16h30',
-  '17h00 - 18h00',
+  '09h00 - 10h00',
+  '10h30 - 11h30',
+  '12h00 - 13h00',
+  '13h30 - 14h30',
+  '14h30 - 15h30',
+  '15h00 - 16h00',
 ];
 
 export default function BookingModal({
@@ -64,44 +65,101 @@ export default function BookingModal({
     || STATIC_SERVICES.find((s) => String(s.id) === String(serviceId));
 
 
-  // Synchronize initial service if changed
+  // Synchroniser le service sélectionné si initialServiceId change
   useEffect(() => {
     if (initialServiceId) {
-      setServiceId(initialServiceId);
+      const match = sourceServices.find((s) =>
+        String(s.id) === String(initialServiceId) ||
+        (s.title && s.title.toLowerCase().includes(initialServiceId.toLowerCase()))
+      );
+      if (match) {
+        setServiceId(match.id);
+        setSelectedServiceTitle(match.title);
+      } else {
+        setServiceId(initialServiceId);
+      }
     }
-  }, [initialServiceId]);
+  }, [initialServiceId, sourceServices]);
 
-  // Fetch products/services from backend (Odoo proxy)
+  // Récupérer les types de rendez-vous publiés depuis Odoo (module Rendez-vous)
   useEffect(() => {
     if (!isOpen) return;
     const controller = new AbortController();
     (async () => {
       try {
-        const resp = await fetch('/api/odoo', {
-          method: 'POST',
+        const resp = await fetch(`${getAppointmentTypesUrl()}?limit=50`, {
+          method: 'GET',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action: 'list_products', params: { limit: 50 } }),
           signal: controller.signal,
         });
         if (!resp.ok) return;
         const data = await resp.json();
-        const products = data.products || [];
-        const mapped = products.map((p: any) => ({
-          id: String(p.id),
-          title: p.name || p.display_name || `Service ${p.id}`,
-          shortDescription: p.description_sale || p.description || '',
-          therapists: [],
-        }));
-        if (mapped.length > 0) {
+        const rawTypes = Array.isArray(data) ? data : (data.types || data.items || []);
+        if (rawTypes.length > 0) {
+          const mapped = rawTypes.map((item: any) => {
+            const d = item.data || item;
+            const name = d.name || item.name || `Type de rendez-vous #${item.id}`;
+            const nameLower = name.toLowerCase();
+
+            // Attribuer une icône pertinente selon le service
+            let iconName = 'HeartHandshake';
+            if (nameLower.includes('individuelle') || nameLower.includes('individuel')) {
+              iconName = 'User';
+            } else if (nameLower.includes('enfant') || nameLower.includes('ado')) {
+              iconName = 'Smile';
+            } else if (nameLower.includes('supervision')) {
+              iconName = 'GraduationCap';
+            } else if (nameLower.includes('couple')) {
+              iconName = 'Heart';
+            } else if (nameLower.includes('famille')) {
+              iconName = 'Users';
+            }
+
+            // Description courte adaptée
+            let shortDescription = d.category === 'recurring' ? 'Rendez-vous récurrent' : 'Séance d\'accompagnement clinique';
+            if (nameLower.includes('individuelle')) {
+              shortDescription = 'Entretien confidentiel avec un psychologue clinicien certifié.';
+            } else if (nameLower.includes('enfant') || nameLower.includes('ado')) {
+              shortDescription = 'Bilan psycho-émotionnel et accompagnement adapté aux jeunes.';
+            } else if (nameLower.includes('supervision')) {
+              shortDescription = 'Supervision clinique, perfectionnement et analyse de pratique.';
+            }
+
+            return {
+              id: String(item.id),
+              appointmentTypeId: Number(item.id),
+              title: name,
+              shortDescription,
+              duration: d.appointment_duration || 1,
+              staffUserIds: d.staff_user_ids || [],
+              iconName,
+              therapists: [],
+            };
+          });
+
           setServicesList(mapped);
-          // If no service selected yet, set to first
-          if (!initialServiceId && (!serviceId || serviceId === STATIC_SERVICES[0].id)) {
+
+          // Si un initialServiceId était demandé, faire correspondre intelligemment
+          let matched = null;
+          if (initialServiceId) {
+            matched = mapped.find((m: any) =>
+              String(m.id) === String(initialServiceId) ||
+              m.title.toLowerCase().includes(initialServiceId.toLowerCase())
+            );
+          }
+
+          if (matched) {
+            setServiceId(matched.id);
+            setSelectedServiceTitle(matched.title);
+          } else if (!serviceId || serviceId === STATIC_SERVICES[0].id) {
             setServiceId(mapped[0].id);
+            setSelectedServiceTitle(mapped[0].title);
           }
         }
-      } catch (err) {
-        // keep static fallback
-        console.debug('Unable to fetch products, using static SERVICES');
+      } catch (err: any) {
+        if (err.name !== 'AbortError') {
+          console.debug('Unable to fetch appointment types from Odoo, using static SERVICES fallback');
+        }
       }
     })();
     return () => controller.abort();
@@ -109,18 +167,41 @@ export default function BookingModal({
 
   const [odooTherapists, setOdooTherapists] = useState<{ id: number; name: string; avatar: string | null }[]>([]);
 
+  // Charger les thérapeutes autorisés pour ce type de rendez-vous depuis Odoo
   useEffect(() => {
-    if (!isOpen || !selectedServiceTitle) return;
-    const titleParam = `?service_title=${encodeURIComponent(selectedServiceTitle)}`;
-    fetch(`${getTherapistsUrl()}/${titleParam}`)
+    if (!isOpen) return;
+
+    const currentService = sourceServices.find((s) => String(s.id) === String(serviceId));
+    const apptTypeId = currentService?.appointmentTypeId || (!isNaN(Number(serviceId)) ? Number(serviceId) : undefined);
+    const serviceTitle = currentService?.title || selectedServiceTitle;
+
+    const params = new URLSearchParams();
+    if (apptTypeId) {
+      params.append('appointment_type_id', String(apptTypeId));
+    }
+    if (serviceTitle) {
+      params.append('service_title', serviceTitle);
+    }
+    const queryString = params.toString() ? `?${params.toString()}` : '';
+
+    fetch(`${getTherapistsUrl()}${queryString}`)
       .then((r) => r.json())
       .then((data) => {
         if (Array.isArray(data)) {
           setOdooTherapists(data);
+          // Si le praticien actuellement sélectionné n'est pas dans la liste des psychologues habilités,
+          // réinitialiser à 'Premier disponible'
+          setPreferredTherapist((prev) => {
+            if (prev === 'Premier disponible') return prev;
+            const exists = data.some((t: any) => t.name === prev);
+            return exists ? prev : 'Premier disponible';
+          });
         }
       })
-      .catch(() => {});
-  }, [isOpen, selectedServiceTitle]);
+      .catch((err) => {
+        console.warn('Erreur chargement thérapeutes Odoo:', err);
+      });
+  }, [isOpen, serviceId, selectedServiceTitle, sourceServices]);
 
   // Generate 7 upcoming business days dynamically
   const [availableDates, setAvailableDates] = useState<{ value: string; label: string }[]>([]);
@@ -197,12 +278,15 @@ export default function BookingModal({
     try {
       // Try to save to Odoo
       // Post directly to FastAPI backend which uses its .env credentials
+      const currentApptTypeId = matchedService?.appointmentTypeId || (!isNaN(Number(serviceId)) ? Number(serviceId) : undefined);
+
       const response = await fetch(getAppointmentsUrl(), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           appointment: {
             ...newAppointment,
+            appointmentTypeId: currentApptTypeId,
             format,                           // 'presentiel' | 'en_ligne'
           },
           loggedInPartnerId: user?.partner_id || null,

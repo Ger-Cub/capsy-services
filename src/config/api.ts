@@ -57,3 +57,15 @@ export const getTherapistsUrl = (): string => {
   }
   return `${base}/therapists`;
 };
+
+/**
+ * URL pour récupérer les types de rendez-vous Odoo (module Rendez-vous).
+ * Proxy Vercel/Express en prod, FastAPI direct en local.
+ */
+export const getAppointmentTypesUrl = (): string => {
+  const base = getApiBase();
+  if (base === '') {
+    return '/api/appointment-types';
+  }
+  return `${base}/appointments/types/`;
+};

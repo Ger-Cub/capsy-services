@@ -23,11 +23,23 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     try {
         const serviceTitle = req.query.service_title as string | undefined;
-        const queryParam = serviceTitle ? `?service_title=${encodeURIComponent(serviceTitle)}` : '';
+        const appointmentTypeId = req.query.appointment_type_id as string | undefined;
+        const params = new URLSearchParams();
+        if (appointmentTypeId) params.append('appointment_type_id', appointmentTypeId);
+        if (serviceTitle) params.append('service_title', serviceTitle);
+        const queryParam = params.toString() ? `?${params.toString()}` : '';
+
+        const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+        if (req.headers.authorization) {
+            headers['Authorization'] = String(req.headers.authorization);
+        } else if (process.env.ODOO_USERNAME && process.env.ODOO_PASSWORD) {
+            const token = Buffer.from(`${process.env.ODOO_USERNAME}:${process.env.ODOO_PASSWORD}`).toString('base64');
+            headers['Authorization'] = `Basic ${token}`;
+        }
 
         const upstream = await fetch(`${FASTAPI_BASE}/therapists/${queryParam}`, {
             method: 'GET',
-            headers: { 'Content-Type': 'application/json' },
+            headers,
         });
 
         const data = await upstream.json();
