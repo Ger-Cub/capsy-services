@@ -25,7 +25,12 @@ export const getFastApiUrl = (): string => {
 export const getApiBase = (): string => {
   if (typeof window !== 'undefined') {
     const hostname = window.location.hostname;
-    if (hostname !== 'localhost' && hostname !== '127.0.0.1') {
+    const isLocal = hostname === 'localhost'
+      || hostname === '127.0.0.1'
+      || hostname === '0.0.0.0'
+      || hostname.startsWith('192.168.')
+      || hostname.startsWith('10.');
+    if (!isLocal) {
       // Production : utiliser les endpoints proxy Vercel (même domaine = pas de CORS)
       return '';
     }
