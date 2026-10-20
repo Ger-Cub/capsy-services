@@ -2,7 +2,7 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 
 /**
  * Proxy server-side vers le FastAPI capsy-odoo-api.
- * Évite les erreurs CORS en faisant l'appel depuis le serveur Vercel.
+ * Évite les erreurs CORS. Endpoint public : aucune authentification requise du client.
  * Route: GET /api/therapists?service_title=...
  */
 const FASTAPI_BASE = (process.env.ODOO_API_URL || 'http://localhost:8000').replace(/\/$/, '');
@@ -30,9 +30,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         const queryParam = params.toString() ? `?${params.toString()}` : '';
 
         const headers: Record<string, string> = { 'Content-Type': 'application/json' };
-        if (req.headers.authorization) {
-            headers['Authorization'] = String(req.headers.authorization);
-        } else if (process.env.ODOO_USERNAME && process.env.ODOO_PASSWORD) {
+        if (process.env.ODOO_USERNAME && process.env.ODOO_PASSWORD) {
             const token = Buffer.from(`${process.env.ODOO_USERNAME}:${process.env.ODOO_PASSWORD}`).toString('base64');
             headers['Authorization'] = `Basic ${token}`;
         }

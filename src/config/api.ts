@@ -22,6 +22,7 @@ export const getFastApiUrl = (): string => {
  * - En production (Vercel) : utilise les proxies /api/... pour éviter CORS.
  * - En local : appelle directement le FastAPI sur localhost:8000.
  */
+
 export const getApiBase = (): string => {
   if (typeof window !== 'undefined') {
     const hostname = window.location.hostname;
