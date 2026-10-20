@@ -197,12 +197,18 @@ export default function BookingModal({
       .then((r) => r.json())
       .then((data) => {
         if (Array.isArray(data)) {
-          setOdooTherapists(data);
+          // Filtrer strictement par staffUserIds du service sélectionné (garantie anti-non-thérapeutes)
+          const validStaffIds = currentService?.staffUserIds;
+          const filtered = (validStaffIds && Array.isArray(validStaffIds) && validStaffIds.length > 0)
+            ? data.filter((t: any) => validStaffIds.includes(t.id))
+            : data;
+
+          setOdooTherapists(filtered);
           // Si le praticien actuellement sélectionné n'est pas dans la liste des psychologues habilités,
           // réinitialiser à 'Premier disponible'
           setPreferredTherapist((prev) => {
             if (prev === 'Premier disponible') return prev;
-            const exists = data.some((t: any) => t.name === prev);
+            const exists = filtered.some((t: any) => t.name === prev);
             return exists ? prev : 'Premier disponible';
           });
         }
