@@ -114,12 +114,14 @@ export const OPERATOR_COLORS: Record<MobileNetwork, string> = {
 /**
  * Détecte automatiquement l'opérateur mobile RDC à partir des premiers chiffres.
  */
-export function detectDrcNetwork(digits: string): MobileNetwork | null {
+export function detectDrcNetwork(digits: string, countryDialCode: string = '+243'): MobileNetwork | null {
+  if (countryDialCode !== '+243') return null;
   if (!digits) return null;
   // Nettoyer les espaces ou l'indicatif
   let clean = digits.replace(/[\s\-\(\)\.]/g, '');
   if (clean.startsWith('+243')) clean = clean.slice(4);
   if (clean.startsWith('00243')) clean = clean.slice(5);
+  if (clean.startsWith('243') && clean.length >= 11) clean = clean.slice(3);
   if (clean.startsWith('0') && clean.length === 10) clean = clean.slice(1);
   if (clean.length < 2) return null;
 
@@ -135,12 +137,13 @@ export function detectDrcNetwork(digits: string): MobileNetwork | null {
 /**
  * Valide et normalise le numéro de téléphone.
  * - Le numéro est OBLIGATOIRE.
- * - En RDC (+243) : doit comporter exactement 9 chiffres après normalisation.
+ * - En RDC (+243) : doit comporter exactement 9 chiffres après normalisation et un préfixe valide.
+ * - International : 6 à 14 chiffres après normalisation.
  * - Rejette les suites séquentielles et numéros fictifs.
  */
 export function validateClientPhone(
   rawPhone: string,
-  networkType: string = 'Orange'
+  countryDialCode: string = '+243'
 ): { isValid: boolean; error?: string; cleanPhone?: string } {
   const clean = (rawPhone || '').trim();
   if (!clean) {
@@ -150,22 +153,21 @@ export function validateClientPhone(
   // Nettoyer tous les espaces, tirets, parenthèses et points
   let digits = clean.replace(/[\s\-\(\)\.]/g, '');
 
-  // Si l'utilisateur tape l'indicatif international +243 ou 00243
-  if (digits.startsWith('+243')) {
-    digits = digits.slice(4);
-  } else if (digits.startsWith('00243')) {
-    digits = digits.slice(5);
+  const dialDigits = (countryDialCode || '+243').replace('+', '');
+
+  // Retirer l'indicatif s'il a été retapé dans le champ (ex: +243... ou 00243...)
+  if (digits.startsWith(`+${dialDigits}`)) {
+    digits = digits.slice(dialDigits.length + 1);
+  } else if (digits.startsWith(`00${dialDigits}`)) {
+    digits = digits.slice(dialDigits.length + 2);
+  } else if (digits.startsWith(dialDigits) && digits.length >= dialDigits.length + 7) {
+    digits = digits.slice(dialDigits.length);
   } else if (digits.startsWith('+')) {
-    // Numéro international hors RDC
-    const intlDigits = digits.slice(1);
-    if (!/^\d{8,15}$/.test(intlDigits)) {
-      return { isValid: false, error: 'Format de numéro international invalide (8 à 15 chiffres requis).' };
-    }
-    return { isValid: true, cleanPhone: digits };
+    digits = digits.slice(1);
   }
 
-  // Si l'utilisateur commence par un 0 (ex: 0991234567 au lieu de 991234567), on le retire
-  if (digits.startsWith('0') && digits.length === 10) {
+  // Si l'utilisateur commence par un 0 (ex: 0991234567 en RDC ou 0612345678 en France), on le retire
+  if (digits.startsWith('0') && digits.length >= 8) {
     digits = digits.slice(1);
   }
 
@@ -181,33 +183,52 @@ export function validateClientPhone(
 
   // Vérifier si tous les chiffres sont identiques (ex: 999999999)
   const firstChar = digits[0];
-  if (digits.length >= 7 && digits.split('').every((c) => c === firstChar)) {
+  if (digits.length >= 6 && digits.split('').every((c) => c === firstChar)) {
     return { isValid: false, error: 'Numéro de téléphone fictif non accepté.' };
   }
 
   // Pour la RDC (+243) : exactement 9 chiffres requis
-  if (digits.length < 9) {
+  if (countryDialCode === '+243') {
+    if (digits.length < 9) {
+      return {
+        isValid: false,
+        error: `Numéro incomplet : 9 chiffres requis pour la RDC (vous en avez saisi ${digits.length}). Ex: 991102444`,
+      };
+    }
+
+    if (digits.length > 9) {
+      return {
+        isValid: false,
+        error: `Numéro trop long : 9 chiffres requis pour la RDC (vous en avez saisi ${digits.length}).`,
+      };
+    }
+
+    // Préfixes d'opérateurs réels en RDC
+    const prefix2 = digits.slice(0, 2);
+    const validDrcPrefixes = ['80', '81', '82', '83', '84', '85', '88', '89', '90', '91', '97', '98', '99', '70'];
+
+    if (!validDrcPrefixes.includes(prefix2)) {
+      return {
+        isValid: false,
+        error: `Le préfixe '${prefix2}' n'est pas un indicatif mobile RDC valide (Airtel, Vodacom, Orange, Africell).`,
+      };
+    }
+
+    return { isValid: true, cleanPhone: digits };
+  }
+
+  // International pour les autres pays (6 à 14 chiffres)
+  if (digits.length < 6) {
     return {
       isValid: false,
-      error: `Numéro incomplet : 9 chiffres requis (vous en avez saisi ${digits.length}). Ex: 991102444`,
+      error: `Numéro international incomplet (au moins 6 chiffres requis).`,
     };
   }
 
-  if (digits.length > 9 && !digits.startsWith('+')) {
+  if (digits.length > 14) {
     return {
       isValid: false,
-      error: `Numéro trop long : 9 chiffres requis pour la RDC (vous en avez saisi ${digits.length}).`,
-    };
-  }
-
-  // Préfixes d'opérateurs réels en RDC
-  const prefix2 = digits.slice(0, 2);
-  const validDrcPrefixes = ['80', '81', '82', '83', '84', '85', '88', '89', '90', '91', '97', '98', '99', '70'];
-
-  if (!validDrcPrefixes.includes(prefix2)) {
-    return {
-      isValid: false,
-      error: `Le préfixe '${prefix2}' n'est pas un indicatif mobile RDC valide (Airtel, Vodacom, Orange, Africell).`,
+      error: `Numéro international trop long (14 chiffres maximum hors indicatif).`,
     };
   }
 

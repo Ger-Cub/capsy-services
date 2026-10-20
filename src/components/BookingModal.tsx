@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { SERVICES as STATIC_SERVICES } from '../data/staticData';
 import { Appointment } from '../types';
 import LucideIcon from './LucideIcon';
+import { Country, DEFAULT_COUNTRY, ALL_COUNTRIES } from '../data/countries';
 
 import { getTherapistsUrl, getAppointmentsUrl, getAppointmentTypesUrl } from '../config/api';
 import {
@@ -74,8 +75,54 @@ export default function BookingModal({
   const [emailError, setEmailError] = useState<string | null>(null);
   const [hasAttemptedSubmit, setHasAttemptedSubmit] = useState(false);
 
+  // Sélecteur de pays pour l'indicatif téléphonique (RDC par défaut)
+  const [selectedCountry, setSelectedCountry] = useState<Country>(DEFAULT_COUNTRY);
+  const [isCountryDropdownOpen, setIsCountryDropdownOpen] = useState(false);
+  const [countrySearchQuery, setCountrySearchQuery] = useState('');
+  const countryDropdownRef = useRef<HTMLDivElement>(null);
+  const countrySearchInputRef = useRef<HTMLInputElement>(null);
+
+  // Filtrage des pays par nom, indicatif ou code ISO
+  const filteredCountries = useMemo(() => {
+    const q = countrySearchQuery.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    if (!q) return ALL_COUNTRIES;
+    return ALL_COUNTRIES.filter((c) => {
+      const normName = c.name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+      const normDial = c.dialCode.replace('+', '');
+      const normCode = c.code.toLowerCase();
+      return normName.includes(q) || c.dialCode.includes(q) || normDial.includes(q) || normCode.includes(q);
+    });
+  }, [countrySearchQuery]);
+
+  // Fermer le dropdown au clic en dehors ou avec la touche Échap
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        countryDropdownRef.current &&
+        !countryDropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsCountryDropdownOpen(false);
+      }
+    };
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && isCountryDropdownOpen) {
+        setIsCountryDropdownOpen(false);
+      }
+    };
+
+    if (isCountryDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener('keydown', handleKeyDown);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isCountryDropdownOpen]);
+
   // Validation stricte en temps réel (email et téléphone obligatoires)
-  const phoneValidation = validateClientPhone(clientPhone, clientPhoneType);
+  const phoneValidation = validateClientPhone(clientPhone, selectedCountry.dialCode);
   const emailValidation = validateClientEmail(clientEmail);
   const nameValidation = validateClientName(clientName);
   const isFormValid = phoneValidation.isValid && emailValidation.isValid && nameValidation.isValid;
@@ -297,7 +344,7 @@ export default function BookingModal({
 
   const validateForm = () => {
     const nameRes = validateClientName(clientName);
-    const phoneRes = validateClientPhone(clientPhone, clientPhoneType);
+    const phoneRes = validateClientPhone(clientPhone, selectedCountry.dialCode);
     const emailRes = validateClientEmail(clientEmail);
 
     setNameError(nameRes.isValid ? null : (nameRes.error || 'Nom invalide'));
@@ -333,7 +380,7 @@ export default function BookingModal({
       serviceTitle: matchedService?.title || 'Consultation Générale',
       clientName: clientName.trim() || 'Patient',
       clientEmail: clientEmail.trim(),
-      clientPhone: validPhone.startsWith('+') ? validPhone : `+243 ${validPhone}`,
+      clientPhone: validPhone.startsWith('+') ? validPhone : `${selectedCountry.dialCode} ${validPhone}`,
       clientNotes: clientNotes || 'Aucun détail supplémentaire',
       date,
       timeSlot,
@@ -430,6 +477,9 @@ export default function BookingModal({
     setClientName('');
     setClientEmail('');
     setClientPhone('');
+    setSelectedCountry(DEFAULT_COUNTRY);
+    setIsCountryDropdownOpen(false);
+    setCountrySearchQuery('');
     setClientNotes('');
     setNameError(null);
     setPhoneError(null);
@@ -741,7 +791,7 @@ export default function BookingModal({
                     <div>
                       <div className="flex items-center justify-between mb-1.5">
                         <label className="block text-xs font-poppins font-bold uppercase tracking-wider text-brand-dark">
-                          Votre nom ou pseudonyme <span className="text-brand-gray-text font-normal lowercase">(facultatif)</span>
+                          Votre nom ou pseudonyme <span className="text-brand-gray-text font-normal lowercase"> </span>
                         </label>
                         {nameError && (
                           <span className="text-[11px] text-red-600 font-medium flex items-center gap-1">
@@ -779,63 +829,175 @@ export default function BookingModal({
                             </span>
                           )}
                         </div>
-                        <div className={`flex rounded-xl border-2 overflow-hidden transition-colors ${
-                          phoneError ? 'border-red-400 bg-red-50/20' : 'border-gray-200 focus-within:border-brand-wellbeing'
-                        }`}>
-                          <span className="bg-brand-gray-light text-brand-dark font-sans text-sm font-semibold px-3 flex items-center justify-center border-r border-gray-200 select-none">
-                            🇨🇩 +243
-                          </span>
-                          <input
-                            type="tel"
-                            required
-                            value={clientPhone}
-                            onChange={(e) => {
-                              const val = e.target.value;
-                              setClientPhone(val);
+                        {/* Conteneur avec sélecteur de pays et input */}
+                        <div className="relative" ref={countryDropdownRef}>
+                          <div className={`flex rounded-xl border-2 transition-colors ${
+                            phoneError ? 'border-red-400 bg-red-50/20' : 'border-gray-200 focus-within:border-brand-wellbeing'
+                          }`}>
+                            {/* Bouton sélecteur de pays / indicatif */}
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setIsCountryDropdownOpen((prev) => !prev);
+                                if (!isCountryDropdownOpen) {
+                                  setTimeout(() => countrySearchInputRef.current?.focus(), 60);
+                                }
+                              }}
+                              className="bg-brand-gray-light hover:bg-gray-200/80 text-brand-dark font-sans text-xs font-semibold px-2.5 py-3 flex items-center gap-1.5 border-r border-gray-200 select-none transition-colors shrink-0 rounded-l-[10px]"
+                              title="Changer de pays / indicatif"
+                              aria-label="Changer de pays"
+                            >
+                              <span className="text-base leading-none">{selectedCountry.flag}</span>
+                              <span className="font-bold text-gray-700">{selectedCountry.dialCode}</span>
+                              <LucideIcon
+                                name="ChevronDown"
+                                className={`w-3.5 h-3.5 text-gray-500 transition-transform duration-200 ${
+                                  isCountryDropdownOpen ? 'rotate-180' : ''
+                                }`}
+                              />
+                            </button>
 
-                              // Auto-détection du réseau mobile (Airtel, Vodacom, Orange, Africell/Autre)
-                              const detected = detectDrcNetwork(val.replace(/[\s\-\(\)\.]/g, ''));
-                              const currentNet = detected || clientPhoneType;
-                              if (detected && detected !== clientPhoneType) {
-                                setClientPhoneType(detected);
-                              }
+                            {/* Champ de saisie du numéro */}
+                            <input
+                              type="tel"
+                              required
+                              value={clientPhone}
+                              onChange={(e) => {
+                                const val = e.target.value;
+                                setClientPhone(val);
 
-                              const res = validateClientPhone(val, currentNet);
-                              setPhoneError(res.isValid ? null : (res.error || null));
-                            }}
-                            placeholder="Ex: 991234567"
-                            className="w-full p-3 text-brand-dark font-sans outline-none placeholder-gray-400 bg-transparent"
-                            id="form-client-phone"
-                          />
+                                if (selectedCountry.code === 'CD') {
+                                  const detected = detectDrcNetwork(val, selectedCountry.dialCode);
+                                  const currentNet = detected || clientPhoneType;
+                                  if (detected && detected !== clientPhoneType) {
+                                    setClientPhoneType(detected);
+                                  }
+                                }
+
+                                const res = validateClientPhone(val, selectedCountry.dialCode);
+                                setPhoneError(res.isValid ? null : (res.error || null));
+                              }}
+                              placeholder={selectedCountry.code === 'CD' ? 'Ex: 991102448' : 'Numéro de téléphone'}
+                              className="w-full p-3 text-brand-dark font-sans outline-none placeholder-gray-400 bg-transparent rounded-r-[10px]"
+                              id="form-client-phone"
+                            />
+                          </div>
+
+                          {/* Menu déroulant des pays avec barre de recherche */}
+                          {isCountryDropdownOpen && (
+                            <div className="absolute top-full left-0 mt-1.5 w-72 sm:w-80 bg-white rounded-xl shadow-2xl border border-gray-200 z-50 overflow-hidden">
+                              {/* Barre de recherche */}
+                              <div className="p-2.5 border-b border-gray-100 bg-gray-50/90">
+                                <div className="relative flex items-center">
+                                  <LucideIcon name="Search" className="w-3.5 h-3.5 text-gray-400 absolute left-2.5 pointer-events-none" />
+                                  <input
+                                    ref={countrySearchInputRef}
+                                    type="text"
+                                    value={countrySearchQuery}
+                                    onChange={(e) => setCountrySearchQuery(e.target.value)}
+                                    placeholder="Rechercher pays ou indicatif..."
+                                    className="w-full pl-8 pr-7 py-1.5 text-xs bg-white border border-gray-200 rounded-lg outline-none focus:border-brand-wellbeing focus:ring-1 focus:ring-brand-wellbeing/20 text-gray-800 placeholder-gray-400"
+                                  />
+                                  {countrySearchQuery && (
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        setCountrySearchQuery('');
+                                        countrySearchInputRef.current?.focus();
+                                      }}
+                                      className="absolute right-2 p-0.5 text-gray-400 hover:text-gray-600 rounded-full"
+                                    >
+                                      <LucideIcon name="X" className="w-3 h-3" />
+                                    </button>
+                                  )}
+                                </div>
+                              </div>
+
+                              {/* Liste des pays scrollable */}
+                              <div className="max-h-60 overflow-y-auto divide-y divide-gray-50">
+                                {filteredCountries.length > 0 ? (
+                                  filteredCountries.map((c) => {
+                                    const isSelected = c.code === selectedCountry.code;
+                                    return (
+                                      <button
+                                        key={c.code}
+                                        type="button"
+                                        onClick={() => {
+                                          setSelectedCountry(c);
+                                          setIsCountryDropdownOpen(false);
+                                          setCountrySearchQuery('');
+                                          if (clientPhone) {
+                                            const res = validateClientPhone(clientPhone, c.dialCode);
+                                            setPhoneError(res.isValid ? null : (res.error || null));
+                                          }
+                                        }}
+                                        className={`w-full px-3 py-2 text-left flex items-center gap-2.5 transition-colors text-xs ${
+                                          isSelected
+                                            ? 'bg-brand-green/10 text-brand-green font-semibold'
+                                            : 'text-gray-700 hover:bg-gray-100'
+                                        }`}
+                                      >
+                                        <span className="text-base shrink-0 leading-none">{c.flag}</span>
+                                        <span className="truncate flex-1 font-medium">{c.name}</span>
+                                        <span className={`text-[11px] font-mono shrink-0 ${isSelected ? 'text-brand-green font-bold' : 'text-gray-400'}`}>
+                                          {c.dialCode}
+                                        </span>
+                                        {isSelected && (
+                                          <LucideIcon name="Check" className="w-3.5 h-3.5 text-brand-green shrink-0 ml-1" />
+                                        )}
+                                      </button>
+                                    );
+                                  })
+                                ) : (
+                                  <div className="p-4 text-center text-xs text-gray-400">
+                                    Aucun pays trouvé pour &laquo;{countrySearchQuery}&raquo;
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          )}
                         </div>
+
                         {phoneError ? (
                           <p className="text-[11px] text-red-600 font-medium flex items-center gap-1 mt-1 leading-tight">
                             <LucideIcon name="AlertCircle" className="h-3.5 w-3.5 shrink-0" />
                             {phoneError}
                           </p>
                         ) : (
-                          <p className="text-[10px] text-brand-gray-text mt-1">9 chiffres (ex: 991102444 ou 812345678).</p>
+                          <p className="text-[10px] text-brand-gray-text mt-1">
+                            {selectedCountry.code === 'CD'
+                              ? '9 chiffres (ex: 991102448 ou 812345678).'
+                              : `Numéro sans indicatif international (indicatif ${selectedCountry.dialCode} inclus automatiquement).`}
+                          </p>
                         )}
-                        <div className="flex gap-1.5 mt-2 flex-wrap items-center">
-                          <span className="text-[10px] text-brand-gray-text font-medium select-none mr-0.5">Réseau :</span>
-                          {OPERATORS.map((op) => {
-                            const detected = detectDrcNetwork(clientPhone);
-                            const isDetected = phoneValidation.isValid && detected === op.name;
-                            return (
-                              <span
-                                key={op.name}
-                                style={isDetected ? { backgroundColor: op.color, borderColor: op.color, color: '#FFFFFF' } : undefined}
-                                className={`text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full border transition-all duration-200 select-none pointer-events-none cursor-default ${
-                                  isDetected
-                                    ? 'shadow-xs scale-105'
-                                    : 'bg-gray-100 text-gray-400 border-gray-200'
-                                }`}
-                              >
-                                {op.name}
-                              </span>
-                            );
-                          })}
-                        </div>
+
+                        {selectedCountry.code === 'CD' ? (
+                          <div className="flex gap-1.5 mt-2 flex-wrap items-center">
+                            <span className="text-[10px] text-brand-gray-text font-medium select-none mr-0.5">Réseau :</span>
+                            {OPERATORS.map((op) => {
+                              const detected = detectDrcNetwork(clientPhone, selectedCountry.dialCode);
+                              const isDetected = phoneValidation.isValid && detected === op.name;
+                              return (
+                                <span
+                                  key={op.name}
+                                  style={isDetected ? { backgroundColor: op.color, borderColor: op.color, color: '#FFFFFF' } : undefined}
+                                  className={`text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full border transition-all duration-200 select-none pointer-events-none cursor-default ${
+                                    isDetected
+                                      ? 'shadow-xs scale-105'
+                                      : 'bg-gray-100 text-gray-400 border-gray-200'
+                                  }`}
+                                >
+                                  {op.name}
+                                </span>
+                              );
+                            })}
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-1.5 mt-2 text-[10px] text-brand-gray-text font-medium">
+                            <LucideIcon name="Globe" className="h-3 w-3 text-brand-green" />
+                            <span>International &bull; {selectedCountry.name} ({selectedCountry.dialCode})</span>
+                          </div>
+                        )}
                       </div>
 
                       <div>
@@ -871,7 +1033,7 @@ export default function BookingModal({
                             {emailError}
                           </p>
                         ) : (
-                          <p className="text-[10px] text-brand-gray-text mt-1">Obligatoire pour recevoir votre convocation.</p>
+                          <p className="text-[10px] text-brand-gray-text mt-1"></p>
                         )}
                       </div>
                     </div>
