@@ -973,7 +973,6 @@ export default function BookingModal({
 
                         {selectedCountry.code === 'CD' ? (
                           <div className="flex gap-1.5 mt-2 flex-wrap items-center">
-                            <span className="text-[10px] text-brand-gray-text font-medium select-none mr-0.5">Réseau :</span>
                             {OPERATORS.map((op) => {
                               const detected = detectDrcNetwork(clientPhone, selectedCountry.dialCode);
                               const isDetected = phoneValidation.isValid && detected === op.name;
