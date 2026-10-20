@@ -320,7 +320,7 @@ export default function App() {
       />
 
       <Suspense fallback={null}>
-        <Chatbot onOpenBooking={handleOpenBooking} hideFloatingButton={isBookingModalOpen || loginOpen} />
+        <Chatbot onOpenBooking={handleOpenBooking} hideFloatingButton={bookingOpen || loginOpen || stressOpen} />
       </Suspense>
 
       <ToastContainer />
