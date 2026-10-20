@@ -9,6 +9,7 @@ import {
   validateClientName,
   validateClientPhone,
   validateClientEmail,
+  detectDrcNetwork,
 } from '../utils/bookingValidation';
 
 interface BookingModalProps {
@@ -63,6 +64,12 @@ export default function BookingModal({
   const [phoneError, setPhoneError] = useState<string | null>(null);
   const [emailError, setEmailError] = useState<string | null>(null);
   const [hasAttemptedSubmit, setHasAttemptedSubmit] = useState(false);
+
+  // Validation stricte en temps réel (email et téléphone obligatoires)
+  const phoneValidation = validateClientPhone(clientPhone, clientPhoneType);
+  const emailValidation = validateClientEmail(clientEmail);
+  const nameValidation = validateClientName(clientName);
+  const isFormValid = phoneValidation.isValid && emailValidation.isValid && nameValidation.isValid;
 
   // Pre-fill user data if logged in
   useEffect(() => {
@@ -315,8 +322,8 @@ export default function BookingModal({
       id: appointmentId,
       serviceId,
       serviceTitle: matchedService?.title || 'Consultation Générale',
-      clientName: clientName.trim(),
-      clientEmail: clientEmail.trim() || 'Non partagé',
+      clientName: clientName.trim() || 'Patient',
+      clientEmail: clientEmail.trim(),
       clientPhone: validPhone.startsWith('+') ? validPhone : `+243 ${validPhone}`,
       clientNotes: clientNotes || 'Aucun détail supplémentaire',
       date,
@@ -725,7 +732,7 @@ export default function BookingModal({
                     <div>
                       <div className="flex items-center justify-between mb-1.5">
                         <label className="block text-xs font-poppins font-bold uppercase tracking-wider text-brand-dark">
-                          Votre nom complet *
+                          Votre nom ou pseudonyme <span className="text-brand-gray-text font-normal lowercase">(facultatif)</span>
                         </label>
                         {nameError && (
                           <span className="text-[11px] text-red-600 font-medium flex items-center gap-1">
@@ -736,16 +743,14 @@ export default function BookingModal({
                       </div>
                       <input
                         type="text"
-                        required
                         value={clientName}
                         onChange={(e) => {
-                          setClientName(e.target.value);
-                          if (hasAttemptedSubmit) {
-                            const res = validateClientName(e.target.value);
-                            setNameError(res.isValid ? null : (res.error || null));
-                          }
+                          const val = e.target.value;
+                          setClientName(val);
+                          const res = validateClientName(val);
+                          setNameError(res.isValid ? null : (res.error || null));
                         }}
-                        placeholder="Ex: Jean Mukendi"
+                        placeholder="Ex: Jean Mukendi (ou laissez vide)"
                         className={`w-full p-3.5 border-2 rounded-xl text-brand-dark font-sans placeholder-gray-400 outline-none transition-colors ${
                           nameError ? 'border-red-400 bg-red-50/20 focus:border-red-500' : 'border-gray-200 focus:border-brand-wellbeing'
                         }`}
@@ -759,6 +764,11 @@ export default function BookingModal({
                           <label className="block text-xs font-poppins font-bold uppercase tracking-wider text-brand-dark">
                             Numéro WhatsApp / Téléphone *
                           </label>
+                          {phoneValidation.isValid && clientPhone.trim() && (
+                            <span className="text-[11px] text-brand-green font-semibold flex items-center gap-0.5">
+                              <LucideIcon name="Check" className="h-3 w-3" /> Valide
+                            </span>
+                          )}
                         </div>
                         <div className={`flex rounded-xl border-2 overflow-hidden transition-colors ${
                           phoneError ? 'border-red-400 bg-red-50/20' : 'border-gray-200 focus-within:border-brand-wellbeing'
@@ -771,37 +781,46 @@ export default function BookingModal({
                             required
                             value={clientPhone}
                             onChange={(e) => {
-                              setClientPhone(e.target.value);
-                              if (hasAttemptedSubmit) {
-                                const res = validateClientPhone(e.target.value, clientPhoneType);
-                                setPhoneError(res.isValid ? null : (res.error || null));
+                              const val = e.target.value;
+                              setClientPhone(val);
+
+                              // Auto-détection du réseau mobile (Airtel, Vodacom, Orange, Africell/Autre)
+                              const detected = detectDrcNetwork(val.replace(/[\s\-\(\)\.]/g, ''));
+                              const currentNet = detected || clientPhoneType;
+                              if (detected && detected !== clientPhoneType) {
+                                setClientPhoneType(detected);
                               }
+
+                              const res = validateClientPhone(val, currentNet);
+                              setPhoneError(res.isValid ? null : (res.error || null));
                             }}
                             placeholder="Ex: 991234567"
                             className="w-full p-3 text-brand-dark font-sans outline-none placeholder-gray-400 bg-transparent"
                             id="form-client-phone"
                           />
                         </div>
-                        {phoneError && (
+                        {phoneError ? (
                           <p className="text-[11px] text-red-600 font-medium flex items-center gap-1 mt-1 leading-tight">
                             <LucideIcon name="AlertCircle" className="h-3.5 w-3.5 shrink-0" />
                             {phoneError}
                           </p>
+                        ) : (
+                          <p className="text-[10px] text-brand-gray-text mt-1">9 chiffres (ex: 991102444 ou 812345678).</p>
                         )}
-                        <div className="flex gap-2.5 mt-1.5">
+                        <div className="flex gap-2 mt-1.5 flex-wrap">
                           {['Airtel', 'Vodacom', 'Orange', 'Autre'].map((net) => (
                             <button
                               key={net}
                               type="button"
                               onClick={() => {
                                 setClientPhoneType(net);
-                                if (hasAttemptedSubmit && clientPhone) {
+                                if (clientPhone) {
                                   const res = validateClientPhone(clientPhone, net);
                                   setPhoneError(res.isValid ? null : (res.error || null));
                                 }
                               }}
                               className={`text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full border transition-all ${clientPhoneType === net
-                                ? 'bg-brand-wellbeing/10 border-brand-wellbeing text-brand-wellbeing'
+                                ? 'bg-brand-green/10 border-brand-green text-brand-green shadow-xs'
                                 : 'border-transparent text-brand-gray-text bg-brand-gray-light hover:bg-neutral-200'
                                 }`}
                             >
@@ -814,20 +833,25 @@ export default function BookingModal({
                       <div>
                         <div className="flex items-center justify-between mb-1.5">
                           <label className="block text-xs font-poppins font-bold uppercase tracking-wider text-brand-dark">
-                            Adresse e-mail
+                            Adresse e-mail *
                           </label>
+                          {emailValidation.isValid && clientEmail.trim() && (
+                            <span className="text-[11px] text-brand-green font-semibold flex items-center gap-0.5">
+                              <LucideIcon name="Check" className="h-3 w-3" /> Valide
+                            </span>
+                          )}
                         </div>
                         <input
                           type="email"
+                          required
                           value={clientEmail}
                           onChange={(e) => {
-                            setClientEmail(e.target.value);
-                            if (hasAttemptedSubmit) {
-                              const res = validateClientEmail(e.target.value);
-                              setEmailError(res.isValid ? null : (res.error || null));
-                            }
+                            const val = e.target.value;
+                            setClientEmail(val);
+                            const res = validateClientEmail(val);
+                            setEmailError(res.isValid ? null : (res.error || null));
                           }}
-                          placeholder="votre.email@domaine.com"
+                          placeholder="Ex: votre.nom@domaine.com"
                           className={`w-full p-3.5 border-2 rounded-xl text-brand-dark font-sans placeholder-gray-400 outline-none transition-colors ${
                             emailError ? 'border-red-400 bg-red-50/20 focus:border-red-500' : 'border-gray-200 focus:border-brand-wellbeing'
                           }`}
@@ -839,7 +863,7 @@ export default function BookingModal({
                             {emailError}
                           </p>
                         ) : (
-                          <p className="text-[10px] text-brand-gray-text mt-1">Facultatif — utile pour recevoir le récapitulatif.</p>
+                          <p className="text-[10px] text-brand-gray-text mt-1">Obligatoire pour recevoir votre convocation.</p>
                         )}
                       </div>
                     </div>
@@ -994,9 +1018,12 @@ export default function BookingModal({
                   <button
                     type="button"
                     onClick={handleFormSubmit}
-                    disabled={!clientName || !clientPhone || isSubmitting}
-                    className={`py-2.5 px-6 rounded-xl font-poppins font-bold text-sm flex items-center gap-2 transition-all shadow-md text-white ${!clientName || !clientPhone || isSubmitting ? 'bg-gray-400 cursor-not-allowed' : 'bg-brand-green hover:bg-brand-green/95'
-                      }`}
+                    disabled={!isFormValid || isSubmitting}
+                    className={`py-2.5 px-6 rounded-xl font-poppins font-bold text-sm flex items-center gap-2 transition-all shadow-md text-white ${
+                      !isFormValid || isSubmitting
+                        ? 'bg-gray-300 text-gray-500 cursor-not-allowed shadow-none'
+                        : 'bg-brand-green hover:bg-brand-green/95 active:scale-95'
+                    }`}
                     id="submit-appointment-btn"
                   >
                     {isSubmitting ? (
