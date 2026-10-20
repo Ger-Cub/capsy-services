@@ -5,6 +5,11 @@ import { Appointment } from '../types';
 import LucideIcon from './LucideIcon';
 
 import { getTherapistsUrl, getAppointmentsUrl, getAppointmentTypesUrl } from '../config/api';
+import {
+  validateClientName,
+  validateClientPhone,
+  validateClientEmail,
+} from '../utils/bookingValidation';
 
 interface BookingModalProps {
   isOpen: boolean;
@@ -52,6 +57,12 @@ export default function BookingModal({
   const [servicesList, setServicesList] = useState<any[]>([]);
   const [isLoadingServices, setIsLoadingServices] = useState(false);
   const [isLoadingTherapists, setIsLoadingTherapists] = useState(false);
+
+  // Validation des coordonnées client
+  const [nameError, setNameError] = useState<string | null>(null);
+  const [phoneError, setPhoneError] = useState<string | null>(null);
+  const [emailError, setEmailError] = useState<string | null>(null);
+  const [hasAttemptedSubmit, setHasAttemptedSubmit] = useState(false);
 
   // Pre-fill user data if logged in
   useEffect(() => {
@@ -268,9 +279,31 @@ export default function BookingModal({
     setStep((prev) => Math.max(1, prev - 1));
   };
 
+  const validateForm = () => {
+    const nameRes = validateClientName(clientName);
+    const phoneRes = validateClientPhone(clientPhone, clientPhoneType);
+    const emailRes = validateClientEmail(clientEmail);
+
+    setNameError(nameRes.isValid ? null : (nameRes.error || 'Nom invalide'));
+    setPhoneError(phoneRes.isValid ? null : (phoneRes.error || 'Numéro invalide'));
+    setEmailError(emailRes.isValid ? null : (emailRes.error || 'E-mail invalide'));
+
+    const isAllValid = nameRes.isValid && phoneRes.isValid && emailRes.isValid;
+    return isAllValid ? (phoneRes.cleanPhone || clientPhone) : null;
+  };
+
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!clientName || !clientPhone) {
+    setHasAttemptedSubmit(true);
+
+    const validPhone = validateForm();
+    if (!validPhone) {
+      window.dispatchEvent(new CustomEvent('capsy:toast', {
+        detail: {
+          message: 'Veuillez corriger les informations requises avant de confirmer.',
+          type: 'error'
+        }
+      }));
       return;
     }
 
@@ -282,9 +315,9 @@ export default function BookingModal({
       id: appointmentId,
       serviceId,
       serviceTitle: matchedService?.title || 'Consultation Générale',
-      clientName,
-      clientEmail: clientEmail || 'Non partagé',
-      clientPhone: clientPhone.startsWith('+') ? clientPhone : `+243 ${clientPhone}`,
+      clientName: clientName.trim(),
+      clientEmail: clientEmail.trim() || 'Non partagé',
+      clientPhone: validPhone.startsWith('+') ? validPhone : `+243 ${validPhone}`,
       clientNotes: clientNotes || 'Aucun détail supplémentaire',
       date,
       timeSlot,
@@ -382,6 +415,10 @@ export default function BookingModal({
     setClientEmail('');
     setClientPhone('');
     setClientNotes('');
+    setNameError(null);
+    setPhoneError(null);
+    setEmailError(null);
+    setHasAttemptedSubmit(false);
     setCreatedAppointment(null);
   };
 
@@ -393,7 +430,7 @@ export default function BookingModal({
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
           {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
@@ -686,26 +723,46 @@ export default function BookingModal({
                 >
                   <form onSubmit={handleFormSubmit} className="space-y-4">
                     <div>
-                      <label className="block text-xs font-poppins font-bold uppercase tracking-wider text-brand-dark mb-1.5">
-                        Votre nom complet *
-                      </label>
+                      <div className="flex items-center justify-between mb-1.5">
+                        <label className="block text-xs font-poppins font-bold uppercase tracking-wider text-brand-dark">
+                          Votre nom complet *
+                        </label>
+                        {nameError && (
+                          <span className="text-[11px] text-red-600 font-medium flex items-center gap-1">
+                            <LucideIcon name="AlertCircle" className="h-3 w-3" />
+                            {nameError}
+                          </span>
+                        )}
+                      </div>
                       <input
                         type="text"
                         required
                         value={clientName}
-                        onChange={(e) => setClientName(e.target.value)}
+                        onChange={(e) => {
+                          setClientName(e.target.value);
+                          if (hasAttemptedSubmit) {
+                            const res = validateClientName(e.target.value);
+                            setNameError(res.isValid ? null : (res.error || null));
+                          }
+                        }}
                         placeholder="Ex: Jean Mukendi"
-                        className="w-full p-3.5 border-2 border-gray-200 rounded-xl text-brand-dark font-sans placeholder-gray-400 focus:border-brand-wellbeing outline-none transition-colors"
+                        className={`w-full p-3.5 border-2 rounded-xl text-brand-dark font-sans placeholder-gray-400 outline-none transition-colors ${
+                          nameError ? 'border-red-400 bg-red-50/20 focus:border-red-500' : 'border-gray-200 focus:border-brand-wellbeing'
+                        }`}
                         id="form-client-name"
                       />
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-xs font-poppins font-bold uppercase tracking-wider text-brand-dark mb-1.5">
-                          Numéro WhatsApp / Téléphone *
-                        </label>
-                        <div className="flex rounded-xl border-2 border-gray-200 overflow-hidden focus-within:border-brand-wellbeing transition-colors">
+                        <div className="flex items-center justify-between mb-1.5">
+                          <label className="block text-xs font-poppins font-bold uppercase tracking-wider text-brand-dark">
+                            Numéro WhatsApp / Téléphone *
+                          </label>
+                        </div>
+                        <div className={`flex rounded-xl border-2 overflow-hidden transition-colors ${
+                          phoneError ? 'border-red-400 bg-red-50/20' : 'border-gray-200 focus-within:border-brand-wellbeing'
+                        }`}>
                           <span className="bg-brand-gray-light text-brand-dark font-sans text-sm font-semibold px-3 flex items-center justify-center border-r border-gray-200 select-none">
                             🇨🇩 +243
                           </span>
@@ -713,18 +770,36 @@ export default function BookingModal({
                             type="tel"
                             required
                             value={clientPhone}
-                            onChange={(e) => setClientPhone(e.target.value)}
-                            placeholder="991234567"
-                            className="w-full p-3 text-brand-dark font-sans outline-none placeholder-gray-400"
+                            onChange={(e) => {
+                              setClientPhone(e.target.value);
+                              if (hasAttemptedSubmit) {
+                                const res = validateClientPhone(e.target.value, clientPhoneType);
+                                setPhoneError(res.isValid ? null : (res.error || null));
+                              }
+                            }}
+                            placeholder="Ex: 991234567"
+                            className="w-full p-3 text-brand-dark font-sans outline-none placeholder-gray-400 bg-transparent"
                             id="form-client-phone"
                           />
                         </div>
+                        {phoneError && (
+                          <p className="text-[11px] text-red-600 font-medium flex items-center gap-1 mt-1 leading-tight">
+                            <LucideIcon name="AlertCircle" className="h-3.5 w-3.5 shrink-0" />
+                            {phoneError}
+                          </p>
+                        )}
                         <div className="flex gap-2.5 mt-1.5">
                           {['Airtel', 'Vodacom', 'Orange', 'Autre'].map((net) => (
                             <button
                               key={net}
                               type="button"
-                              onClick={() => setClientPhoneType(net)}
+                              onClick={() => {
+                                setClientPhoneType(net);
+                                if (hasAttemptedSubmit && clientPhone) {
+                                  const res = validateClientPhone(clientPhone, net);
+                                  setPhoneError(res.isValid ? null : (res.error || null));
+                                }
+                              }}
                               className={`text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full border transition-all ${clientPhoneType === net
                                 ? 'bg-brand-wellbeing/10 border-brand-wellbeing text-brand-wellbeing'
                                 : 'border-transparent text-brand-gray-text bg-brand-gray-light hover:bg-neutral-200'
@@ -737,17 +812,35 @@ export default function BookingModal({
                       </div>
 
                       <div>
-                        <label className="block text-xs font-poppins font-bold uppercase tracking-wider text-brand-dark mb-1.5">
-                          Adresse e-mail (facultatif)
-                        </label>
+                        <div className="flex items-center justify-between mb-1.5">
+                          <label className="block text-xs font-poppins font-bold uppercase tracking-wider text-brand-dark">
+                            Adresse e-mail
+                          </label>
+                        </div>
                         <input
                           type="email"
                           value={clientEmail}
-                          onChange={(e) => setClientEmail(e.target.value)}
+                          onChange={(e) => {
+                            setClientEmail(e.target.value);
+                            if (hasAttemptedSubmit) {
+                              const res = validateClientEmail(e.target.value);
+                              setEmailError(res.isValid ? null : (res.error || null));
+                            }
+                          }}
                           placeholder="votre.email@domaine.com"
-                          className="w-full p-3.5 border-2 border-gray-200 rounded-xl text-brand-dark font-sans placeholder-gray-400 focus:border-brand-wellbeing outline-none transition-colors"
+                          className={`w-full p-3.5 border-2 rounded-xl text-brand-dark font-sans placeholder-gray-400 outline-none transition-colors ${
+                            emailError ? 'border-red-400 bg-red-50/20 focus:border-red-500' : 'border-gray-200 focus:border-brand-wellbeing'
+                          }`}
                           id="form-client-email"
                         />
+                        {emailError ? (
+                          <p className="text-[11px] text-red-600 font-medium flex items-center gap-1 mt-1 leading-tight">
+                            <LucideIcon name="AlertCircle" className="h-3.5 w-3.5 shrink-0" />
+                            {emailError}
+                          </p>
+                        ) : (
+                          <p className="text-[10px] text-brand-gray-text mt-1">Facultatif — utile pour recevoir le récapitulatif.</p>
+                        )}
                       </div>
                     </div>
 
