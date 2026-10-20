@@ -101,18 +101,35 @@ export function validateClientName(name: string): { isValid: boolean; error?: st
   return { isValid: true };
 }
 
+export type MobileNetwork = 'Airtel' | 'Vodacom' | 'Orange' | 'Africell' | 'Autre';
+
+export const OPERATOR_COLORS: Record<MobileNetwork, string> = {
+  Airtel: '#E70310',
+  Vodacom: '#EC0102',
+  Orange: '#FF6421',
+  Africell: '#A51473',
+  Autre: '#0F766E',
+};
+
 /**
  * Détecte automatiquement l'opérateur mobile RDC à partir des premiers chiffres.
  */
-export function detectDrcNetwork(digits: string): 'Airtel' | 'Vodacom' | 'Orange' | 'Autre' | null {
-  if (!digits || digits.length < 2) return null;
-  const p = digits.slice(0, 2);
+export function detectDrcNetwork(digits: string): MobileNetwork | null {
+  if (!digits) return null;
+  // Nettoyer les espaces ou l'indicatif
+  let clean = digits.replace(/[\s\-\(\)\.]/g, '');
+  if (clean.startsWith('+243')) clean = clean.slice(4);
+  if (clean.startsWith('00243')) clean = clean.slice(5);
+  if (clean.startsWith('0') && clean.length === 10) clean = clean.slice(1);
+  if (clean.length < 2) return null;
+
+  const p = clean.slice(0, 2);
 
   if (['97', '98', '99'].includes(p)) return 'Airtel';
   if (['81', '82', '83', '70'].includes(p)) return 'Vodacom';
-  if (['80', '84', '85', '89'].includes(p)) return 'Orange';
-  if (['90', '91'].includes(p)) return 'Autre'; // Africell
-  return null;
+  if (['80', '84', '85', '88', '89'].includes(p)) return 'Orange';
+  if (['90', '91'].includes(p)) return 'Africell';
+  return 'Autre';
 }
 
 /**

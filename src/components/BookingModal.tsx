@@ -10,7 +10,16 @@ import {
   validateClientPhone,
   validateClientEmail,
   detectDrcNetwork,
+  MobileNetwork,
 } from '../utils/bookingValidation';
+
+const OPERATORS: { name: MobileNetwork; color: string }[] = [
+  { name: 'Airtel', color: '#E70310' },
+  { name: 'Vodacom', color: '#EC0102' },
+  { name: 'Orange', color: '#FF6421' },
+  { name: 'Africell', color: '#A51473' },
+  { name: 'Autre', color: '#0F766E' },
+];
 
 interface BookingModalProps {
   isOpen: boolean;
@@ -807,26 +816,25 @@ export default function BookingModal({
                         ) : (
                           <p className="text-[10px] text-brand-gray-text mt-1">9 chiffres (ex: 991102444 ou 812345678).</p>
                         )}
-                        <div className="flex gap-2 mt-1.5 flex-wrap">
-                          {['Airtel', 'Vodacom', 'Orange', 'Autre'].map((net) => (
-                            <button
-                              key={net}
-                              type="button"
-                              onClick={() => {
-                                setClientPhoneType(net);
-                                if (clientPhone) {
-                                  const res = validateClientPhone(clientPhone, net);
-                                  setPhoneError(res.isValid ? null : (res.error || null));
-                                }
-                              }}
-                              className={`text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full border transition-all ${clientPhoneType === net
-                                ? 'bg-brand-green/10 border-brand-green text-brand-green shadow-xs'
-                                : 'border-transparent text-brand-gray-text bg-brand-gray-light hover:bg-neutral-200'
+                        <div className="flex gap-1.5 mt-2 flex-wrap items-center">
+                          <span className="text-[10px] text-brand-gray-text font-medium select-none mr-0.5">Réseau :</span>
+                          {OPERATORS.map((op) => {
+                            const detected = detectDrcNetwork(clientPhone);
+                            const isDetected = phoneValidation.isValid && detected === op.name;
+                            return (
+                              <span
+                                key={op.name}
+                                style={isDetected ? { backgroundColor: op.color, borderColor: op.color, color: '#FFFFFF' } : undefined}
+                                className={`text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full border transition-all duration-200 select-none pointer-events-none cursor-default ${
+                                  isDetected
+                                    ? 'shadow-xs scale-105'
+                                    : 'bg-gray-100 text-gray-400 border-gray-200'
                                 }`}
-                            >
-                              {net}
-                            </button>
-                          ))}
+                              >
+                                {op.name}
+                              </span>
+                            );
+                          })}
                         </div>
                       </div>
 
