@@ -5,7 +5,13 @@ import { Appointment } from '../types';
 import LucideIcon from './LucideIcon';
 import { Country, DEFAULT_COUNTRY, ALL_COUNTRIES } from '../data/countries';
 
-import { getTherapistsUrl, getAppointmentsUrl, getAppointmentTypesUrl } from '../config/api';
+import {
+  getTherapistsUrl,
+  getAppointmentsUrl,
+  getAppointmentTypesUrl,
+  getAppointmentDetailsUrl,
+  getAvailableSlotsUrl,
+} from '../config/api';
 import {
   validateClientName,
   validateClientPhone,
@@ -68,6 +74,14 @@ export default function BookingModal({
   const [servicesList, setServicesList] = useState<any[]>([]);
   const [isLoadingServices, setIsLoadingServices] = useState(false);
   const [isLoadingTherapists, setIsLoadingTherapists] = useState(false);
+  const [serviceDetails, setServiceDetails] = useState<any | null>(null);
+  const [isLoadingDetails, setIsLoadingDetails] = useState(false);
+  const [showServiceIntro, setShowServiceIntro] = useState(false);
+  const [availableSlots, setAvailableSlots] = useState<{ slot: string; startTime: string; endTime: string; available: boolean; reason?: string | null }[]>([]);
+  const [isLoadingSlots, setIsLoadingSlots] = useState(false);
+  const [hasCheckedSlots, setHasCheckedSlots] = useState(false);
+  const [timezone, setTimezone] = useState<string>('Africa/Kinshasa');
+  const [questionAnswers, setQuestionAnswers] = useState<Record<number, string>>({});
 
   // Validation des coordonnées client
   const [nameError, setNameError] = useState<string | null>(null);
@@ -121,11 +135,23 @@ export default function BookingModal({
     };
   }, [isCountryDropdownOpen]);
 
-  // Validation stricte en temps réel (email et téléphone obligatoires)
+  // Validation stricte en temps réel (email et téléphone obligatoires + questions requises Odoo)
   const phoneValidation = validateClientPhone(clientPhone, selectedCountry.dialCode);
   const emailValidation = validateClientEmail(clientEmail);
   const nameValidation = validateClientName(clientName);
-  const isFormValid = phoneValidation.isValid && emailValidation.isValid && nameValidation.isValid;
+  const areRequiredQuestionsAnswered = useMemo(() => {
+    if (!serviceDetails?.questions || !Array.isArray(serviceDetails.questions)) return true;
+    for (const q of serviceDetails.questions) {
+      if (q.question_type !== 'phone' && q.required) {
+        if (!questionAnswers[q.id] || !questionAnswers[q.id].trim()) {
+          return false;
+        }
+      }
+    }
+    return true;
+  }, [serviceDetails, questionAnswers]);
+
+  const isFormValid = phoneValidation.isValid && emailValidation.isValid && nameValidation.isValid && areRequiredQuestionsAnswered;
 
   // Pre-fill user data if logged in
   useEffect(() => {
@@ -295,20 +321,86 @@ export default function BookingModal({
       });
   }, [isOpen, serviceId, selectedServiceTitle, sourceServices]);
 
-  // Generate 7 upcoming business days dynamically
+  // Charger les détails complets du type de rendez-vous (descriptif Odoo, questions dynamiques, délais)
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const currentService = sourceServices.find((s) => String(s.id) === String(serviceId));
+    const apptTypeId = currentService?.appointmentTypeId || (!isNaN(Number(serviceId)) ? Number(serviceId) : undefined);
+    if (!apptTypeId) return;
+
+    const controller = new AbortController();
+    setIsLoadingDetails(true);
+
+    fetch(getAppointmentDetailsUrl(apptTypeId), { signal: controller.signal })
+      .then((r) => {
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        return r.json();
+      })
+      .then((data) => {
+        if (data && data.id) {
+          setServiceDetails(data);
+          if (data.timezone || data.appointment_tz) {
+            setTimezone(data.timezone || data.appointment_tz);
+          }
+          // Initialiser les réponses par défaut aux questions radio
+          if (Array.isArray(data.questions)) {
+            setQuestionAnswers((prev) => {
+              const updated = { ...prev };
+              data.questions.forEach((q: any) => {
+                if (q.question_type === 'radio' && Array.isArray(q.answers) && q.answers.length > 0 && !updated[q.id]) {
+                  const qNameLower = (q.name || '').toLowerCase();
+                  if (qNameLower.includes('lieu') || qNameLower.includes('modalit') || qNameLower.includes('rendez-vous')) {
+                    if (format === 'en_ligne') {
+                      const onlineAns = q.answers.find((a: any) => a.name.toLowerCase().includes('ligne'));
+                      updated[q.id] = onlineAns ? onlineAns.name : q.answers[0].name;
+                    } else {
+                      const presentielAns = q.answers.find((a: any) => a.name.toLowerCase().includes('bureau') || a.name.toLowerCase().includes('capsy'));
+                      updated[q.id] = presentielAns ? presentielAns.name : q.answers[0].name;
+                    }
+                  } else {
+                    updated[q.id] = q.answers[0].name;
+                  }
+                }
+              });
+              return updated;
+            });
+          }
+        }
+      })
+      .catch((err) => {
+        if (err.name !== 'AbortError') {
+          console.debug('Impossible de charger les détails Odoo du service:', err);
+        }
+      })
+      .finally(() => {
+        setIsLoadingDetails(false);
+      });
+
+    return () => controller.abort();
+  }, [isOpen, serviceId, sourceServices]);
+
+  // Générer les dates disponibles selon les règles Odoo (max_schedule_days, min_schedule_hours)
   const [availableDates, setAvailableDates] = useState<{ value: string; label: string }[]>([]);
   useEffect(() => {
+    const maxDays = serviceDetails?.max_schedule_days ? Math.min(Number(serviceDetails.max_schedule_days), 30) : 15;
+    const minHours = serviceDetails?.min_schedule_hours ? Number(serviceDetails.min_schedule_hours) : 0;
+
     const dates: { value: string; label: string }[] = [];
-    const today = new Date();
+    const startDate = new Date();
+    if (minHours >= 24) {
+      startDate.setDate(startDate.getDate() + 1);
+    }
+
+    let cursor = new Date(startDate);
     let count = 0;
-    while (count < 8) {
-      today.setDate(today.getDate() + 1);
-      // Skip Sundays
-      if (today.getDay() !== 0) {
-        const valueStr = today.toISOString().split('T')[0];
+    while (count < maxDays) {
+      cursor.setDate(cursor.getDate() + 1);
+      // Ignorer les dimanches (fermeture clinique)
+      if (cursor.getDay() !== 0) {
+        const valueStr = cursor.toISOString().split('T')[0];
         const options: Intl.DateTimeFormatOptions = { weekday: 'long', day: 'numeric', month: 'long' };
-        // Format French
-        const labelStr = today.toLocaleDateString('fr-FR', options);
+        const labelStr = cursor.toLocaleDateString('fr-FR', options);
         dates.push({
           value: valueStr,
           label: labelStr.charAt(0).toUpperCase() + labelStr.slice(1),
@@ -318,9 +410,73 @@ export default function BookingModal({
     }
     setAvailableDates(dates);
     if (dates.length > 0) {
-      setDate(dates[0].value);
+      setDate((prev) => {
+        const exists = dates.some((d) => d.value === prev);
+        return exists ? prev : dates[0].value;
+      });
     }
-  }, []);
+  }, [serviceDetails]);
+
+  // Calculer les créneaux réels disponibles depuis Odoo
+  useEffect(() => {
+    if (!isOpen || !date) return;
+
+    const currentService = sourceServices.find((s) => String(s.id) === String(serviceId));
+    const apptTypeId = currentService?.appointmentTypeId || (!isNaN(Number(serviceId)) ? Number(serviceId) : undefined);
+    if (!apptTypeId) return;
+
+    let therapistUserId: number | undefined = undefined;
+    if (preferredTherapist && preferredTherapist !== 'Premier disponible') {
+      const match = odooTherapists.find((t) => t.name === preferredTherapist);
+      if (match) therapistUserId = match.id;
+    }
+
+    const controller = new AbortController();
+    setIsLoadingSlots(true);
+    setHasCheckedSlots(false);
+
+    fetch(getAvailableSlotsUrl(apptTypeId, date, therapistUserId), { signal: controller.signal })
+      .then((r) => {
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        return r.json();
+      })
+      .then((data) => {
+        if (data && data.timezone) {
+          setTimezone(data.timezone);
+        }
+        const slots: any[] = Array.isArray(data.slots) ? data.slots : [];
+        if (slots.length > 0) {
+          setAvailableSlots(slots);
+          setTimeSlot((prev) => {
+            if (!prev) return '';
+            const match = slots.find((s) => s.slot === prev && s.available);
+            return match ? prev : '';
+          });
+        } else {
+          setAvailableSlots([]);
+          setTimeSlot('');
+        }
+        setHasCheckedSlots(true);
+      })
+      .catch((err) => {
+        if (err.name !== 'AbortError') {
+          console.warn('Erreur chargement créneaux Odoo:', err);
+          // Fallback sur la grille statique si l'API est indisponible
+          setAvailableSlots(TIME_SLOTS.map((slot) => ({
+            slot,
+            startTime: slot.split(' - ')[0],
+            endTime: slot.split(' - ')[1] || '',
+            available: true,
+          })));
+          setHasCheckedSlots(true);
+        }
+      })
+      .finally(() => {
+        setIsLoadingSlots(false);
+      });
+
+    return () => controller.abort();
+  }, [isOpen, date, preferredTherapist, serviceId, odooTherapists, sourceServices]);
 
   const handleServiceSelect = (id: string) => {
     setServiceId(id);
@@ -328,6 +484,8 @@ export default function BookingModal({
     const fromStatic = STATIC_SERVICES.find((s) => String(s.id) === String(id));
     const fromOdoo = servicesList.find((s) => String(s.id) === String(id));
     setSelectedServiceTitle(fromStatic?.title || fromOdoo?.title || '');
+    setHasCheckedSlots(false);
+    setIsLoadingSlots(true);
     setStep(2);
   };
 
@@ -374,6 +532,21 @@ export default function BookingModal({
 
     const appointmentId = `CAPS-${Date.now().toString().slice(-4)}-${Math.floor(1000 + Math.random() * 9000)}`;
 
+    // Rassembler les réponses aux questions Odoo (mode de paiement, lieu/modalité, etc.)
+    const odooAnswersList: string[] = [];
+    if (serviceDetails?.questions && Array.isArray(serviceDetails.questions)) {
+      serviceDetails.questions.forEach((q: any) => {
+        if (q.question_type !== 'phone' && questionAnswers[q.id]) {
+          odooAnswersList.push(`• ${q.name} : ${questionAnswers[q.id]}`);
+        }
+      });
+    }
+
+    const compiledNotes = [
+      odooAnswersList.length > 0 ? `[Questions Odoo]\n${odooAnswersList.join('\n')}` : '',
+      clientNotes ? `[Notes du client]\n${clientNotes.trim()}` : '',
+    ].filter(Boolean).join('\n\n') || 'Aucun détail supplémentaire';
+
     const newAppointment: Appointment = {
       id: appointmentId,
       serviceId,
@@ -381,7 +554,7 @@ export default function BookingModal({
       clientName: clientName.trim() || 'Patient',
       clientEmail: clientEmail.trim(),
       clientPhone: validPhone.startsWith('+') ? validPhone : `${selectedCountry.dialCode} ${validPhone}`,
-      clientNotes: clientNotes || 'Aucun détail supplémentaire',
+      clientNotes: compiledNotes,
       date,
       timeSlot,
       preferredTherapist,
@@ -486,6 +659,10 @@ export default function BookingModal({
     setEmailError(null);
     setHasAttemptedSubmit(false);
     setCreatedAppointment(null);
+    setShowServiceIntro(false);
+    setHasCheckedSlots(false);
+    setIsLoadingSlots(false);
+    setAvailableSlots([]);
   };
 
   const handleCloseModal = () => {
@@ -611,6 +788,35 @@ export default function BookingModal({
                         ))
                     }
                   </div>
+
+                  {/* Fiche descriptive officielle issue d'Odoo (message_intro) */}
+                  {serviceDetails && (serviceDetails.description_html || serviceDetails.message_intro) && (
+                    <div className="bg-brand-gray-light/70 rounded-xl border border-gray-200 overflow-hidden transition-all mt-3">
+                      <button
+                        type="button"
+                        onClick={() => setShowServiceIntro(!showServiceIntro)}
+                        className="w-full p-3.5 text-left flex items-center justify-between hover:bg-gray-100/70 transition-colors"
+                      >
+                        <div className="flex items-center gap-2 text-xs font-poppins font-bold text-brand-dark">
+                          <LucideIcon name="BookOpen" className="h-4 w-4 text-brand-wellbeing shrink-0" />
+                          <span>Descriptif officiel & Objectifs (« {serviceDetails.name || selectedServiceTitle} »)</span>
+                        </div>
+                        <LucideIcon
+                          name="ChevronDown"
+                          className={`h-4 w-4 text-gray-500 transition-transform duration-200 shrink-0 ${showServiceIntro ? 'rotate-180' : ''}`}
+                        />
+                      </button>
+                      {showServiceIntro && (
+                        <div className="p-4 pt-2 border-t border-gray-200 text-xs text-brand-dark font-sans leading-relaxed bg-white">
+                          <div
+                            className="space-y-2 text-gray-700 [&>p]:mb-2 [&>strong]:text-brand-dark [&>p:last-child]:mb-0"
+                            dangerouslySetInnerHTML={{ __html: serviceDetails.description_html || serviceDetails.message_intro }}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  )}
+
                   <div className="space-y-2 mt-3">
                     <div className="bg-brand-gray-light p-3.5 rounded-xl flex gap-3 text-xs text-brand-gray-text leading-relaxed border border-gray-200">
                       <LucideIcon name="Info" className="h-5 w-5 text-brand-wellbeing shrink-0 mt-0.5" />
@@ -673,7 +879,12 @@ export default function BookingModal({
                     </label>
                     <select
                       value={date}
-                      onChange={(e) => setDate(e.target.value)}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setDate(val);
+                        setHasCheckedSlots(false);
+                        setIsLoadingSlots(true);
+                      }}
                       className="w-full p-3.5 border-2 border-gray-200 rounded-xl bg-white font-sans text-brand-dark focus:border-brand-wellbeing outline-none transition-colors"
                       id="date-picker"
                     >
@@ -687,24 +898,91 @@ export default function BookingModal({
 
                   {/* Select Time Slot */}
                   <div>
-                    <label className="block text-sm font-poppins font-bold text-brand-dark mb-2">
-                      Créneaux horaires disponibles
-                    </label>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5" id="time-grid">
-                      {TIME_SLOTS.map((slot) => (
-                        <button
-                          key={slot}
-                          type="button"
-                          onClick={() => setTimeSlot(slot)}
-                          className={`p-3 rounded-xl border-2 text-center text-xs font-semibold font-mono transition-all ${timeSlot === slot
-                            ? 'border-brand-green bg-green-50/20 text-brand-green shadow-xs'
-                            : 'border-gray-200 text-brand-gray-text hover:border-gray-300'
-                            }`}
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 mb-2.5">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <label className="block text-sm font-poppins font-bold text-brand-dark">
+                          Créneaux horaires disponibles
+                        </label>
+                        <span
+                          className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-brand-wellbeing/10 text-brand-wellbeing border border-brand-wellbeing/20"
+                          title={`Fuseau horaire configuré dans Odoo : ${timezone}`}
                         >
-                          {slot}
-                        </button>
-                      ))}
+                          <LucideIcon name="Globe" className="h-3 w-3 text-brand-wellbeing" />
+                          <span>{timezone === 'Africa/Kinshasa' ? 'Heure de Kinshasa (UTC+1)' : timezone}</span>
+                        </span>
+                      </div>
+                      {(!hasCheckedSlots || isLoadingSlots) && (
+                        <span className="text-[11px] text-brand-wellbeing flex items-center gap-1 font-medium">
+                          <LucideIcon name="Loader2" className="h-3.5 w-3.5 animate-spin" />
+                          Vérification Odoo...
+                        </span>
+                      )}
                     </div>
+
+                    {(!hasCheckedSlots || isLoadingSlots) ? (
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                        {Array.from({ length: 6 }).map((_, i) => (
+                          <div
+                            key={i}
+                            className="p-3 rounded-xl border border-gray-150 bg-gray-50/80 animate-pulse h-12 flex flex-col justify-center items-center"
+                          >
+                            <div className="h-3.5 w-20 bg-gray-200 rounded" />
+                          </div>
+                        ))}
+                      </div>
+                    ) : availableSlots.length > 0 ? (
+                      <>
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5" id="time-grid">
+                          {availableSlots.map((slot) => {
+                            const isSelected = timeSlot === slot.slot;
+                            const isFree = slot.available;
+                            return (
+                              <button
+                                key={slot.slot}
+                                type="button"
+                                disabled={!isFree}
+                                onClick={() => isFree && setTimeSlot(slot.slot)}
+                                title={!isFree ? (slot.reason || 'Créneau indisponible') : 'Cliquer pour choisir ce créneau'}
+                                className={`p-3 rounded-xl border-2 text-center text-xs font-mono transition-all flex flex-col items-center justify-center min-h-[48px] ${
+                                  isSelected
+                                    ? 'border-brand-green bg-green-50/30 text-brand-green font-bold shadow-xs'
+                                    : isFree
+                                    ? 'border-gray-200 text-brand-gray-text hover:border-gray-300 font-semibold bg-white'
+                                    : 'border-gray-150 bg-gray-50 text-gray-400 opacity-60 line-through cursor-not-allowed font-medium'
+                                }`}
+                              >
+                                <span>{slot.slot}</span>
+                                {!isFree && (
+                                  <span className="text-[9px] no-underline font-sans text-gray-400 font-normal mt-0.5">
+                                    {slot.reason === 'Complet' ? 'Complet' : 'Indisponible'}
+                                  </span>
+                                )}
+                              </button>
+                            );
+                          })}
+                        </div>
+
+                        {/* Indication précise du fuseau horaire */}
+                        <div className="flex items-center gap-1.5 mt-2 text-[11px] text-brand-gray-text">
+                          <LucideIcon name="Clock" className="h-3.5 w-3.5 text-brand-wellbeing shrink-0" />
+                          <span>
+                            Créneaux exprimés en <strong>{timezone === 'Africa/Kinshasa' ? 'heure de Kinshasa (UTC+1)' : timezone}</strong>
+                            {typeof Intl !== 'undefined' && Intl.DateTimeFormat().resolvedOptions().timeZone !== timezone && (
+                              <span className="text-gray-400 font-normal ml-1">
+                                &bull; Votre heure locale : {Intl.DateTimeFormat().resolvedOptions().timeZone}
+                              </span>
+                            )}
+                          </span>
+                        </div>
+                      </>
+                    ) : (
+                      <div className="p-4 rounded-xl border border-amber-200 bg-amber-50/70 text-xs text-amber-900 flex items-start gap-2.5">
+                        <LucideIcon name="CalendarX" className="h-4 w-4 text-amber-600 shrink-0 mt-0.5" />
+                        <p>
+                          Aucune disponibilité ce jour pour ce praticien. Veuillez sélectionner une autre date ou choisir « Premier disponible ».
+                        </p>
+                      </div>
+                    )}
                   </div>
 
                   {/* Select Therapist Option */}
@@ -715,7 +993,11 @@ export default function BookingModal({
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                       <button
                         type="button"
-                        onClick={() => setPreferredTherapist('Premier disponible')}
+                        onClick={() => {
+                          setPreferredTherapist('Premier disponible');
+                          setHasCheckedSlots(false);
+                          setIsLoadingSlots(true);
+                        }}
                         className={`p-3.5 rounded-2xl border-2 text-left flex items-center gap-3 transition-all ${preferredTherapist === 'Premier disponible'
                           ? 'border-brand-wellbeing bg-brand-wellbeing/5 text-brand-wellbeing font-semibold shadow-xs'
                           : 'border-gray-200 text-brand-gray-text hover:border-gray-300'
@@ -751,7 +1033,11 @@ export default function BookingModal({
                             <button
                               key={therapist.label}
                               type="button"
-                              onClick={() => setPreferredTherapist(therapist.label)}
+                              onClick={() => {
+                                setPreferredTherapist(therapist.label);
+                                setHasCheckedSlots(false);
+                                setIsLoadingSlots(true);
+                              }}
                               className={`p-3.5 rounded-2xl border-2 text-left flex items-center gap-3 transition-all ${preferredTherapist === therapist.label
                                 ? 'border-brand-wellbeing bg-brand-wellbeing/5 text-brand-wellbeing font-semibold shadow-xs'
                                 : 'border-gray-200 text-brand-gray-text hover:border-gray-300'
@@ -1037,6 +1323,7 @@ export default function BookingModal({
                       </div>
                     </div>
 
+                   
                     <div>
                       <label className="block text-xs font-poppins font-bold uppercase tracking-wider text-brand-dark mb-1.5">
                         Dites-nous brièvement ce qui vous amène (Optionnel & Confidentiel)
@@ -1117,7 +1404,12 @@ export default function BookingModal({
                       </div>
                       <div className="flex justify-between border-b border-gray-200 pb-1.5">
                         <span className="text-brand-gray-text font-medium">Créneau :</span>
-                        <span className="font-bold">{createdAppointment.timeSlot}</span>
+                        <div className="text-right">
+                          <span className="font-bold">{createdAppointment.timeSlot}</span>
+                          <span className="block text-[10px] text-brand-gray-text font-mono">
+                            {timezone === 'Africa/Kinshasa' ? 'Heure de Kinshasa (UTC+1)' : timezone}
+                          </span>
+                        </div>
                       </div>
                       <div className="flex justify-between border-b border-gray-200 pb-1.5">
                         <span className="text-brand-gray-text font-medium">Praticien :</span>

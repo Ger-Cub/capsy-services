@@ -75,3 +75,38 @@ export const getAppointmentTypesUrl = (): string => {
   }
   return `${base}/appointments/types/`;
 };
+
+/**
+ * URL pour récupérer les détails complets d'un type de RDV Odoo
+ * (descriptif, questions, disponibilités, options).
+ * Proxy Vercel/Express en prod, FastAPI direct en local.
+ */
+export const getAppointmentDetailsUrl = (id: number | string): string => {
+  const base = getApiBase();
+  if (base === '') {
+    return `/api/appointment-details?id=${id}`;
+  }
+  return `${base}/appointments/types/${id}/details`;
+};
+
+/**
+ * URL pour récupérer les créneaux disponibles en temps réel pour une date et un service.
+ * Proxy Vercel/Express en prod, FastAPI direct en local.
+ */
+export const getAvailableSlotsUrl = (
+  appointmentTypeId: number | string,
+  date: string,
+  therapistUserId?: number | string
+): string => {
+  const base = getApiBase();
+  const params = new URLSearchParams({
+    appointment_type_id: String(appointmentTypeId),
+    date,
+  });
+  if (therapistUserId) params.set('therapist_user_id', String(therapistUserId));
+
+  if (base === '') {
+    return `/api/available-slots?${params}`;
+  }
+  return `${base}/appointments/available-slots?${params}`;
+};

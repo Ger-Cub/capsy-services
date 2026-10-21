@@ -11,6 +11,8 @@ import authHandler from "./api/auth";
 import appointmentTypesHandler from "./api/appointment-types";
 import therapistsHandler from "./api/therapists";
 import appointmentsListHandler from "./api/appointments-list";
+import appointmentDetailsHandler from "./api/appointment-details";
+import availableSlotsHandler from "./api/available-slots";
 
 const app = express();
 app.use(express.json());
@@ -162,6 +164,16 @@ app.all("/api/therapists", async (req, res) => {
 // Appointments List / Create API route
 app.all("/api/appointments-list", async (req, res) => {
   return appointmentsListHandler(req as any, res as any);
+});
+
+// Appointment Details API route (descriptif + questions + disponibilités)
+app.all("/api/appointment-details", async (req, res) => {
+  return appointmentDetailsHandler(req as any, res as any);
+});
+
+// Available Slots API route (créneaux libres pour une date donnée)
+app.all("/api/available-slots", async (req, res) => {
+  return availableSlotsHandler(req as any, res as any);
 });
 
 // --- Server-side 301 redirects for legacy URLs ---
