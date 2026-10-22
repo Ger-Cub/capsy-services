@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { SERVICES as STATIC_SERVICES } from '../data/staticData';
 import { Appointment } from '../types';
@@ -76,7 +76,12 @@ export default function BookingModal({
   const [isLoadingTherapists, setIsLoadingTherapists] = useState(false);
   const [serviceDetails, setServiceDetails] = useState<any | null>(null);
   const [isLoadingDetails, setIsLoadingDetails] = useState(false);
-  const [showServiceIntro, setShowServiceIntro] = useState(false);
+
+  // Hover popover state: cache HTML descriptions per service ID, hovered service, mobile info overlay
+  const [hoveredDescCache, setHoveredDescCache] = useState<Record<string, string>>({});
+  const [hoveredServiceId, setHoveredServiceId] = useState<string | null>(null);
+  const [mobileInfoServiceId, setMobileInfoServiceId] = useState<string | null>(null);
+
   const [availableSlots, setAvailableSlots] = useState<{ slot: string; startTime: string; endTime: string; available: boolean; reason?: string | null }[]>([]);
   const [isLoadingSlots, setIsLoadingSlots] = useState(false);
   const [hasCheckedSlots, setHasCheckedSlots] = useState(false);
@@ -243,6 +248,25 @@ export default function BookingModal({
 
           setServicesList(mapped);
 
+          // Précharger les descriptifs Odoo en arrière-plan pour un affichage instantané au survol
+          mapped.forEach((item: any) => {
+            if (item.appointmentTypeId) {
+              fetch(getAppointmentDetailsUrl(item.appointmentTypeId))
+                .then((r) => (r.ok ? r.json() : null))
+                .then((d) => {
+                  if (d && (d.description_html || d.message_intro)) {
+                    const html = d.description_html || d.message_intro;
+                    setHoveredDescCache((prev) => ({
+                      ...prev,
+                      [String(item.id)]: html,
+                      [String(item.appointmentTypeId)]: html,
+                    }));
+                  }
+                })
+                .catch(() => {});
+            }
+          });
+
           // Si un initialServiceId était demandé, faire correspondre intelligemment
           const initSid = typeof initialServiceId === 'string' ? initialServiceId : '';
           let matched = null;
@@ -340,6 +364,14 @@ export default function BookingModal({
       .then((data) => {
         if (data && data.id) {
           setServiceDetails(data);
+          const html = data.description_html || data.message_intro || '';
+          if (html) {
+            setHoveredDescCache((prev) => ({
+              ...prev,
+              [String(serviceId)]: html,
+              [String(data.id)]: html,
+            }));
+          }
           if (data.timezone || data.appointment_tz) {
             setTimezone(data.timezone || data.appointment_tz);
           }
@@ -379,6 +411,35 @@ export default function BookingModal({
 
     return () => controller.abort();
   }, [isOpen, serviceId, sourceServices]);
+
+  const [loadingDescId, setLoadingDescId] = useState<string | null>(null);
+
+  // Charger le descriptif Odoo pour un service donné lors du survol ou clic sur l'icône info
+  const loadServiceDesc = useCallback(async (s: any) => {
+    const sId = String(s.id);
+    const apptTypeId = s.appointmentTypeId || (!isNaN(Number(s.id)) ? Number(s.id) : undefined);
+    if (hoveredDescCache[sId]) return;
+    if (!apptTypeId) return;
+
+    try {
+      setLoadingDescId(sId);
+      const resp = await fetch(getAppointmentDetailsUrl(apptTypeId));
+      if (!resp.ok) return;
+      const data = await resp.json();
+      const html = data.description_html || data.message_intro || '';
+      if (html) {
+        setHoveredDescCache((prev) => ({
+          ...prev,
+          [sId]: html,
+          [String(apptTypeId)]: html,
+        }));
+      }
+    } catch (err) {
+      console.debug('Impossible de charger le descriptif du service:', err);
+    } finally {
+      setLoadingDescId((prev) => (prev === sId ? null : prev));
+    }
+  }, [hoveredDescCache]);
 
   // Générer les dates disponibles selon les règles Odoo (max_schedule_days, min_schedule_hours)
   const [availableDates, setAvailableDates] = useState<{ value: string; label: string }[]>([]);
@@ -659,7 +720,8 @@ export default function BookingModal({
     setEmailError(null);
     setHasAttemptedSubmit(false);
     setCreatedAppointment(null);
-    setShowServiceIntro(false);
+    setHoveredServiceId(null);
+    setMobileInfoServiceId(null);
     setHasCheckedSlots(false);
     setIsLoadingSlots(false);
     setAvailableSlots([]);
@@ -756,66 +818,192 @@ export default function BookingModal({
                             <div className="h-3 w-4/5 rounded-md bg-gray-100" />
                           </div>
                         ))
-                      : sourceServices.map((s) => (
-                          <button
-                            key={s.id}
-                            type="button"
-                            onClick={() => handleServiceSelect(s.id)}
-                            className={`p-4 rounded-xl border-2 text-left transition-all hover:bg-neutral-50 flex flex-col justify-between h-full ${serviceId === s.id
-                              ? 'border-brand-green bg-green-50/20 shadow-sm'
-                              : 'border-gray-200'
-                              }`}
-                          >
-                            <div className="flex items-center gap-3 mb-2">
-                              <div className={`p-2 rounded-lg ${serviceId === s.id ? 'bg-brand-green text-white' : 'bg-brand-gray-light text-brand-wellbeing'}`}>
-                                <LucideIcon name={s.iconName} className="h-5 w-5" />
+                      : sourceServices.map((s) => {
+                          const isSelected = serviceId === s.id;
+                          const isHovered = hoveredServiceId === s.id;
+                          const descHtml = hoveredDescCache[String(s.id)] ||
+                            (isSelected && (serviceDetails?.description_html || serviceDetails?.message_intro));
+
+                          return (
+                            <div
+                              key={s.id}
+                              className="relative"
+                              onMouseEnter={() => {
+                                setHoveredServiceId(s.id);
+                                loadServiceDesc(s);
+                              }}
+                              onMouseLeave={() => {
+                                setHoveredServiceId((prev) => (prev === s.id ? null : prev));
+                              }}
+                            >
+                              <div
+                                role="button"
+                                tabIndex={0}
+                                onClick={() => handleServiceSelect(s.id)}
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter' || e.key === ' ') {
+                                    e.preventDefault();
+                                    handleServiceSelect(s.id);
+                                  }
+                                }}
+                                className={`p-4 rounded-xl border-2 text-left transition-all hover:bg-neutral-50 flex flex-col justify-between h-full cursor-pointer select-none ${
+                                  isSelected
+                                    ? 'border-brand-green bg-green-50/20 shadow-sm'
+                                    : 'border-gray-200'
+                                }`}
+                              >
+                                <div className="flex items-start justify-between gap-2 mb-2 w-full">
+                                  <div className="flex items-center gap-3">
+                                    <div
+                                      className={`p-2 rounded-lg shrink-0 ${
+                                        isSelected
+                                          ? 'bg-brand-green text-white'
+                                          : 'bg-brand-gray-light text-brand-wellbeing'
+                                      }`}
+                                    >
+                                      <LucideIcon name={s.iconName} className="h-5 w-5" />
+                                    </div>
+                                    <span className="font-poppins font-bold text-brand-dark text-sm leading-tight">
+                                      {s.title}
+                                    </span>
+                                  </div>
+                                  <button
+                                    type="button"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      loadServiceDesc(s);
+                                      setMobileInfoServiceId(s.id);
+                                    }}
+                                    className="p-1.5 rounded-lg text-gray-400 hover:text-brand-wellbeing hover:bg-gray-100 transition-colors shrink-0"
+                                    title="Voir le descriptif détaillé"
+                                    aria-label={`Détails sur ${s.title}`}
+                                  >
+                                    <LucideIcon name="Info" className="h-4 w-4" />
+                                  </button>
+                                </div>
+                                <p className="text-xs text-brand-gray-text line-clamp-2 mt-1">
+                                  {s.shortDescription}
+                                </p>
+                                {isSelected && (
+                                  <div className="flex justify-end w-full mt-3">
+                                    <span className="text-brand-green text-xs font-semibold flex items-center gap-1">
+                                      Sélectionné <LucideIcon name="Check" className="h-3.5 w-3.5" strokeWidth={3} />
+                                    </span>
+                                  </div>
+                                )}
                               </div>
-                              <span className="font-poppins font-bold text-brand-dark text-sm leading-tight">
-                                {s.title}
-                              </span>
+
+                              {/* Dropdown / Popover au survol (Desktop) */}
+                              <AnimatePresence>
+                                {isHovered && (
+                                  <motion.div
+                                    initial={{ opacity: 0, y: 6, scale: 0.98 }}
+                                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                                    exit={{ opacity: 0, y: 4, scale: 0.98 }}
+                                    transition={{ duration: 0.15 }}
+                                    className="hidden sm:block absolute z-50 left-0 right-0 top-[calc(100%+6px)] bg-white rounded-xl shadow-2xl border border-gray-200 p-4 text-xs font-sans text-brand-dark"
+                                  >
+                                    <div className="flex items-center justify-between gap-1.5 pb-2 mb-2 border-b border-gray-100">
+                                      <div className="flex items-center gap-1.5 font-poppins font-bold text-brand-wellbeing text-xs">
+                                        <LucideIcon name="BookOpen" className="h-3.5 w-3.5" />
+                                        <span className="line-clamp-1">{s.title}</span>
+                                      </div>
+                                      <span className="text-[10px] text-gray-400 font-sans uppercase tracking-wider font-semibold">
+                                        Descriptif
+                                      </span>
+                                    </div>
+                                    <div className="max-h-48 overflow-y-auto pr-1 text-gray-700 leading-relaxed text-[11px] space-y-1.5 [&>p]:mb-1.5 [&>strong]:text-brand-dark [&>p:last-child]:mb-0">
+                                      {loadingDescId === s.id ? (
+                                        <div className="flex items-center justify-center py-4 text-gray-400 gap-2">
+                                          <LucideIcon name="Loader2" className="h-4 w-4 animate-spin text-brand-wellbeing" />
+                                          <span>Chargement du descriptif Odoo...</span>
+                                        </div>
+                                      ) : descHtml ? (
+                                        <div dangerouslySetInnerHTML={{ __html: descHtml }} />
+                                      ) : (
+                                        <p className="text-gray-500 italic py-1">
+                                          {s.shortDescription || 'Consultez votre conseiller pour les détails de ce service.'}
+                                        </p>
+                                      )}
+                                    </div>
+                                  </motion.div>
+                                )}
+                              </AnimatePresence>
                             </div>
-                            <p className="text-xs text-brand-gray-text line-clamp-2 mt-1">
-                              {s.shortDescription}
-                            </p>
-                            {serviceId === s.id && (
-                              <div className="flex justify-end w-full mt-3">
-                                <span className="text-brand-green text-xs font-semibold flex items-center gap-1">
-                                  Sélectionné <LucideIcon name="Check" className="h-3.5 w-3.5" strokeWidth={3} />
-                                </span>
-                              </div>
-                            )}
-                          </button>
-                        ))
+                          );
+                        })
                     }
                   </div>
 
-                  {/* Fiche descriptive officielle issue d'Odoo (message_intro) */}
-                  {serviceDetails && (serviceDetails.description_html || serviceDetails.message_intro) && (
-                    <div className="bg-brand-gray-light/70 rounded-xl border border-gray-200 overflow-hidden transition-all mt-3">
-                      <button
-                        type="button"
-                        onClick={() => setShowServiceIntro(!showServiceIntro)}
-                        className="w-full p-3.5 text-left flex items-center justify-between hover:bg-gray-100/70 transition-colors"
-                      >
-                        <div className="flex items-center gap-2 text-xs font-poppins font-bold text-brand-dark">
-                          <LucideIcon name="BookOpen" className="h-4 w-4 text-brand-wellbeing shrink-0" />
-                          <span>Descriptif officiel & Objectifs (« {serviceDetails.name || selectedServiceTitle} »)</span>
+                  {/* Modal overlay pour voir la description complète (Mobile & clic bouton Info) */}
+                  <AnimatePresence>
+                    {mobileInfoServiceId && (() => {
+                      const activeService = sourceServices.find((s) => String(s.id) === String(mobileInfoServiceId));
+                      const descHtml = hoveredDescCache[String(mobileInfoServiceId)] ||
+                        (String(serviceId) === String(mobileInfoServiceId) && (serviceDetails?.description_html || serviceDetails?.message_intro));
+                      return (
+                        <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+                          <motion.div
+                            initial={{ opacity: 0, scale: 0.95, y: 10 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: 10 }}
+                            className="bg-white rounded-2xl max-w-lg w-full max-h-[85vh] flex flex-col shadow-2xl overflow-hidden border border-gray-100"
+                          >
+                            <div className="p-4 bg-brand-wellbeing text-white flex items-center justify-between">
+                              <div className="flex items-center gap-2">
+                                <LucideIcon name="BookOpen" className="h-5 w-5 text-brand-green" />
+                                <h4 className="font-poppins font-bold text-sm">
+                                  {activeService?.title || 'Détails du service'}
+                                </h4>
+                              </div>
+                              <button
+                                type="button"
+                                onClick={() => setMobileInfoServiceId(null)}
+                                className="p-1 rounded-full hover:bg-white/10 transition-colors text-white"
+                                aria-label="Fermer"
+                              >
+                                <LucideIcon name="X" className="h-5 w-5" />
+                              </button>
+                            </div>
+                            <div className="p-5 overflow-y-auto text-xs text-gray-700 leading-relaxed space-y-2 [&>p]:mb-2 [&>strong]:text-brand-dark">
+                              {loadingDescId === mobileInfoServiceId ? (
+                                <div className="flex items-center justify-center py-8 text-gray-400 gap-2">
+                                  <LucideIcon name="Loader2" className="h-5 w-5 animate-spin text-brand-wellbeing" />
+                                  <span>Chargement du descriptif officiel...</span>
+                                </div>
+                              ) : descHtml ? (
+                                <div dangerouslySetInnerHTML={{ __html: descHtml }} />
+                              ) : (
+                                <p className="text-gray-500 italic py-2">
+                                  {activeService?.shortDescription || 'Aucun détail supplémentaire disponible.'}
+                                </p>
+                              )}
+                            </div>
+                            <div className="p-3 bg-brand-gray-light border-t border-gray-200 flex justify-end gap-2">
+                              <button
+                                type="button"
+                                onClick={() => setMobileInfoServiceId(null)}
+                                className="px-4 py-2 border border-gray-300 rounded-xl text-xs font-semibold text-gray-700 hover:bg-gray-100 transition-colors"
+                              >
+                                Fermer
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  if (activeService) handleServiceSelect(activeService.id);
+                                  setMobileInfoServiceId(null);
+                                }}
+                                className="px-4 py-2 bg-brand-wellbeing text-white rounded-xl text-xs font-semibold hover:bg-brand-wellbeing/90 transition-colors flex items-center gap-1.5"
+                              >
+                                <span>Choisir ce service</span>
+                                <LucideIcon name="ArrowRight" className="h-3.5 w-3.5" />
+                              </button>
+                            </div>
+                          </motion.div>
                         </div>
-                        <LucideIcon
-                          name="ChevronDown"
-                          className={`h-4 w-4 text-gray-500 transition-transform duration-200 shrink-0 ${showServiceIntro ? 'rotate-180' : ''}`}
-                        />
-                      </button>
-                      {showServiceIntro && (
-                        <div className="p-4 pt-2 border-t border-gray-200 text-xs text-brand-dark font-sans leading-relaxed bg-white">
-                          <div
-                            className="space-y-2 text-gray-700 [&>p]:mb-2 [&>strong]:text-brand-dark [&>p:last-child]:mb-0"
-                            dangerouslySetInnerHTML={{ __html: serviceDetails.description_html || serviceDetails.message_intro }}
-                          />
-                        </div>
-                      )}
-                    </div>
-                  )}
+                      );
+                    })()}
+                  </AnimatePresence>
 
                   <div className="space-y-2 mt-3">
                     <div className="bg-brand-gray-light p-3.5 rounded-xl flex gap-3 text-xs text-brand-gray-text leading-relaxed border border-gray-200">
