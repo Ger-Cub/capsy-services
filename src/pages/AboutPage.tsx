@@ -44,7 +44,7 @@ export default function AboutPage({ onOpenBooking }: AboutPageProps) {
                 CAPSY Services est la marque de services du Centre d’Assistance Psychologique, CAPSY SARL, institution privée congolaise engagée dans la santé mentale, le soutien psychosocial, la formation et l’innovation.
               </p>
               <p className="text-sm leading-relaxed text-brand-gray-text font-sans">
-                Nous accompagnons les personnes, les familles et les structures vers une meilleure résilience psychologique. Nous travaillons avec des psychologues, des thérapeutes et des professionnels de la santé mentale pour offrir un soutien accessible, discret et adapté.
+                Nous accompagnons les personnes, les familles et les organisations vers une meilleure résilience psychologique. Nous travaillons avec des psychologues, des thérapeutes et des professionnels de la santé mentale pour offrir un soutien accessible, discret et adapté.
               </p>
             </div>
             <div className="space-y-6">
