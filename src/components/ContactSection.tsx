@@ -85,7 +85,7 @@ export default function ContactSection() {
                   <h4 className="font-poppins font-bold text-brand-dark text-base">Téléphone & WhatsApp</h4>
                   <div className="text-sm text-brand-gray-text mt-1 space-y-1 font-mono font-semibold">
                     <p className="flex items-center gap-1.5 hover:text-brand-green transition-colors">
-                      <a href="tel:+243997707312">+243 997 707 312</a>
+                      <a href="tel:+243838248355">+243 838 248 355</a>
                       <span className="text-[9px] bg-brand-green/10 text-brand-green py-0.5 px-1.5 rounded-sm font-bold uppercase tracking-wider">WhatsApp</span>
                     </p>
                   </div>
@@ -127,19 +127,69 @@ export default function ContactSection() {
 
             </div>
 
-            {/* Social handles list card */}
+            {/* Social handles list card mirroring Image 1 footer */}
             <div className="bg-brand-gray-light p-5 rounded-2xl border border-gray-150 space-y-3">
-              <p className="text-xs font-bold text-brand-dark uppercase tracking-wider font-poppins">Réseaux & Messagerie</p>
+              <p className="text-xs font-bold text-brand-dark uppercase tracking-wider font-poppins">Suivez-nous sur les réseaux</p>
               <div className="flex gap-2.5">
                 <a
-                  href="https://wa.me/243997707312"
+                  href="https://www.facebook.com/CapsyServices"
                   target="_blank"
                   rel="noopener noreferrer"
-                  title="WhatsApp CAPSY (+243 997 707 312)"
-                  className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#25D366] hover:bg-[#20ba56] text-white rounded-xl text-xs font-bold font-poppins transition-all shadow-xs"
+                  title="Capsy Services Facebook"
+                  className="h-9 w-9 bg-white text-brand-dark rounded-full flex items-center justify-center border border-gray-250 transition-all hover:bg-brand-wellbeing hover:text-white"
+                  aria-label="Capsy Services Facebook"
                 >
-                  <LucideIcon name="MessageSquareShare" className="h-4 w-4" />
-                  <span>WhatsApp direct (+243 997 707 312)</span>
+                  <span className="text-lg font-black leading-none">f</span>
+                </a>
+
+                <a
+                  href="https://www.instagram.com/capsyservices/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title="Capsy Services Instagram"
+                  className="h-9 w-9 bg-white text-brand-dark rounded-full flex items-center justify-center border border-gray-250 transition-all hover:bg-brand-wellbeing hover:text-white"
+                  aria-label="Capsy Services Instagram"
+                >
+                  <svg viewBox="0 0 24 24" className="h-4.5 w-4.5 fill-none stroke-current stroke-[1.8]" aria-hidden="true">
+                    <rect x="3.5" y="3.5" width="17" height="17" rx="5" />
+                    <circle cx="12" cy="12" r="4.2" />
+                    <circle cx="17.3" cy="6.7" r="1.2" fill="currentColor" stroke="none" />
+                  </svg>
+                </a>
+
+                <a
+                  href="https://x.com/CapsyServices"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title="Capsy Services X"
+                  className="h-9 w-9 bg-white text-brand-dark rounded-full flex items-center justify-center border border-gray-250 transition-all hover:bg-brand-wellbeing hover:text-white"
+                  aria-label="Capsy Services X"
+                >
+                  <span className="text-base font-black leading-none">X</span>
+                </a>
+
+                <a
+                  href="https://www.linkedin.com/company/capsy-rdc/posts/?viewAsMember=true"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title="Capsy Services LinkedIn"
+                  className="h-9 w-9 bg-white text-brand-dark rounded-full flex items-center justify-center border border-gray-250 transition-all hover:bg-brand-wellbeing hover:text-white"
+                  aria-label="Capsy Services LinkedIn"
+                >
+                  <span className="text-base font-black leading-none">in</span>
+                </a>
+
+                <a
+                  href="https://www.tiktok.com/@capsyservices"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title="Capsy Services TikTok"
+                  className="h-9 w-9 bg-white text-brand-dark rounded-full flex items-center justify-center border border-gray-250 transition-all hover:bg-brand-wellbeing hover:text-white"
+                  aria-label="Capsy Services TikTok"
+                >
+                  <svg viewBox="0 0 24 24" className="h-4.5 w-4.5 fill-current" aria-hidden="true">
+                    <path d="M14.5 3.5c.7 1.7 2.1 2.8 4.1 3.1v2.6c-1.4 0-2.7-.4-3.8-1.3v6.3a5.2 5.2 0 1 1-5.2-5.2c.3 0 .7 0 1 .1v2.7a2.6 2.6 0 1 0 1.8 2.5V3.5h2.1Z"/>
+                  </svg>
                 </a>
               </div>
             </div>

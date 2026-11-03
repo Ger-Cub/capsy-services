@@ -70,7 +70,7 @@ export default function ConfidentialitePage({ onOpenBooking }: ConfidentialitePa
               4. Exercice de vos droits
             </h2>
             <p className="text-sm text-brand-gray-text leading-relaxed">
-              Vous disposez du droit d'accéder aux informations vous concernant, d'en demander la rectification ou la suppression pour tout motif légitime. Pour toute question relative à la protection de vos données ou pour exercer vos droits, vous pouvez contacter notre secrétariat à l'adresse suivante : <a href="mailto:contact@capsy-rdc.org" className="text-brand-wellbeing font-semibold underline">contact@capsy-rdc.org</a> ou au <span className="font-semibold text-brand-dark">+243 997 707 312</span>.
+              Vous disposez du droit d'accéder aux informations vous concernant, d'en demander la rectification ou la suppression pour tout motif légitime. Pour toute question relative à la protection de vos données ou pour exercer vos droits, vous pouvez contacter notre secrétariat à l'adresse suivante : <a href="mailto:contact@capsy-rdc.org" className="text-brand-wellbeing font-semibold underline">contact@capsy-rdc.org</a> ou au <span className="font-semibold text-brand-dark">+243 838 248 355</span>.
             </p>
           </div>
 

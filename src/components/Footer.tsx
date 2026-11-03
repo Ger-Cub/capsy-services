@@ -29,7 +29,7 @@ export default function Footer({ onOpenBooking }: FooterProps) {
               </p>
               <p className="flex items-center gap-1.5 hover:text-white transition-colors">
                 <LucideIcon name="Phone" className="h-3.5 w-3.5 text-brand-confidence" />
-                <span>+243 997 707 312</span>
+                <span>+243 838 248 355</span>
               </p>
               <p className="flex items-start gap-1.5">
                 <LucideIcon name="MapPin" className="h-3.5 w-3.5 text-brand-confidence shrink-0 mt-0.5" />

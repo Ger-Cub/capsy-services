@@ -7,6 +7,7 @@ import UserProfilePage from './components/UserProfilePage';
 import ToastContainer from './components/Toast';
 import PageLoader from './components/PageLoader';
 import HomePage from './pages/HomePage';
+import EmployerLookupPage from './pages/EmployerLookupPage';
 import { AnimatePresence, motion } from 'motion/react';
 import { applySeoMeta, PAGE_SEO } from './hooks/useSeoMeta';
 
@@ -230,8 +231,14 @@ export default function App() {
   const isRendezVous = pathname === '/mes-rendezvous';
   const isMentionsLegales = pathname === '/mentions-legales';
   const isConfidentialite = pathname === '/confidentialite';
+  const employerMatch = pathname.match(/^\/employers\/?([^/]+)?$/);
+  const employerToken = employerMatch && employerMatch[1] ? decodeURIComponent(employerMatch[1]) : undefined;
   const certifMatch = pathname.match(/^\/formations\/certificat\/(.+)$/);
   const certifId = certifMatch ? certifMatch[1] : undefined;
+
+  if (pathname === '/employers' || pathname === '/employers/' || employerToken) {
+    return <EmployerLookupPage token={employerToken || ''} />;
+  }
 
   if (isDashboard) {
     return (

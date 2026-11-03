@@ -1585,7 +1585,7 @@ export default function BookingModal({
                           {new Date(createdAppointment.date).toLocaleDateString('fr-FR', {
                             weekday: 'long',
                             day: 'numeric',
-                            month: 'long',
+                                                       month: 'long',
                             year: 'numeric',
                           })}
                         </span>
@@ -1619,7 +1619,7 @@ export default function BookingModal({
                   {/* Actions */}
                   <div className="flex flex-col sm:flex-row gap-2.5 justify-center pt-2 max-w-md mx-auto">
                     <a
-                      href={`https://wa.me/243997707312?text=Bonjour%20Capsy%20Services%2C%20je%20viens%20de%20soumettre%20une%20demande%20de%20rendez-vous%20sur%20votre%20site.%20Mon%20N%C2%B0%20de%20suivi%20est%20${createdAppointment.id}.%20Merci!`}
+                      href={`https://wa.me/243838248355?text=Bonjour%20Capsy%20Services%2C%20je%20viens%20de%20soumettre%20une%20demande%20de%20rendez-vous%20sur%20votre%20site.%20Mon%20N%C2%B0%20de%20suivi%20est%20${createdAppointment.id}.%20Merci!`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="flex-1 py-3 px-4 bg-[#25D366] hover:bg-[#20ba56] text-white font-bold font-poppins rounded-xl flex items-center justify-center gap-2 transition-all shadow-md cursor-pointer text-sm"

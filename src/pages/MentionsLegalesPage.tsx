@@ -31,7 +31,7 @@ export default function MentionsLegalesPage({ onOpenBooking }: MentionsLegalesPa
               <p><strong className="text-brand-dark">Statut :</strong> Société à Responsabilité Limitée de droit congolais</p>
               <p><strong className="text-brand-dark">Siège social :</strong> N°18, avenue Des Écoles, Quartier Les Volcans, Goma, Nord-Kivu, RDC</p>
               <p><strong className="text-brand-dark">Bureau de liaison :</strong> N°63, avenue Kabinda, Quartier Boyoma, Kinshasa, RDC</p>
-              <p><strong className="text-brand-dark">Téléphone / WhatsApp :</strong> +243 997 707 312</p>
+              <p><strong className="text-brand-dark">Téléphone / WhatsApp :</strong> +243 838 248 355</p>
               <p><strong className="text-brand-dark">Courriel :</strong> contact@capsy-rdc.org</p>
               <p><strong className="text-brand-dark">Site web officiel :</strong> www.capsy-rdc.org</p>
             </div>

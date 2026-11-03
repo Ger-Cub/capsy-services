@@ -100,7 +100,7 @@ export const PAGE_SEO: Record<string, SeoOptions> = {
   '/contact': {
     title: 'Contactez CAPSY Services — Goma & Kinshasa',
     description:
-      "Contactez l'équipe CAPSY Services par WhatsApp (+243 997 707 312) ou par email. Bureaux à Goma (av. des Écoles) et Kinshasa (av. Kabinda). Ouvert du lundi au vendredi 08h–16h.",
+      "Contactez l'équipe CAPSY Services par WhatsApp (+243 838 248 355) ou par email. Bureaux à Goma (av. des Écoles) et Kinshasa (av. Kabinda). Ouvert du lundi au vendredi 08h–16h.",
     canonical: '/contact',
   },
   '/faq': {

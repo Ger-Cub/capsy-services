@@ -220,7 +220,7 @@ export default function Chatbot({ onOpenBooking, isFullScreen = false, hideFloat
         }
         return [...prev, {
           role: 'model',
-          text: `${errorMessage}\n\nVous pouvez aussi nous contacter directement au **+243 997 707 312** 📞.`
+          text: `${errorMessage}\n\nVous pouvez aussi nous contacter directement au **+243 838 248 355** 📞.`
         }];
       });
     } finally {
