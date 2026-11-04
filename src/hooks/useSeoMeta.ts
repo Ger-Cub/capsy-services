@@ -146,4 +146,9 @@ export const PAGE_SEO: Record<string, SeoOptions> = {
     canonical: '/mes-rendezvous',
     noIndex: true,
   },
+  '/employers': {
+    title: 'Vérification des collaborateurs — CAPSY Services',
+    description: "Portail officiel d'authentification et de vérification des accréditations des collaborateurs de CAPSY SERVICES.",
+    canonical: '/employers',
+  },
 };

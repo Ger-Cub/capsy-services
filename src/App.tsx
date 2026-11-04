@@ -38,6 +38,10 @@ const LEGACY_REDIRECTS: Record<string, string> = {
   '/academy':             '/formations',
   '/news':                '/actualites',
   '/blog':                '/actualites',
+  '/employees':           '/employers',
+  '/collaborateurs':      '/employers',
+  '/personnel':           '/employers',
+  '/employes':            '/employers',
   '/home':                '/',
   '/index':               '/',
   '/index.html':          '/',
@@ -231,14 +235,11 @@ export default function App() {
   const isRendezVous = pathname === '/mes-rendezvous';
   const isMentionsLegales = pathname === '/mentions-legales';
   const isConfidentialite = pathname === '/confidentialite';
-  const employerMatch = pathname.match(/^\/employers\/?([^/]+)?$/);
+  const employerMatch = pathname.match(/^\/employers(?:\/([^\/?#]+))?\/?$/);
   const employerToken = employerMatch && employerMatch[1] ? decodeURIComponent(employerMatch[1]) : undefined;
+  const isEmployers = pathname === '/employers' || pathname === '/employers/' || employerMatch !== null;
   const certifMatch = pathname.match(/^\/formations\/certificat\/(.+)$/);
   const certifId = certifMatch ? certifMatch[1] : undefined;
-
-  if (pathname === '/employers' || pathname === '/employers/' || employerToken) {
-    return <EmployerLookupPage token={employerToken || ''} />;
-  }
 
   if (isDashboard) {
     return (
@@ -280,6 +281,8 @@ export default function App() {
     <ConfidentialitePage onOpenBooking={handleOpenBooking} />
   ) : isFormations ? (
     <FormationsPage certifId={certifId} onOpenBooking={handleOpenBooking} />
+  ) : isEmployers ? (
+    <EmployerLookupPage token={employerToken || ''} onOpenBooking={() => handleOpenBooking('')} />
   ) : (
     <HomePage onOpenBooking={handleOpenBooking} onOpenStressTest={handleOpenStressTest} user={user} onViewAppointments={handleViewAppointments} />
   );
