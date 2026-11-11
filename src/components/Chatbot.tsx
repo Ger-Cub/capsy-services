@@ -636,7 +636,7 @@ export default function Chatbot({ onOpenBooking, isFullScreen = false, hideFloat
 
       {isOpen && (
         <div
-          className="pointer-events-auto flex flex-col w-[calc(100vw-2rem)] sm:w-100 h-[75vh] sm:h-137.5 max-h-[85vh] rounded-2xl bg-white border border-gray-150 shadow-2xl overflow-hidden transition-all duration-300 fixed bottom-20 right-4 sm:relative sm:bottom-0 sm:right-0"
+          className="pointer-events-auto flex flex-col fixed inset-0 sm:inset-auto sm:bottom-20 sm:right-6 w-full h-full sm:w-100 sm:h-[75vh] sm:max-h-[85vh] sm:rounded-2xl bg-white border-0 sm:border border-gray-150 shadow-2xl overflow-hidden z-50 transition-all duration-300"
           id="chatbot-window"
         >
           <div className="bg-brand-dark px-5 py-4 flex items-center justify-between border-b border-white/10">
