@@ -12,9 +12,10 @@ interface Message {
 interface ChatbotProps {
   onOpenBooking: (serviceId?: string) => void;
   isFullScreen?: boolean;
+  hideFloatingButton?: boolean;
 }
 
-export default function Chatbot({ onOpenBooking, isFullScreen = false }: ChatbotProps) {
+export default function Chatbot({ onOpenBooking, isFullScreen = false, hideFloatingButton = false }: ChatbotProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>(() => {
     try {
@@ -22,7 +23,7 @@ export default function Chatbot({ onOpenBooking, isFullScreen = false }: Chatbot
       return saved ? JSON.parse(saved) : [
         {
           role: 'model',
-          text: "Bonjour ! Je suis **CAPSY**, votre conseiller virtuel d'écoute et d'orientation 💚.\n\nJe suis là pour vous accompagner de manière confidentielle et sans jugement. Vous pouvez :\n- Réaliser un **test interactif de votre niveau de stress** 📊.\n- Vous informer sur nos **services de psychothérapie et nos tarifs** 💼.\n- Faciliter la **prise de rendez-vous** avec un de nos cliniciens 📅.\n\nComment puis-je vous aider aujourd'hui ?",
+          text: "Bonjour ! Je suis **CAPSY**, votre conseiller virtuel d'orientation 💚.\n\nJe peux vous aider à trouver une information ou demander un rendez-vous. Je ne pose pas de diagnostic et je ne remplace pas une consultation avec un psychologue. Merci de ne pas partager ici des informations personnelles sensibles.\n\nComment puis-je vous aider aujourd'hui ?",
           isWelcome: true
         }
       ];
@@ -30,7 +31,7 @@ export default function Chatbot({ onOpenBooking, isFullScreen = false }: Chatbot
       return [
         {
           role: 'model',
-          text: "Bonjour ! Je suis **CAPSY**, votre conseiller virtuel d'écoute et d'orientation 💚.\n\nJe suis là pour vous accompagner de manière confidentielle et sans jugement. Vous pouvez :\n- Réaliser un **test interactif de votre niveau de stress** 📊.\n- Vous informer sur nos **services de psychothérapie et nos tarifs** 💼.\n- Faciliter la **prise de rendez-vous** avec un de nos cliniciens 📅.\n\nComment puis-je vous aider aujourd'hui ?",
+          text: "Bonjour ! Je suis **CAPSY**, votre conseiller virtuel d'orientation 💚.\n\nJe peux vous aider à trouver une information ou demander un rendez-vous. Je ne pose pas de diagnostic et je ne remplace pas une consultation avec un psychologue. Merci de ne pas partager ici des informations personnelles sensibles.\n\nComment puis-je vous aider aujourd'hui ?",
           isWelcome: true
         }
       ];
@@ -45,7 +46,7 @@ export default function Chatbot({ onOpenBooking, isFullScreen = false }: Chatbot
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const clinicians = [
-    { name: 'Jacques Batenga', role: 'Psychologue Clinicien Principal' },
+    { name: 'Jacques Kambale Batenga', role: 'Psychologue Clinicien Principal' },
     { name: 'Josué Kasereka Shamamba', role: 'Psychologue Praticien' },
     { name: 'Samuel Kasereka Musisiva', role: 'Psychologue & Superviseur' }
   ];
@@ -219,7 +220,7 @@ export default function Chatbot({ onOpenBooking, isFullScreen = false }: Chatbot
         }
         return [...prev, {
           role: 'model',
-          text: `${errorMessage}\n\nVous pouvez aussi nous contacter directement au **+243 997 707 312** 📞.`
+          text: `${errorMessage}\n\nVous pouvez aussi nous contacter directement au **+243 838 248 355** 📞.`
         }];
       });
     } finally {
@@ -608,12 +609,16 @@ export default function Chatbot({ onOpenBooking, isFullScreen = false }: Chatbot
     );
   }
 
+  if (hideFloatingButton && !isOpen) {
+    return null;
+  }
+
   return (
-    <div className="fixed bottom-6 right-6 sm:right-6 sm:bottom-6 left-6 sm:left-auto z-50 font-sans flex flex-col items-center sm:items-end" id="capsy-chatbot-container">
+    <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-40 font-sans flex flex-col items-end pointer-events-none" id="capsy-chatbot-container">
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="relative flex items-center justify-center w-14 h-14 rounded-full bg-brand-confidence text-brand-dark shadow-xl hover:bg-brand-confidence/90 hover:scale-105 active:scale-95 transition-all outline-none border border-white/20 group cursor-pointer"
+          className="pointer-events-auto relative flex items-center justify-center w-14 h-14 rounded-full bg-brand-confidence text-brand-dark shadow-xl hover:bg-brand-confidence/90 hover:scale-105 active:scale-95 transition-all outline-none border border-white/20 group cursor-pointer"
           id="btn-open-chatbot"
           aria-label="Discuter avec CAPSY IA"
         >
@@ -631,7 +636,7 @@ export default function Chatbot({ onOpenBooking, isFullScreen = false }: Chatbot
 
       {isOpen && (
         <div
-          className="flex flex-col w-[calc(100vw-2rem)] sm:w-100 h-[75vh] sm:h-137.5 max-h-[85vh] rounded-2xl bg-white border border-gray-150 shadow-2xl overflow-hidden transition-all duration-300 fixed bottom-24 left-4 right-4 sm:relative sm:bottom-0 sm:left-auto sm:right-0"
+          className="pointer-events-auto flex flex-col w-[calc(100vw-2rem)] sm:w-100 h-[75vh] sm:h-137.5 max-h-[85vh] rounded-2xl bg-white border border-gray-150 shadow-2xl overflow-hidden transition-all duration-300 fixed bottom-20 right-4 sm:relative sm:bottom-0 sm:right-0"
           id="chatbot-window"
         >
           <div className="bg-brand-dark px-5 py-4 flex items-center justify-between border-b border-white/10">

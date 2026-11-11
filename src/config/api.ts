@@ -22,10 +22,16 @@ export const getFastApiUrl = (): string => {
  * - En production (Vercel) : utilise les proxies /api/... pour éviter CORS.
  * - En local : appelle directement le FastAPI sur localhost:8000.
  */
+
 export const getApiBase = (): string => {
   if (typeof window !== 'undefined') {
     const hostname = window.location.hostname;
-    if (hostname !== 'localhost' && hostname !== '127.0.0.1') {
+    const isLocal = hostname === 'localhost'
+      || hostname === '127.0.0.1'
+      || hostname === '0.0.0.0'
+      || hostname.startsWith('192.168.')
+      || hostname.startsWith('10.');
+    if (!isLocal) {
       // Production : utiliser les endpoints proxy Vercel (même domaine = pas de CORS)
       return '';
     }
@@ -56,4 +62,51 @@ export const getTherapistsUrl = (): string => {
     return '/api/therapists';
   }
   return `${base}/therapists`;
+};
+
+/**
+ * URL pour récupérer les types de rendez-vous Odoo (module Rendez-vous).
+ * Proxy Vercel/Express en prod, FastAPI direct en local.
+ */
+export const getAppointmentTypesUrl = (): string => {
+  const base = getApiBase();
+  if (base === '') {
+    return '/api/appointment-types';
+  }
+  return `${base}/appointments/types/`;
+};
+
+/**
+ * URL pour récupérer les détails complets d'un type de RDV Odoo
+ * (descriptif, questions, disponibilités, options).
+ * Proxy Vercel/Express en prod, FastAPI direct en local.
+ */
+export const getAppointmentDetailsUrl = (id: number | string): string => {
+  const base = getApiBase();
+  if (base === '') {
+    return `/api/appointment-details?id=${id}`;
+  }
+  return `${base}/appointments/types/${id}/details`;
+};
+
+/**
+ * URL pour récupérer les créneaux disponibles en temps réel pour une date et un service.
+ * Proxy Vercel/Express en prod, FastAPI direct en local.
+ */
+export const getAvailableSlotsUrl = (
+  appointmentTypeId: number | string,
+  date: string,
+  therapistUserId?: number | string
+): string => {
+  const base = getApiBase();
+  const params = new URLSearchParams({
+    appointment_type_id: String(appointmentTypeId),
+    date,
+  });
+  if (therapistUserId) params.set('therapist_user_id', String(therapistUserId));
+
+  if (base === '') {
+    return `/api/available-slots?${params}`;
+  }
+  return `${base}/appointments/available-slots?${params}`;
 };

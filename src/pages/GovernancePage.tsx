@@ -103,8 +103,8 @@ export default function GovernancePage({ onOpenBooking }: GovernancePageProps) {
       <PageHero
         variant="green"
         eyebrow="Gouvernance"
-        title="Direction & Leadership"
-        description="Découvrez notre approche stratégique pour une gouvernance transparente, éthique et rigoureuse au service de la santé mentale et du bien-être en RDC."
+        title="Gouvernance et qualité des services"
+        description="CAPSY SARL organise ses décisions, ses services et ses partenariats selon des règles de responsabilité, d’éthique et de qualité."
         primaryCtaLabel="Prendre rendez-vous"
         onPrimaryCta={onOpenBooking}
       />
@@ -225,7 +225,7 @@ export default function GovernancePage({ onOpenBooking }: GovernancePageProps) {
                   Excellence et Rigueur Scientifique
                 </p>
                 <p className="text-xs leading-relaxed text-brand-gray-text mb-5">
-                  Garantit la qualité technique et l’alignement des interventions cliniques sur les normes internationales (OMS 2016, 2021).
+                  Garantit la qualité technique, la supervision des équipes et l’actualisation des pratiques, en s’appuyant sur des références scientifiques et professionnelles pertinentes.
                 </p>
                 <ul className="space-y-2.5 text-xs text-brand-dark font-medium">
                   <li className="flex items-start gap-2">
@@ -455,6 +455,17 @@ export default function GovernancePage({ onOpenBooking }: GovernancePageProps) {
               <span>Prendre un Rendez-vous avec CAPSY</span>
             </button>
           </div>
+        </div>
+      </section>
+
+      {/* Notre écosystème numérique (N°21) */}
+      <section className="py-16 bg-brand-gray-light border-t border-gray-150">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-4">
+          <span className="text-xs uppercase tracking-widest text-brand-green font-bold font-poppins">Système d'Information</span>
+          <h2 className="text-2xl sm:text-3xl font-poppins font-black text-brand-dark">Notre écosystème numérique</h2>
+          <p className="text-sm text-brand-gray-text leading-relaxed">
+            Le site CAPSY est une porte d’entrée publique. Il permet de découvrir les services, demander un rendez-vous et accéder à des informations autorisées. Les dossiers et informations cliniques sont traités dans des outils internes sécurisés, accessibles uniquement aux personnes habilitées.
+          </p>
         </div>
       </section>
     </main>

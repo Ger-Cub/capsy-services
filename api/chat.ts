@@ -77,7 +77,7 @@ Si vous parlez d\'un service spécifique que l\'utilisateur pourrait apprécier 
 - [SUGGEST_BOOKING:supervision] (pour la supervision)
 Ne l\'ajoutez que si la conversation s\'oriente clairement vers la réservation ou vers un besoin lié à ce domaine précis.`;
 
-        console.log("Streaming content with gemini-3.5-flash...");
+        console.log("Streaming content with gemini-3.8-flash...");
 
         // Set headers for SSE
         res.setHeader('Content-Type', 'text/event-stream');
@@ -85,7 +85,7 @@ Ne l\'ajoutez que si la conversation s\'oriente clairement vers la réservation 
         res.setHeader('Connection', 'keep-alive');
 
         const responseStream = await ai.models.generateContentStream({
-            model: "gemini-2.5-flash",
+            model: "gemini-3.8-flash",
             contents: contents,
             config: {
                 systemInstruction: sysInstruction,

@@ -8,6 +8,11 @@ import { createServer as createViteServer } from "vite";
 import { GoogleGenAI } from "@google/genai";
 import odooHandler from "./api/odoo";
 import authHandler from "./api/auth";
+import appointmentTypesHandler from "./api/appointment-types";
+import therapistsHandler from "./api/therapists";
+import appointmentsListHandler from "./api/appointments-list";
+import appointmentDetailsHandler from "./api/appointment-details";
+import availableSlotsHandler from "./api/available-slots";
 
 const app = express();
 app.use(express.json());
@@ -86,7 +91,7 @@ Si vous parlez d\'un service spécifique que l\'utilisateur pourrait apprécier 
 - [SUGGEST_BOOKING:supervision] (pour la supervision)
 Ne l\'ajoutez que si la conversation s\'oriente clairement vers la réservation ou vers un besoin lié à ce domaine précis.`;
 
-    console.log("Streaming content with gemini-3.5-flash...");
+    console.log("Streaming content with gemini-3.8-flash...");
 
     // Set headers for SSE (Server-Sent Events)
     res.setHeader('Content-Type', 'text/event-stream');
@@ -94,7 +99,7 @@ Ne l\'ajoutez que si la conversation s\'oriente clairement vers la réservation 
     res.setHeader('Connection', 'keep-alive');
 
     const responseStream = await ai.models.generateContentStream({
-      model: "gemini-2.5-flash",
+      model: "gemini-3.8-flash",
       contents: contents,
       config: {
         systemInstruction: sysInstruction,
@@ -146,6 +151,71 @@ app.post("/api/auth", async (req, res) => {
   return authHandler(req as any, res as any);
 });
 
+// Appointment Types API route (Odoo module Rendez-vous)
+app.all("/api/appointment-types", async (req, res) => {
+  return appointmentTypesHandler(req as any, res as any);
+});
+
+// Therapists API route
+app.all("/api/therapists", async (req, res) => {
+  return therapistsHandler(req as any, res as any);
+});
+
+// Appointments List / Create API route
+app.all("/api/appointments-list", async (req, res) => {
+  return appointmentsListHandler(req as any, res as any);
+});
+
+// Appointment Details API route (descriptif + questions + disponibilités)
+app.all("/api/appointment-details", async (req, res) => {
+  return appointmentDetailsHandler(req as any, res as any);
+});
+
+// Available Slots API route (créneaux libres pour une date donnée)
+app.all("/api/available-slots", async (req, res) => {
+  return availableSlotsHandler(req as any, res as any);
+});
+
+// --- Server-side 301 redirects for legacy URLs ---
+const SERVER_REDIRECTS: Record<string, string> = {
+  '/our-services':     '/services',
+  '/services-list':    '/services',
+  '/service':          '/services',
+  '/psychologie':      '/services',
+  '/apropos':          '/a-propos',
+  '/about':            '/a-propos',
+  '/about-us':         '/a-propos',
+  '/a-propos-de-nous': '/a-propos',
+  '/qui-sommes-nous':  '/a-propos',
+  '/contactus':        '/contact',
+  '/contact-us':       '/contact',
+  '/nous-contacter':   '/contact',
+  '/rendez-vous':      '/mes-rendezvous',
+  '/prendre-rdv':      '/mes-rendezvous',
+  '/reservation':      '/mes-rendezvous',
+  '/booking':          '/mes-rendezvous',
+  '/faqs':             '/faq',
+  '/questions':        '/faq',
+  '/team':             '/gouvernance',
+  '/equipe':           '/gouvernance',
+  '/formation':        '/formations',
+  '/training':         '/formations',
+  '/academy':          '/formations',
+  '/news':             '/actualites',
+  '/blog':             '/actualites',
+  '/home':             '/',
+  '/index':            '/',
+  '/index.html':       '/',
+};
+
+app.use((req, res, next) => {
+  const target = SERVER_REDIRECTS[req.path] ?? SERVER_REDIRECTS[req.path.replace(/\/$/, '')];
+  if (target) {
+    return res.redirect(301, target);
+  }
+  next();
+});
+
 // Serve static files or use Vite dev server
 if (process.env.NODE_ENV !== "production") {
   (async () => {
@@ -164,12 +234,11 @@ if (process.env.NODE_ENV !== "production") {
   });
 }
 
+
 const PORT = Number(process.env.PORT) || 3000;
-if (process.env.NODE_ENV !== "production") {
-  app.listen(PORT, "0.0.0.0", () => {
-    console.log(`Server running on http://localhost:${PORT}`);
-  });
-}
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`Server running on http://0.0.0.0:${PORT} [NODE_ENV=${process.env.NODE_ENV || 'development'}]`);
+});
 
 export default app;
 

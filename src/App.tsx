@@ -7,38 +7,65 @@ import UserProfilePage from './components/UserProfilePage';
 import ToastContainer from './components/Toast';
 import PageLoader from './components/PageLoader';
 import HomePage from './pages/HomePage';
+import EmployerLookupPage from './pages/EmployerLookupPage';
 import { AnimatePresence, motion } from 'motion/react';
+import { applySeoMeta, PAGE_SEO } from './hooks/useSeoMeta';
 
-// Lazy-load heavy or infrequently-used components to reduce initial bundle
+// --- Legacy URL redirect map (anciens chemins → nouveaux) ---
+const LEGACY_REDIRECTS: Record<string, string> = {
+  '/our-services':        '/services',
+  '/services-list':       '/services',
+  '/service':             '/services',
+  '/psychologie':         '/services',
+  '/apropos':             '/a-propos',
+  '/about':               '/a-propos',
+  '/about-us':            '/a-propos',
+  '/a-propos-de-nous':    '/a-propos',
+  '/qui-sommes-nous':     '/a-propos',
+  '/contactus':           '/contact',
+  '/contact-us':          '/contact',
+  '/nous-contacter':      '/contact',
+  '/rendez-vous':         '/mes-rendezvous',
+  '/prendre-rdv':         '/mes-rendezvous',
+  '/reservation':         '/mes-rendezvous',
+  '/booking':             '/mes-rendezvous',
+  '/faqs':                '/faq',
+  '/questions':           '/faq',
+  '/team':                '/gouvernance',
+  '/equipe':              '/gouvernance',
+  '/formation':           '/formations',
+  '/training':            '/formations',
+  '/academy':             '/formations',
+  '/news':                '/actualites',
+  '/blog':                '/actualites',
+  '/employees':           '/employers',
+  '/collaborateurs':      '/employers',
+  '/personnel':           '/employers',
+  '/employes':            '/employers',
+  '/home':                '/',
+  '/index':               '/',
+  '/index.html':          '/',
+};
+
+
+// Import core pages directly for instant, zero-delay SPA navigation without loading spinners
+import ServicesPage from './pages/ServicesPage';
+import AboutPage from './pages/AboutPage';
+import FaqPage from './pages/FaqPage';
+import GovernancePage from './pages/GovernancePage';
+import ContactPage from './pages/ContactPage';
+import FormationsPage from './pages/FormationsPage';
+import ActualitesPage from './pages/ActualitesPage';
+import ActualiteDetailPage from './pages/ActualiteDetailPage';
+import RendezVousPage from './pages/RendezVousPage';
+import MentionsLegalesPage from './pages/MentionsLegalesPage';
+import ConfidentialitePage from './pages/ConfidentialitePage';
+
+// Lazy-load only heavy or infrequently used standalone components to optimize initial bundle
 const Chatbot = React.lazy(() => import('./components/Chatbot'));
 const OdooDashboard = React.lazy(() => import('./components/OdooDashboard'));
 const StressTest = React.lazy(() => import('./components/StressTest'));
-const ServicesPage = React.lazy(() => import('./pages/ServicesPage'));
-const AboutPage = React.lazy(() => import('./pages/AboutPage'));
-const FaqPage = React.lazy(() => import('./pages/FaqPage'));
-const GovernancePage = React.lazy(() => import('./pages/GovernancePage'));
-const ContactPage = React.lazy(() => import('./pages/ContactPage'));
-const FormationsPage = React.lazy(() => import('./pages/FormationsPage'));
-const ActualitesPage = React.lazy(() => import('./pages/ActualitesPage'));
-const ActualiteDetailPage = React.lazy(() => import('./pages/ActualiteDetailPage'));
-const ContactSection = React.lazy(() => import('./components/ContactSection'));
-const RendezVousPage = React.lazy(() => import('./pages/RendezVousPage'));
 
-// Preload route chunks silently in the background after initial render
-const preloadAllRoutes = () => {
-  const routes = [
-    () => import('./pages/ServicesPage'),
-    () => import('./pages/AboutPage'),
-    () => import('./pages/FaqPage'),
-    () => import('./pages/GovernancePage'),
-    () => import('./pages/ContactPage'),
-    () => import('./pages/FormationsPage'),
-    () => import('./pages/ActualitesPage'),
-    () => import('./pages/RendezVousPage'),
-    () => import('./components/Chatbot'),
-  ];
-  routes.forEach((fn) => fn());
-};
 
 export default function App() {
   const [bookingOpen, setBookingOpen] = useState(false);
@@ -64,15 +91,35 @@ export default function App() {
 
   useEffect(() => {
     refreshAppointmentsCount();
-    // Preload lazy routes shortly after initial render for instant page switches
-    const timer = setTimeout(preloadAllRoutes, 1000);
 
     const handleLocationChange = () => {
-      setCurrentLocation({
-        pathname: window.location.pathname,
-        search: window.location.search,
+      const rawPathname = window.location.pathname;
+
+      // --- 1. Legacy URL redirects (client-side 301 equivalent) ---
+      const redirectTarget = LEGACY_REDIRECTS[rawPathname.toLowerCase()] ??
+        LEGACY_REDIRECTS[rawPathname.toLowerCase().replace(/\/$/, '')];
+      if (redirectTarget) {
+        window.history.replaceState({}, '', redirectTarget);
+        window.dispatchEvent(new Event('locationchange'));
+        return;
+      }
+
+      // --- 2. Update routing state with non-blocking transition ---
+      React.startTransition(() => {
+        setCurrentLocation({
+          pathname: window.location.pathname,
+          search: window.location.search,
+        });
       });
 
+      // --- 3. Apply SEO meta tags for this page ---
+      const seoKey = window.location.pathname === '/' ? '/'
+        : Object.keys(PAGE_SEO).find(k => window.location.pathname.startsWith(k) && k !== '/')
+        ?? '/';
+      const seoOpts = PAGE_SEO[seoKey] ?? PAGE_SEO['/'];
+      applySeoMeta(seoOpts);
+
+      // --- 4. Handle ?booking= query param ---
       const params = new URLSearchParams(window.location.search);
       const bookingParam = params.get('booking');
       if (bookingParam) {
@@ -133,7 +180,6 @@ export default function App() {
     document.addEventListener('click', handleGlobalClick);
 
     return () => {
-      clearTimeout(timer);
       window.removeEventListener('popstate', handleLocationChange);
       window.removeEventListener('locationchange', handleLocationChange);
       document.removeEventListener('click', handleGlobalClick);
@@ -187,6 +233,11 @@ export default function App() {
   const isGouvernance = pathname === '/gouvernance';
   const isContact = pathname === '/contact';
   const isRendezVous = pathname === '/mes-rendezvous';
+  const isMentionsLegales = pathname === '/mentions-legales';
+  const isConfidentialite = pathname === '/confidentialite';
+  const employerMatch = pathname.match(/^\/employers(?:\/([^\/?#]+))?\/?$/);
+  const employerToken = employerMatch && employerMatch[1] ? decodeURIComponent(employerMatch[1]) : undefined;
+  const isEmployers = pathname === '/employers' || pathname === '/employers/' || employerMatch !== null;
   const certifMatch = pathname.match(/^\/formations\/certificat\/(.+)$/);
   const certifId = certifMatch ? certifMatch[1] : undefined;
 
@@ -224,8 +275,14 @@ export default function App() {
     <ActualiteDetailPage slug={actualiteSlug} />
   ) : isActualites ? (
     <ActualitesPage onOpenBooking={handleOpenBooking} />
+  ) : isMentionsLegales ? (
+    <MentionsLegalesPage onOpenBooking={handleOpenBooking} />
+  ) : isConfidentialite ? (
+    <ConfidentialitePage onOpenBooking={handleOpenBooking} />
   ) : isFormations ? (
     <FormationsPage certifId={certifId} onOpenBooking={handleOpenBooking} />
+  ) : isEmployers ? (
+    <EmployerLookupPage token={employerToken || ''} onOpenBooking={() => handleOpenBooking('')} />
   ) : (
     <HomePage onOpenBooking={handleOpenBooking} onOpenStressTest={handleOpenStressTest} user={user} onViewAppointments={handleViewAppointments} />
   );
@@ -273,7 +330,7 @@ export default function App() {
       />
 
       <Suspense fallback={null}>
-        <Chatbot onOpenBooking={handleOpenBooking} />
+        <Chatbot onOpenBooking={handleOpenBooking} hideFloatingButton={bookingOpen || loginOpen || stressOpen} />
       </Suspense>
 
       <ToastContainer />

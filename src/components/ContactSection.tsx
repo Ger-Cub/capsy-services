@@ -40,6 +40,14 @@ export default function ContactSection() {
           </p>
         </div>
 
+        {/* Emergency Alert Callout (N°11) */}
+        <div className="mb-10 max-w-4xl mx-auto p-4 sm:p-5 rounded-2xl bg-amber-50/80 border border-amber-200/80 flex items-start gap-3.5 text-amber-900">
+          <LucideIcon name="AlertTriangle" className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
+          <p className="text-xs sm:text-sm leading-relaxed">
+            <strong className="font-semibold">Urgence :</strong> En cas de danger immédiat, de risque de violence ou d’urgence médicale, contactez les services d’urgence disponibles dans votre zone ou rendez-vous dans la structure de santé la plus proche. CAPSY ne remplace pas les services d’urgence.
+          </p>
+        </div>
+
         {/* Info Grid Split */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-stretch font-sans">
 
@@ -77,7 +85,7 @@ export default function ContactSection() {
                   <h4 className="font-poppins font-bold text-brand-dark text-base">Téléphone & WhatsApp</h4>
                   <div className="text-sm text-brand-gray-text mt-1 space-y-1 font-mono font-semibold">
                     <p className="flex items-center gap-1.5 hover:text-brand-green transition-colors">
-                      <a href="tel:+243997707312">+243 997 707 312</a>
+                      <a href="tel:+243838248355">+243 838 248 355</a>
                       <span className="text-[9px] bg-brand-green/10 text-brand-green py-0.5 px-1.5 rounded-sm font-bold uppercase tracking-wider">WhatsApp</span>
                     </p>
                   </div>
@@ -109,10 +117,10 @@ export default function ContactSection() {
                 </div>
                 <div>
                   <h4 className="font-poppins font-bold text-brand-dark text-base">Heures d'Ouverture</h4>
-                  <p className="text-sm text-brand-gray-text mt-1">
-                    Lundi -Sur re Vendredi : 08h00 - 16h00<br />
-                    Samedi : Sur rendez-vous<br />
-                    Dimanche : Fermé
+                  <p className="text-sm text-brand-gray-text mt-1 leading-relaxed">
+                    Lundi au vendredi : 08 h 00 à 16 h 00<br />
+                    Samedi : sur rendez-vous<br />
+                    Dimanche : fermé
                   </p>
                 </div>
               </div>
@@ -123,22 +131,66 @@ export default function ContactSection() {
             <div className="bg-brand-gray-light p-5 rounded-2xl border border-gray-150 space-y-3">
               <p className="text-xs font-bold text-brand-dark uppercase tracking-wider font-poppins">Suivez-nous sur les réseaux</p>
               <div className="flex gap-2.5">
-                {[
-                  { icon: 'Facebook', href: '#', label: 'Capsy Services Facebook', color: 'hover:bg-brand-wellbeing hover:text-white' },
-                  { icon: 'Instagram', href: '#', label: 'Capsy Services Instagram', color: 'hover:bg-pink-600 hover:text-white' },
-                  { icon: 'MessageSquareShare', href: 'https://wa.me/243997707312', label: 'WhatsApp direct link', color: 'hover:bg-green-600 hover:text-white bg-brand-green/20 text-brand-green' },
-                  { icon: 'Send', href: '#', label: 'Telegram channel', color: 'hover:bg-brand-wellbeing hover:text-white' },
-                  { icon: 'Linkedin', href: '#', label: 'LinkedIn corporate handle', color: 'hover:bg-brand-dark hover:text-white' }
-                ].map((social, sIdx) => (
-                  <a
-                    key={sIdx}
-                    href={social.href}
-                    title={social.label}
-                    className={`h-9 w-9 bg-white text-brand-dark rounded-full flex items-center justify-center border border-gray-250 transition-all ${social.color}`}
-                  >
-                    <LucideIcon name={social.icon} className="h-4.5 w-4.5" />
-                  </a>
-                ))}
+                <a
+                  href="https://www.facebook.com/CapsyServices"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title="Capsy Services Facebook"
+                  className="h-9 w-9 bg-white text-brand-dark rounded-full flex items-center justify-center border border-gray-250 transition-all hover:bg-brand-wellbeing hover:text-white"
+                  aria-label="Capsy Services Facebook"
+                >
+                  <span className="text-lg font-black leading-none">f</span>
+                </a>
+
+                <a
+                  href="https://www.instagram.com/capsyservices/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title="Capsy Services Instagram"
+                  className="h-9 w-9 bg-white text-brand-dark rounded-full flex items-center justify-center border border-gray-250 transition-all hover:bg-brand-wellbeing hover:text-white"
+                  aria-label="Capsy Services Instagram"
+                >
+                  <svg viewBox="0 0 24 24" className="h-4.5 w-4.5 fill-none stroke-current stroke-[1.8]" aria-hidden="true">
+                    <rect x="3.5" y="3.5" width="17" height="17" rx="5" />
+                    <circle cx="12" cy="12" r="4.2" />
+                    <circle cx="17.3" cy="6.7" r="1.2" fill="currentColor" stroke="none" />
+                  </svg>
+                </a>
+
+                <a
+                  href="https://x.com/CapsyServices"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title="Capsy Services X"
+                  className="h-9 w-9 bg-white text-brand-dark rounded-full flex items-center justify-center border border-gray-250 transition-all hover:bg-brand-wellbeing hover:text-white"
+                  aria-label="Capsy Services X"
+                >
+                  <span className="text-base font-black leading-none">X</span>
+                </a>
+
+                <a
+                  href="https://www.linkedin.com/company/capsy-rdc/posts/?viewAsMember=true"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title="Capsy Services LinkedIn"
+                  className="h-9 w-9 bg-white text-brand-dark rounded-full flex items-center justify-center border border-gray-250 transition-all hover:bg-brand-wellbeing hover:text-white"
+                  aria-label="Capsy Services LinkedIn"
+                >
+                  <span className="text-base font-black leading-none">in</span>
+                </a>
+
+                <a
+                  href="https://www.tiktok.com/@capsyservices"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title="Capsy Services TikTok"
+                  className="h-9 w-9 bg-white text-brand-dark rounded-full flex items-center justify-center border border-gray-250 transition-all hover:bg-brand-wellbeing hover:text-white"
+                  aria-label="Capsy Services TikTok"
+                >
+                  <svg viewBox="0 0 24 24" className="h-4.5 w-4.5 fill-current" aria-hidden="true">
+                    <path d="M14.5 3.5c.7 1.7 2.1 2.8 4.1 3.1v2.6c-1.4 0-2.7-.4-3.8-1.3v6.3a5.2 5.2 0 1 1-5.2-5.2c.3 0 .7 0 1 .1v2.7a2.6 2.6 0 1 0 1.8 2.5V3.5h2.1Z"/>
+                  </svg>
+                </a>
               </div>
             </div>
 
@@ -185,17 +237,20 @@ export default function ContactSection() {
                     placeholder="Dites-nous comment nous pouvons vous orienter..."
                     className="w-full p-3 bg-white border border-gray-200 rounded-xl text-brand-dark text-sm outline-none focus:border-brand-wellbeing transition-colors resize-none"
                   />
+                  <p className="text-[11px] text-brand-gray-text mt-1.5 leading-relaxed">
+                    Pour votre sécurité, ne décrivez pas ici votre situation personnelle en détail. Ce formulaire sert à demander une information ou un rendez-vous.
+                  </p>
                 </div>
 
-                <div className="flex justify-between items-center pt-2">
-                  <p className="text-[10px] text-brand-gray-text flex items-center gap-1">
-                    <LucideIcon name="Lock" className="h-3.5 w-3.5 text-brand-green" />
-                    Strictement confidentiel sous chiffrement
+                <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-3 pt-2">
+                  <p className="text-[11px] text-brand-gray-text flex items-center gap-1.5">
+                    <LucideIcon name="ShieldCheck" className="h-4 w-4 text-brand-green shrink-0" />
+                    <span>Les informations transmises sont traitées conformément à notre politique de confidentialité.</span>
                   </p>
 
                   <button
                     type="submit"
-                    className="px-6 py-2.5 bg-brand-wellbeing hover:bg-brand-wellbeing/90 text-white font-bold font-poppins rounded-xl text-xs flex items-center gap-2 transition-all shadow-md cursor-pointer"
+                    className="px-6 py-2.5 bg-brand-wellbeing hover:bg-brand-wellbeing/90 text-white font-bold font-poppins rounded-xl text-xs flex items-center justify-center gap-2 transition-all shadow-md cursor-pointer shrink-0"
                   >
                     <LucideIcon name="Send" className="h-3.5 w-3.5 text-brand-green" />
                     <span>Envoyer le Message</span>

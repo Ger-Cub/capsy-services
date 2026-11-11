@@ -115,17 +115,17 @@ export default function ServicesGrid({ onSelectService }: ServicesGridProps) {
         <div className="mt-14 bg-brand-dark border border-brand-confidence/30 rounded-2xl p-6 sm:p-8 text-white relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-6 shadow-md">
           <div className="absolute top-0 right-0 w-32 h-32 bg-brand-confidence/10 rounded-full translate-x-8 -translate-y-8 blur-lg" />
           <div className="space-y-2 text-center md:text-left max-w-2xl relative z-10">
-            <h4 className="text-xl font-poppins font-bold text-white">Un cas sortant du cadre habituel ?</h4>
+            <h4 className="text-xl font-poppins font-bold text-white">Besoin d’un accompagnement pour votre organisation ?</h4>
             <p className="text-xs sm:text-sm text-white/80 leading-relaxed font-sans">
-              Nous concevons des plans d'accompagnement clinique sur-mesure pour les structures d'aide humanitaire, institutions et ONGs en RDC. Parlons-en.
+              CAPSY accompagne les organisations, écoles et équipes humanitaires dans la promotion du bien-être, le renforcement des capacités et l’amélioration des pratiques d’accompagnement. Contactez-nous pour une demande institutionnelle.
             </p>
           </div>
-          <button
-            onClick={() => onSelectService('individuelle')}
-            className="w-full md:w-auto px-6 py-3 bg-brand-confidence hover:bg-brand-confidence/90 text-brand-dark border border-brand-confidence/40 rounded-xl text-xs font-poppins font-bold uppercase tracking-wider select-none shrink-0 transition-all cursor-pointer shadow-xs"
+          <a
+            href="/contact"
+            className="w-full md:w-auto text-center px-6 py-3 bg-white hover:bg-brand-gray-light text-[var(--color-brand-wellbeing)] rounded-xl text-xs font-poppins font-bold uppercase tracking-wider select-none shrink-0 transition-colors cursor-pointer"
           >
-            S'inscrire ou planifier
-          </button>
+            Demande institutionnelle
+          </a>
         </div>
 
       </div>

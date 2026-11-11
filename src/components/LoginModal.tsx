@@ -142,7 +142,7 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginMod
                             </div>
                             <h3 className="text-2xl font-bold font-poppins text-brand-dark">{titles[view]}</h3>
                             {view === 'login' && <p className="text-sm text-brand-gray-text mt-2">Connectez-vous pour gérer vos consultations</p>}
-                            {view === 'register' && <p className="text-sm text-brand-gray-text mt-2">Créez votre espace client CAPSY Services</p>}
+                            {view === 'register' && <p className="text-sm text-brand-gray-text mt-2">Créez votre espace personnel CAPSY Services</p>}
                             {view === 'reset' && <p className="text-sm text-brand-gray-text mt-2">Entrez votre email pour recevoir un lien de réinitialisation</p>}
                         </div>
 

@@ -812,9 +812,9 @@ export default function FormationsPageView({ certifId, onOpenBooking }: Formatio
         <div className="min-h-screen bg-brand-gray-light" id="formations-page">
             <PageHero
                 variant="green"
-                eyebrow="Formations"
-                title="Nos Formations"
-                description={`Retrouvez toutes les formations organisées par CAPSY SERVICES (${counts.all} formation${counts.all > 1 ? 's' : ''}, ${totalParticipants} participants, 24h+ de formation). Les participants peuvent télécharger leurs certificats et les modules disponibles.`}
+                eyebrow="CAPSY Academy"
+                title="Nos Formations & Supervisions"
+                description="CAPSY Academy propose des formations, supervisions et ressources destinées aux psychologues, institutions et acteurs communautaires. Les programmes présentés sont validés avant publication."
                 primaryCtaLabel="Prendre rendez-vous"
                 onPrimaryCta={onOpenBooking}
             />

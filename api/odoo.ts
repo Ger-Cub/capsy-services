@@ -77,7 +77,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         } else {
             if (!usernameToUse || !passwordToUse) {
                 console.error('[Odoo API] No credentials provided (neither body nor env).');
-                return res.status(401).json({ error: "Aucun identifiant Odoo fourni. Pour créer des rendez-vous sans authentification interactive, configurez une 'service user' via les variables d'environnement ODOO_USERNAME/ODOO_PASSWORD ou envoyez 'username' et 'password' dans le corps de la requête." });
+                return res.status(200).json({
+                    results: [],
+                    error: "Aucun identifiant Odoo fourni. Pour créer des rendez-vous sans authentification interactive, configurez une 'service user' via les variables d'environnement ODOO_USERNAME/ODOO_PASSWORD ou envoyez 'username' et 'password' dans le corps de la requête."
+                });
             }
             try {
                 uid = await callOdoo('/xmlrpc/2/common', 'authenticate', [
