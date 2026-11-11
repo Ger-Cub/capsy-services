@@ -116,14 +116,14 @@ function CertificateModal({
 
     return (
         <div
-            className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+            className="fixed inset-0 z-[100] flex items-center justify-center p-0 lg:p-4 bg-black/60 backdrop-blur-sm"
             onClick={(e) => e.target === e.currentTarget && onClose()}
         >
             <motion.div
-                initial={{ opacity: 0, scale: 0.92, y: 20 }}
+                initial={{ opacity: 0, scale: 0.98, y: 10 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.92, y: 20 }}
-                className="bg-white rounded-2xl shadow-2xl w-full max-w-5xl max-h-[95vh] overflow-y-auto"
+                exit={{ opacity: 0, scale: 0.98, y: 10 }}
+                className="bg-white rounded-none lg:rounded-2xl shadow-2xl w-full h-full lg:h-auto max-w-none lg:max-w-5xl max-h-none lg:max-h-[95vh] overflow-y-auto"
             >
                 {/* Modal toolbar */}
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between px-6 py-4 border-b border-gray-100 sticky top-0 bg-white z-10">
@@ -592,7 +592,7 @@ function FormationDetail({
 
     return (
         <AnimatePresence>
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-0 lg:p-4">
                 {/* Backdrop */}
                 <motion.div
                     initial={{ opacity: 0 }}
@@ -604,11 +604,11 @@ function FormationDetail({
 
                 {/* Modal Container */}
                 <motion.div
-                    initial={{ scale: 0.95, opacity: 0, y: 20 }}
+                    initial={{ scale: 0.98, opacity: 0, y: 10 }}
                     animate={{ scale: 1, opacity: 1, y: 0 }}
-                    exit={{ scale: 0.95, opacity: 0, y: 20 }}
+                    exit={{ scale: 0.98, opacity: 0, y: 10 }}
                     transition={{ type: 'spring', damping: 25, stiffness: 250 }}
-                    className="relative w-full max-w-3xl bg-white rounded-2xl shadow-2xl overflow-hidden z-10 flex flex-col max-h-[90vh]"
+                    className="relative w-full h-full lg:h-auto max-w-none lg:max-w-3xl bg-white rounded-none lg:rounded-2xl shadow-2xl overflow-hidden z-10 flex flex-col max-h-none lg:max-h-[90vh]"
                 >
                     {/* Header */}
                     <div className="p-6 bg-brand-dark text-white flex items-center justify-between border-b border-white/10 shrink-0">

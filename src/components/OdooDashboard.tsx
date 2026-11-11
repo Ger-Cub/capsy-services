@@ -747,8 +747,8 @@ export function JsonPreviewModal({ data, onClose }: { data: any; onClose: () => 
     if (!data) return null;
     const text = JSON.stringify(data, null, 2);
     return (
-        <div className="fixed inset-0 z-200 flex items-center justify-center p-4 bg-black/60" onClick={(e) => e.currentTarget === e.target && onClose()}>
-            <div className="bg-white rounded-lg w-full max-w-3xl max-h-[80vh] overflow-auto p-4">
+        <div className="fixed inset-0 z-200 flex items-center justify-center p-0 lg:p-4 bg-black/60" onClick={(e) => e.currentTarget === e.target && onClose()}>
+            <div className="bg-white rounded-none lg:rounded-lg w-full h-full lg:h-auto max-w-none lg:max-w-3xl max-h-none lg:max-h-[80vh] overflow-auto p-4 flex flex-col">
                 <div className="flex items-center justify-between mb-2">
                     <h3 className="font-bold">Détails</h3>
                     <button onClick={onClose} className="text-sm text-gray-600">Fermer</button>

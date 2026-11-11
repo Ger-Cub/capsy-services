@@ -347,15 +347,15 @@ export default function App() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-0 lg:p-4"
             onClick={() => setStressOpen(false)}
           >
             <motion.div
-              initial={{ scale: 0.96, opacity: 0 }}
+              initial={{ scale: 0.98, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.96, opacity: 0 }}
+              exit={{ scale: 0.98, opacity: 0 }}
               transition={{ type: 'spring', damping: 22, stiffness: 180 }}
-              className="w-full max-w-3xl overflow-hidden"
+              className="w-full h-full lg:h-auto max-w-none lg:max-w-3xl overflow-y-auto flex flex-col justify-center"
               onClick={(e) => e.stopPropagation()}
             >
               <Suspense fallback={<div className="p-6">Chargement...</div>}>

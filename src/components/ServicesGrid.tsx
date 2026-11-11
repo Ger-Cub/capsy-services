@@ -132,12 +132,12 @@ export default function ServicesGrid({ onSelectService }: ServicesGridProps) {
 
       {/* Details Modal overlay for a single service view */}
       {selectedService && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-0 lg:p-4">
           <div
             className="absolute inset-0 bg-black/60 backdrop-blur-xs"
             onClick={() => setSelectedService(null)}
           />
-          <div className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl overflow-hidden z-10 flex flex-col animate-in fade-in zoom-in-95 duration-200 max-h-[90vh]">
+          <div className="relative w-full h-full lg:h-auto max-w-none lg:max-w-lg bg-white rounded-none lg:rounded-3xl shadow-2xl overflow-hidden z-10 flex flex-col animate-in fade-in zoom-in-95 duration-200 max-h-none lg:max-h-[90vh]">
             
             {/* Modal header with Image */}
             <div className="h-48 sm:h-56 w-full relative shrink-0">
