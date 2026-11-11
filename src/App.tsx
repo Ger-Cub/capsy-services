@@ -359,7 +359,7 @@ export default function App() {
               onClick={(e) => e.stopPropagation()}
             >
               <Suspense fallback={<div className="p-6">Chargement...</div>}>
-                <StressTest onOpenBooking={handleOpenStressBooking} />
+                <StressTest onOpenBooking={handleOpenStressBooking} onClose={() => setStressOpen(false)} />
               </Suspense>
             </motion.div>
           </motion.div>

@@ -5,9 +5,10 @@ import LucideIcon from './LucideIcon';
 
 interface StressTestProps {
   onOpenBooking: (serviceId: string) => void;
+  onClose?: () => void;
 }
 
-export default function StressTest({ onOpenBooking }: StressTestProps) {
+export default function StressTest({ onOpenBooking, onClose }: StressTestProps) {
   const [currentIdx, setCurrentIdx] = useState(-1); // -1 is the "Start" state
   const [scores, setScores] = useState<number[]>([]);
   const [showResult, setShowResult] = useState(false);
@@ -76,10 +77,20 @@ export default function StressTest({ onOpenBooking }: StressTestProps) {
   const result = showResult ? getInterpretation() : null;
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-150 shadow-lg p-6 sm:p-8 max-w-2xl mx-auto overflow-hidden relative" id="stress-test-section">
+    <div className="bg-white rounded-none lg:rounded-2xl border-0 lg:border border-gray-150 shadow-none lg:shadow-lg p-6 sm:p-8 max-w-none lg:max-w-2xl mx-auto overflow-hidden relative min-h-0 flex flex-col" id="stress-test-section">
+      {/* Bouton de fermeture (toujours visible, utile notamment sur mobile) */}
+      {onClose && (
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 z-20 p-2 rounded-xl bg-gray-100 hover:bg-gray-200 text-brand-gray-text hover:text-brand-dark transition-colors"
+          aria-label="Fermer"
+        >
+          <LucideIcon name="X" className="h-5 w-5" />
+        </button>
+      )}
       {/* Decorative background vectors */}
-      <div className="absolute -top-12 -right-12 h-32 w-32 bg-brand-green/5 rounded-full blur-xl" />
-      <div className="absolute -bottom-12 -left-12 h-32 w-32 bg-brand-wellbeing/5 rounded-full blur-xl" />
+      <div className="absolute -top-12 -right-12 h-32 w-32 bg-brand-green/5 rounded-full blur-xl pointer-events-none" />
+      <div className="absolute -bottom-12 -left-12 h-32 w-32 bg-brand-wellbeing/5 rounded-full blur-xl pointer-events-none" />
 
       <AnimatePresence mode="wait">
         {currentIdx === -1 && (
