@@ -1176,7 +1176,7 @@ export default function BookingModal({
                   {/* Select Therapist Option */}
                   <div>
                     <label className="block text-sm font-poppins font-bold text-brand-dark mb-2.5">
-                      Préférence de praticien (Psychologues Odoo)
+                      Préférence de praticien (Psychologues disponibles)
                     </label>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                       <button
@@ -1555,7 +1555,7 @@ export default function BookingModal({
                       Rendez-vous pré-enregistré !
                     </h4>
                     <p className="text-sm text-brand-gray-text max-w-md mx-auto">
-                      Un conseiller de <span className="font-semibold text-brand-wellbeing">Capsy Services</span> va vous contacter sur WhatsApp dans l'heure pour finaliser et confirmer l'horaire précis.
+                      Un conseiller de <span className="font-semibold text-brand-wellbeing">CAPSY Services</span> va vous contacter sur WhatsApp dans l'heure pour finaliser et confirmer l'horaire précis.
                     </p>
                   </div>
 
@@ -1619,7 +1619,7 @@ export default function BookingModal({
                   {/* Actions */}
                   <div className="flex flex-col sm:flex-row gap-2.5 justify-center pt-2 max-w-md mx-auto">
                     <a
-                      href={`https://wa.me/243838248355?text=Bonjour%20Capsy%20Services%2C%20je%20viens%20de%20soumettre%20une%20demande%20de%20rendez-vous%20sur%20votre%20site.%20Mon%20N%C2%B0%20de%20suivi%20est%20${createdAppointment.id}.%20Merci!`}
+                      href={`https://wa.me/243838248355?text=Bonjour%20CAPSY%20Services%2C%20je%20viens%20de%20soumettre%20une%20demande%20de%20rendez-vous%20sur%20votre%20site.%20Mon%20N%C2%B0%20de%20suivi%20est%20${createdAppointment.id}.%20Merci!`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="flex-1 py-3 px-4 bg-[#25D366] hover:bg-[#20ba56] text-white font-bold font-poppins rounded-xl flex items-center justify-center gap-2 transition-all shadow-md cursor-pointer text-sm"
