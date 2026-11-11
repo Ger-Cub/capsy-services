@@ -1013,12 +1013,12 @@ export default function BookingModal({
                         Cette demande permet de solliciter un rendez-vous. Elle ne constitue pas une consultation, un diagnostic ni une prise en charge d’urgence.
                       </p>
                     </div>
-                    <div className="p-3 rounded-xl bg-amber-50/80 border border-amber-200/80 flex items-start gap-2.5 text-xs text-amber-900 leading-relaxed">
+                    {/* <div className="p-3 rounded-xl bg-amber-50/80 border border-amber-200/80 flex items-start gap-2.5 text-xs text-amber-900 leading-relaxed">
                       <LucideIcon name="AlertTriangle" className="h-4 w-4 text-amber-600 shrink-0 mt-0.5" />
                       <p>
                         <strong className="font-semibold">Urgence :</strong> En cas de danger immédiat, de risque de violence ou d’urgence médicale, contactez les services d’urgence disponibles dans votre zone ou rendez-vous dans la structure de santé la plus proche. CAPSY ne remplace pas les services d’urgence.
                       </p>
-                    </div>
+                    </div> */}
                   </div>
                 </motion.div>
               )}
