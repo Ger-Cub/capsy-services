@@ -643,13 +643,13 @@ export default function EmployerLookupPage({ token: initialToken = '', onOpenBoo
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-0 lg:p-4"
           >
             <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
+              initial={{ scale: 0.98, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              className="relative w-full max-w-md overflow-hidden rounded-3xl bg-white shadow-2xl"
+              exit={{ scale: 0.98, opacity: 0 }}
+              className="relative w-full h-full lg:h-auto max-w-none lg:max-w-md overflow-hidden rounded-none lg:rounded-3xl bg-white shadow-2xl flex flex-col justify-center"
             >
               {/* Modal Header */}
               <div className="flex items-center justify-between border-b border-gray-100 bg-brand-dark px-6 py-4 text-white">

@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { SERVICES as STATIC_SERVICES } from '../data/staticData';
 import { Appointment } from '../types';
 import LucideIcon from './LucideIcon';
+import CapsyDatePicker from './CapsyDatePicker';
 import { Country, DEFAULT_COUNTRY, ALL_COUNTRIES } from '../data/countries';
 
 import {
@@ -735,7 +736,7 @@ export default function BookingModal({
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-0 lg:p-4">
           {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
@@ -747,11 +748,11 @@ export default function BookingModal({
 
           {/* Modal Container */}
           <motion.div
-            initial={{ scale: 0.95, opacity: 0, y: 20 }}
+            initial={{ scale: 0.98, opacity: 0, y: 10 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
-            exit={{ scale: 0.95, opacity: 0, y: 20 }}
+            exit={{ scale: 0.98, opacity: 0, y: 10 }}
             transition={{ type: 'spring', damping: 25, stiffness: 250 }}
-            className="relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl overflow-hidden z-10 flex flex-col max-h-[90vh]"
+            className="relative w-full h-full lg:h-auto max-w-none lg:max-w-2xl bg-white rounded-none lg:rounded-2xl shadow-2xl overflow-hidden z-10 flex flex-col max-h-none lg:max-h-[90vh]"
             id="rdv-modal"
           >
             {/* Header */}
@@ -942,12 +943,12 @@ export default function BookingModal({
                       const descHtml = hoveredDescCache[String(mobileInfoServiceId)] ||
                         (String(serviceId) === String(mobileInfoServiceId) && (serviceDetails?.description_html || serviceDetails?.message_intro));
                       return (
-                        <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+                        <div className="fixed inset-0 z-[120] flex items-center justify-center p-0 lg:p-4 bg-black/60 backdrop-blur-xs">
                           <motion.div
-                            initial={{ opacity: 0, scale: 0.95, y: 10 }}
+                            initial={{ opacity: 0, scale: 0.98, y: 10 }}
                             animate={{ opacity: 1, scale: 1, y: 0 }}
-                            exit={{ opacity: 0, scale: 0.95, y: 10 }}
-                            className="bg-white rounded-2xl max-w-lg w-full max-h-[85vh] flex flex-col shadow-2xl overflow-hidden border border-gray-100"
+                            exit={{ opacity: 0, scale: 0.98, y: 10 }}
+                            className="bg-white rounded-none lg:rounded-2xl max-w-none lg:max-w-lg w-full h-full lg:h-auto max-h-none lg:max-h-[85vh] flex flex-col shadow-2xl overflow-hidden border border-gray-100"
                           >
                             <div className="p-4 bg-brand-wellbeing text-white flex items-center justify-between">
                               <div className="flex items-center gap-2">
@@ -1065,23 +1066,16 @@ export default function BookingModal({
                     <label className="block text-sm font-poppins font-bold text-brand-dark mb-2">
                       Choisir une date
                     </label>
-                    <select
+                    <CapsyDatePicker
+                      id="date-picker"
                       value={date}
-                      onChange={(e) => {
-                        const val = e.target.value;
-                        setDate(val);
+                      availableDates={availableDates}
+                      onChange={(newDate) => {
+                        setDate(newDate);
                         setHasCheckedSlots(false);
                         setIsLoadingSlots(true);
                       }}
-                      className="w-full p-3.5 border-2 border-gray-200 rounded-xl bg-white font-sans text-brand-dark focus:border-brand-wellbeing outline-none transition-colors"
-                      id="date-picker"
-                    >
-                      {availableDates.map((d) => (
-                        <option key={d.value} value={d.value}>
-                          {d.label}
-                        </option>
-                      ))}
-                    </select>
+                    />
                   </div>
 
                   {/* Select Time Slot */}
@@ -1102,7 +1096,7 @@ export default function BookingModal({
                       {(!hasCheckedSlots || isLoadingSlots) && (
                         <span className="text-[11px] text-brand-wellbeing flex items-center gap-1 font-medium">
                           <LucideIcon name="Loader2" className="h-3.5 w-3.5 animate-spin" />
-                          Vérification Odoo...
+                          Vérification...
                         </span>
                       )}
                     </div>
@@ -1150,18 +1144,7 @@ export default function BookingModal({
                           })}
                         </div>
 
-                        {/* Indication précise du fuseau horaire */}
-                        <div className="flex items-center gap-1.5 mt-2 text-[11px] text-brand-gray-text">
-                          <LucideIcon name="Clock" className="h-3.5 w-3.5 text-brand-wellbeing shrink-0" />
-                          <span>
-                            Créneaux exprimés en <strong>{timezone === 'Africa/Kinshasa' ? 'heure de Kinshasa (UTC+1)' : timezone}</strong>
-                            {typeof Intl !== 'undefined' && Intl.DateTimeFormat().resolvedOptions().timeZone !== timezone && (
-                              <span className="text-gray-400 font-normal ml-1">
-                                &bull; Votre heure locale : {Intl.DateTimeFormat().resolvedOptions().timeZone}
-                              </span>
-                            )}
-                          </span>
-                        </div>
+                        
                       </>
                     ) : (
                       <div className="p-4 rounded-xl border border-amber-200 bg-amber-50/70 text-xs text-amber-900 flex items-start gap-2.5">

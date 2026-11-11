@@ -28,7 +28,7 @@ export default function UserProfilePage({ user, onClose, onLogout }: UserProfile
     return (
         <AnimatePresence>
             {isVisible && (
-                <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+                <div className="fixed inset-0 z-[60] flex items-center justify-center p-0 lg:p-4">
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
@@ -38,11 +38,11 @@ export default function UserProfilePage({ user, onClose, onLogout }: UserProfile
                     />
 
                     <motion.div
-                        initial={{ scale: 0.95, opacity: 0, y: 30 }}
+                        initial={{ scale: 0.98, opacity: 0, y: 10 }}
                         animate={{ scale: 1, opacity: 1, y: 0 }}
-                        exit={{ scale: 0.95, opacity: 0, y: 30 }}
+                        exit={{ scale: 0.98, opacity: 0, y: 10 }}
                         transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                        className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl overflow-hidden z-10"
+                        className="relative w-full h-full lg:h-auto max-w-none lg:max-w-md bg-white rounded-none lg:rounded-3xl shadow-2xl overflow-y-auto z-10 flex flex-col justify-center"
                     >
                         {/* Close button */}
                         <button

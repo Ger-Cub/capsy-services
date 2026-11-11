@@ -119,7 +119,7 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginMod
     return (
         <AnimatePresence>
             {isOpen && (
-                <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+                <div className="fixed inset-0 z-[60] flex items-center justify-center p-0 lg:p-4">
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
@@ -130,11 +130,20 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginMod
 
                     <motion.div
                         key={view}
-                        initial={{ scale: 0.95, opacity: 0, y: 20 }}
+                        initial={{ scale: 0.98, opacity: 0, y: 10 }}
                         animate={{ scale: 1, opacity: 1, y: 0 }}
-                        exit={{ scale: 0.95, opacity: 0, y: 20 }}
-                        className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden z-10 p-8"
+                        exit={{ scale: 0.98, opacity: 0, y: 10 }}
+                        className="relative w-full h-full lg:h-auto max-w-none lg:max-w-md bg-white rounded-none lg:rounded-2xl shadow-2xl overflow-y-auto z-10 p-6 sm:p-8 flex flex-col justify-center"
                     >
+                        {/* Close button */}
+                        <button
+                            type="button"
+                            onClick={onClose}
+                            className="absolute top-4 right-4 p-2 text-gray-400 hover:text-brand-dark rounded-xl hover:bg-gray-100 transition-colors z-20"
+                            aria-label="Fermer"
+                        >
+                            <LucideIcon name="X" className="h-5 w-5" />
+                        </button>
                         {/* Header */}
                         <div className="text-center mb-8">
                             <div className="inline-flex p-3 bg-brand-wellbeing/10 rounded-full text-brand-wellbeing mb-4">
