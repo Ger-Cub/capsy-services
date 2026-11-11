@@ -46,7 +46,7 @@ export default function StressTest({ onOpenBooking }: StressTestProps) {
         color: 'text-rose-600 bg-rose-50 border-rose-200',
         barColor: 'bg-rose-500',
         intro: "Le stress n'est pas une faiblesse. Lorsqu'il devient chronique, il affecte en profondeur votre santé, vos relations et votre milieu professionnel.",
-        advice: "Vos indicateurs suggèrent que vous traversez une période d'épuisement ou de surmenage intense. Parler à un psychothérapeute qualifié de Capsy Services vous apportera les outils nécessaires pour retrouver l'équilibre et préserver votre santé mentale.",
+        advice: "Vos indicateurs suggèrent que vous traversez une période d'épuisement ou de surmenage intense. Parler à un psychothérapeute qualifié de CAPSY Services vous apportera les outils nécessaires pour retrouver l'équilibre et préserver votre santé mentale.",
         recommendedService: 'individuel',
         recommendedServiceName: 'Consultation Individuelle'
       };
