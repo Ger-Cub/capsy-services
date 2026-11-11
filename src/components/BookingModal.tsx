@@ -1078,84 +1078,6 @@ export default function BookingModal({
                     />
                   </div>
 
-                  {/* Select Time Slot */}
-                  <div>
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 mb-2.5">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <label className="block text-sm font-poppins font-bold text-brand-dark">
-                          Créneaux horaires disponibles
-                        </label>
-                        <span
-                          className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-brand-wellbeing/10 text-brand-wellbeing border border-brand-wellbeing/20"
-                          title={`Fuseau horaire configuré dans Odoo : ${timezone}`}
-                        >
-                          <LucideIcon name="Globe" className="h-3 w-3 text-brand-wellbeing" />
-                          <span>{timezone === 'Africa/Kinshasa' ? 'Heure de Kinshasa (UTC+1)' : timezone}</span>
-                        </span>
-                      </div>
-                      {(!hasCheckedSlots || isLoadingSlots) && (
-                        <span className="text-[11px] text-brand-wellbeing flex items-center gap-1 font-medium">
-                          <LucideIcon name="Loader2" className="h-3.5 w-3.5 animate-spin" />
-                          Vérification...
-                        </span>
-                      )}
-                    </div>
-
-                    {(!hasCheckedSlots || isLoadingSlots) ? (
-                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
-                        {Array.from({ length: 6 }).map((_, i) => (
-                          <div
-                            key={i}
-                            className="p-3 rounded-xl border border-gray-150 bg-gray-50/80 animate-pulse h-12 flex flex-col justify-center items-center"
-                          >
-                            <div className="h-3.5 w-20 bg-gray-200 rounded" />
-                          </div>
-                        ))}
-                      </div>
-                    ) : availableSlots.length > 0 ? (
-                      <>
-                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5" id="time-grid">
-                          {availableSlots.map((slot) => {
-                            const isSelected = timeSlot === slot.slot;
-                            const isFree = slot.available;
-                            return (
-                              <button
-                                key={slot.slot}
-                                type="button"
-                                disabled={!isFree}
-                                onClick={() => isFree && setTimeSlot(slot.slot)}
-                                title={!isFree ? (slot.reason || 'Créneau indisponible') : 'Cliquer pour choisir ce créneau'}
-                                className={`p-3 rounded-xl border-2 text-center text-xs font-mono transition-all flex flex-col items-center justify-center min-h-[48px] ${
-                                  isSelected
-                                    ? 'border-brand-green bg-green-50/30 text-brand-green font-bold shadow-xs'
-                                    : isFree
-                                    ? 'border-gray-200 text-brand-gray-text hover:border-gray-300 font-semibold bg-white'
-                                    : 'border-gray-150 bg-gray-50 text-gray-400 opacity-60 line-through cursor-not-allowed font-medium'
-                                }`}
-                              >
-                                <span>{slot.slot}</span>
-                                {!isFree && (
-                                  <span className="text-[9px] no-underline font-sans text-gray-400 font-normal mt-0.5">
-                                    {slot.reason === 'Complet' ? 'Complet' : 'Indisponible'}
-                                  </span>
-                                )}
-                              </button>
-                            );
-                          })}
-                        </div>
-
-                        
-                      </>
-                    ) : (
-                      <div className="p-4 rounded-xl border border-amber-200 bg-amber-50/70 text-xs text-amber-900 flex items-start gap-2.5">
-                        <LucideIcon name="CalendarX" className="h-4 w-4 text-amber-600 shrink-0 mt-0.5" />
-                        <p>
-                          Aucune disponibilité ce jour pour ce praticien. Veuillez sélectionner une autre date ou choisir « Premier disponible ».
-                        </p>
-                      </div>
-                    )}
-                  </div>
-
                   {/* Select Therapist Option */}
                   <div>
                     <label className="block text-sm font-poppins font-bold text-brand-dark mb-2.5">
@@ -1234,6 +1156,84 @@ export default function BookingModal({
                       }
                     </div>
 
+                  </div>
+
+                  {/* Select Time Slot */}
+                  <div>
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 mb-2.5">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <label className="block text-sm font-poppins font-bold text-brand-dark">
+                          Créneaux horaires disponibles
+                        </label>
+                        <span
+                          className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-brand-wellbeing/10 text-brand-wellbeing border border-brand-wellbeing/20"
+                          title={`Fuseau horaire configuré dans Odoo : ${timezone}`}
+                        >
+                          <LucideIcon name="Globe" className="h-3 w-3 text-brand-wellbeing" />
+                          <span>{timezone === 'Africa/Kinshasa' ? 'Heure de Kinshasa (UTC+1)' : timezone}</span>
+                        </span>
+                      </div>
+                      {(!hasCheckedSlots || isLoadingSlots) && (
+                        <span className="text-[11px] text-brand-wellbeing flex items-center gap-1 font-medium">
+                          <LucideIcon name="Loader2" className="h-3.5 w-3.5 animate-spin" />
+                          Vérification...
+                        </span>
+                      )}
+                    </div>
+
+                    {(!hasCheckedSlots || isLoadingSlots) ? (
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                        {Array.from({ length: 6 }).map((_, i) => (
+                          <div
+                            key={i}
+                            className="p-3 rounded-xl border border-gray-150 bg-gray-50/80 animate-pulse h-12 flex flex-col justify-center items-center"
+                          >
+                            <div className="h-3.5 w-20 bg-gray-200 rounded" />
+                          </div>
+                        ))}
+                      </div>
+                    ) : availableSlots.length > 0 ? (
+                      <>
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5" id="time-grid">
+                          {availableSlots.map((slot) => {
+                            const isSelected = timeSlot === slot.slot;
+                            const isFree = slot.available;
+                            return (
+                              <button
+                                key={slot.slot}
+                                type="button"
+                                disabled={!isFree}
+                                onClick={() => isFree && setTimeSlot(slot.slot)}
+                                title={!isFree ? (slot.reason || 'Créneau indisponible') : 'Cliquer pour choisir ce créneau'}
+                                className={`p-3 rounded-xl border-2 text-center text-xs font-mono transition-all flex flex-col items-center justify-center min-h-[48px] ${
+                                  isSelected
+                                    ? 'border-brand-green bg-green-50/30 text-brand-green font-bold shadow-xs'
+                                    : isFree
+                                    ? 'border-gray-200 text-brand-gray-text hover:border-gray-300 font-semibold bg-white'
+                                    : 'border-gray-150 bg-gray-50 text-gray-400 opacity-60 line-through cursor-not-allowed font-medium'
+                                }`}
+                              >
+                                <span>{slot.slot}</span>
+                                {!isFree && (
+                                  <span className="text-[9px] no-underline font-sans text-gray-400 font-normal mt-0.5">
+                                    {slot.reason === 'Complet' ? 'Complet' : 'Indisponible'}
+                                  </span>
+                                )}
+                              </button>
+                            );
+                          })}
+                        </div>
+
+                        
+                      </>
+                    ) : (
+                      <div className="p-4 rounded-xl border border-amber-200 bg-amber-50/70 text-xs text-amber-900 flex items-start gap-2.5">
+                        <LucideIcon name="CalendarX" className="h-4 w-4 text-amber-600 shrink-0 mt-0.5" />
+                        <p>
+                          Aucune disponibilité ce jour pour ce praticien. Veuillez sélectionner une autre date ou choisir « Premier disponible ».
+                        </p>
+                      </div>
+                    )}
                   </div>
                 </motion.div>
               )}
