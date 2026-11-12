@@ -408,7 +408,7 @@ export default function EmployerLookupPage({ token: initialToken = '', onOpenBoo
 
                   <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-200 text-xs font-poppins font-bold">
                     <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-                    Statut Actif & Vérifié
+                    Vérifié
                   </div>
                 </div>
               </div>
@@ -533,7 +533,7 @@ export default function EmployerLookupPage({ token: initialToken = '', onOpenBoo
                     <LucideIcon name="Info" className="h-4 w-4 text-brand-wellbeing shrink-0 mt-0.5" />
                     <div>
                       <strong className="text-brand-dark font-poppins font-bold">Garantie de Confidentialité & Éthique Professionnelle :</strong>{' '}
-                      Cette attestation confirme uniquement la légitimité et la fonction active du collaborateur auprès de CAPSY SERVICES. Conformément aux règles déontologiques et au secret professionnel, les détails contractuels privés et coordonnées personnelles ne sont pas divulgués publiquement.
+                      Cette attestation confirme uniquement la légitimité du collaborateur auprès de CAPSY SERVICES. Conformément aux règles déontologiques et au secret professionnel, les détails contractuels privés et coordonnées personnelles ne sont pas divulgués publiquement.
                     </div>
                   </div>
                 </div>
