@@ -41,12 +41,12 @@ export default function ContactSection() {
         </div>
 
         {/* Emergency Alert Callout (N°11) */}
-        <div className="mb-10 max-w-4xl mx-auto p-4 sm:p-5 rounded-2xl bg-amber-50/80 border border-amber-200/80 flex items-start gap-3.5 text-amber-900">
+        {/* <div className="mb-10 max-w-4xl mx-auto p-4 sm:p-5 rounded-2xl bg-amber-50/80 border border-amber-200/80 flex items-start gap-3.5 text-amber-900">
           <LucideIcon name="AlertTriangle" className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
           <p className="text-xs sm:text-sm leading-relaxed">
             <strong className="font-semibold">Urgence :</strong> En cas de danger immédiat, de risque de violence ou d’urgence médicale, contactez les services d’urgence disponibles dans votre zone ou rendez-vous dans la structure de santé la plus proche. CAPSY ne remplace pas les services d’urgence.
           </p>
-        </div>
+        </div> */}
 
         {/* Info Grid Split */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-stretch font-sans">

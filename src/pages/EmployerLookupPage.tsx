@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import QRCode from 'qrcode';
-import fallbackEmployees from '../../employers_1793711702018.json';
+import fallbackEmployees from '../../response_1794476398866.json';
 import LucideIcon from '../components/LucideIcon';
 
 const PUBLIC_BASE_URL = 'https://www.capsy-rdc.org';
@@ -16,7 +16,8 @@ const PUBLIC_EMPLOYEE_FIELDS = [
   'department_id',
   'work_phone',
   'company_id',
-  'hr_presence_state'
+  'hr_presence_state',
+  'x_studio_staff_id'
 ];
 
 interface EmployerLookupPageProps {
@@ -27,6 +28,7 @@ interface EmployerLookupPageProps {
 interface EmployeeRecord {
   id: string | number;
   employee_token: string;
+  x_studio_staff_id?: string;
   display_name: string;
   photo: string;
   job_title: string;
@@ -57,10 +59,14 @@ const normalizeRecord = (record: any): EmployeeRecord => {
   ].filter(Boolean);
 
   const company = pick(raw.company_id);
+  const staffId = raw.x_studio_staff_id && typeof raw.x_studio_staff_id === 'string'
+    ? raw.x_studio_staff_id
+    : '';
 
   return {
     id: raw.id ?? '',
     employee_token: raw.employee_token ?? '',
+    x_studio_staff_id: staffId,
     display_name: raw.display_name ?? raw.name ?? 'Collaborateur CAPSY',
     photo: imageSources[0] ?? '',
     job_title: raw.job_title ?? 'Professionnel de santé / Agent',
@@ -126,7 +132,7 @@ export default function EmployerLookupPage({ token: initialToken = '', onOpenBoo
           action: 'search_read',
           params: {
             model: 'hr.employee',
-            domain: [['employee_token', '=', cleanToken]],
+            domain: ['|', ['employee_token', '=', cleanToken], ['x_studio_staff_id', '=', cleanToken]],
             fields: PUBLIC_EMPLOYEE_FIELDS,
             limit: 1,
             order: 'id asc'
@@ -145,7 +151,11 @@ export default function EmployerLookupPage({ token: initialToken = '', onOpenBoo
       if (!match) {
         const localMatch = (fallbackEmployees as any[]).find((item: any) => {
           const raw = item?.data ?? item ?? {};
-          return String(raw.employee_token || '').toLowerCase() === cleanToken.toLowerCase();
+          return (
+            String(raw.employee_token || '').toLowerCase() === cleanToken.toLowerCase() ||
+            String(raw.x_studio_staff_id || '').toLowerCase() === cleanToken.toLowerCase() ||
+            String(raw.id || '') === cleanToken
+          );
         });
         match = localMatch ?? null;
       }
@@ -175,7 +185,11 @@ export default function EmployerLookupPage({ token: initialToken = '', onOpenBoo
       // Offline fallback
       const localMatch = (fallbackEmployees as any[]).find((item: any) => {
         const raw = item?.data ?? item ?? {};
-        return String(raw.employee_token || '').toLowerCase() === cleanToken.toLowerCase();
+        return (
+          String(raw.employee_token || '').toLowerCase() === cleanToken.toLowerCase() ||
+          String(raw.x_studio_staff_id || '').toLowerCase() === cleanToken.toLowerCase() ||
+          String(raw.id || '') === cleanToken
+        );
       });
 
       if (localMatch) {
@@ -426,10 +440,10 @@ export default function EmployerLookupPage({ token: initialToken = '', onOpenBoo
 
                     <div>
                       <div className="text-xs font-bold uppercase tracking-wider text-brand-gray-text font-poppins">
-                        Matricule officiel
+                        Staff ID
                       </div>
                       <div className="font-mono text-sm font-bold text-brand-dark">
-                        #{employee.id || 'N/A'}
+                        {employee.x_studio_staff_id || (employee.id ? `#${employee.id}` : 'N/A')}
                       </div>
                     </div>
                   </div>
