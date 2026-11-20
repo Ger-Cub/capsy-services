@@ -90,6 +90,16 @@ export const getAppointmentDetailsUrl = (id: number | string): string => {
 };
 
 /**
+ * URL pour envoyer un message de contact vers le CRM Odoo (crm.lead + res.partner).
+ * Proxy Vercel en prod (/api/crm-contact), FastAPI direct en local.
+ */
+export const getCrmContactUrl = (): string => {
+  const base = getApiBase();
+  if (base === '') return '/api/crm-contact';
+  return `${base}/crm/contact-message`;
+};
+
+/**
  * URL pour récupérer les créneaux disponibles en temps réel pour une date et un service.
  * Proxy Vercel/Express en prod, FastAPI direct en local.
  */
