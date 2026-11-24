@@ -13,6 +13,7 @@ import therapistsHandler from "./api/therapists";
 import appointmentsListHandler from "./api/appointments-list";
 import appointmentDetailsHandler from "./api/appointment-details";
 import availableSlotsHandler from "./api/available-slots";
+import crmContactHandler from "./api/crm-contact";
 
 const app = express();
 app.use(express.json());
@@ -174,6 +175,11 @@ app.all("/api/appointment-details", async (req, res) => {
 // Available Slots API route (créneaux libres pour une date donnée)
 app.all("/api/available-slots", async (req, res) => {
   return availableSlotsHandler(req as any, res as any);
+});
+
+// CRM Contact Message API route (formulaire "Écrivez-nous un message" → Odoo crm.lead)
+app.all("/api/crm-contact", async (req, res) => {
+  return crmContactHandler(req as any, res as any);
 });
 
 // --- Server-side 301 redirects for legacy URLs ---

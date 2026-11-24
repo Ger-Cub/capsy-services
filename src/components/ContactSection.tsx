@@ -1,27 +1,70 @@
-import React, { useState, Suspense } from 'react';
+import React, { useState, useRef, useCallback, Suspense } from 'react';
 import LucideIcon from './LucideIcon';
+import { getCrmContactUrl } from '../config/api';
 const LeafletMap = React.lazy(() => import('./LeafletMap'));
 
 export default function ContactSection() {
   const [formName, setFormName] = useState('');
   const [formEmail, setFormEmail] = useState('');
+  const [formPhone, setFormPhone] = useState('');
   const [formMessage, setFormMessage] = useState('');
+  const [honeypot, setHoneypot] = useState(''); // champ piège anti-bot (caché)
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
-  const handleMessageSubmit = (e: React.FormEvent) => {
+  // Généré une seule fois par montage (anti-double-soumission)
+  const requestIdRef = useRef<string>(crypto.randomUUID());
+
+  const handleMessageSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formName || !formMessage) return;
+    if (isSubmitting) return;
 
-    // Simulate sending message
-    setIsSubmitted(true);
-    setFormName('');
-    setFormEmail('');
-    setFormMessage('');
+    setSubmitError(null);
+    setIsSubmitting(true);
 
-    setTimeout(() => {
-      setIsSubmitted(false);
-    }, 5000);
-  };
+    try {
+      const response = await fetch(getCrmContactUrl(), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: formName.trim(),
+          email: formEmail.trim(),
+          phone: formPhone.trim() || undefined,
+          message: formMessage.trim(),
+          request_id: requestIdRef.current,
+          page_source: window.location.href,
+          honeypot,
+        }),
+      });
+
+      let data: any;
+      try {
+        data = await response.json();
+      } catch {
+        data = {};
+      }
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || `Erreur ${response.status} — veuillez réessayer.`);
+      }
+
+      // Succès : réinitialisation + nouveau request_id pour une future soumission
+      setIsSubmitted(true);
+      setFormName('');
+      setFormEmail('');
+      setFormPhone('');
+      setFormMessage('');
+      setHoneypot('');
+      requestIdRef.current = crypto.randomUUID();
+
+      setTimeout(() => setIsSubmitted(false), 7000);
+    } catch (err: any) {
+      setSubmitError(err.message || 'Une erreur inattendue est survenue. Veuillez réessayer.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  }, [formName, formEmail, formPhone, formMessage, honeypot, isSubmitting]);
 
   return (
     <section className="py-20 bg-white" id="contact">
@@ -203,6 +246,18 @@ export default function ContactSection() {
               <h4 className="font-poppins font-bold text-brand-wellbeing text-lg mb-4">Écrivez-nous un message</h4>
 
               <form onSubmit={handleMessageSubmit} className="space-y-4">
+                {/* Champ piège anti-bot (caché des utilisateurs réels) */}
+                <input
+                  type="text"
+                  name="website_url"
+                  value={honeypot}
+                  onChange={(e) => setHoneypot(e.target.value)}
+                  className="hidden"
+                  aria-hidden="true"
+                  tabIndex={-1}
+                  autoComplete="off"
+                />
+
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-xs font-bold text-brand-dark uppercase tracking-wide mb-1.5">Nom complet *</label>
@@ -228,6 +283,17 @@ export default function ContactSection() {
                 </div>
 
                 <div>
+                  <label className="block text-xs font-bold text-brand-dark uppercase tracking-wide mb-1.5">Téléphone (Optionnel)</label>
+                  <input
+                    type="tel"
+                    value={formPhone}
+                    onChange={(e) => setFormPhone(e.target.value)}
+                    placeholder="+243 8XX XXX XXX"
+                    className="w-full p-3 bg-white border border-gray-200 rounded-xl text-brand-dark text-sm outline-none focus:border-brand-wellbeing transition-colors"
+                  />
+                </div>
+
+                <div>
                   <label className="block text-xs font-bold text-brand-dark uppercase tracking-wide mb-1.5">Votre message ou requête *</label>
                   <textarea
                     required
@@ -250,17 +316,39 @@ export default function ContactSection() {
 
                   <button
                     type="submit"
-                    className="px-6 py-2.5 bg-brand-wellbeing hover:bg-brand-wellbeing/90 text-white font-bold font-poppins rounded-xl text-xs flex items-center justify-center gap-2 transition-all shadow-md cursor-pointer shrink-0"
+                    disabled={isSubmitting}
+                    className="px-6 py-2.5 bg-brand-wellbeing hover:bg-brand-wellbeing/90 disabled:opacity-60 disabled:cursor-not-allowed text-white font-bold font-poppins rounded-xl text-xs flex items-center justify-center gap-2 transition-all shadow-md cursor-pointer shrink-0"
                   >
-                    <LucideIcon name="Send" className="h-3.5 w-3.5 text-brand-green" />
-                    <span>Envoyer le Message</span>
+                    {isSubmitting ? (
+                      <>
+                        <svg className="animate-spin h-3.5 w-3.5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                        </svg>
+                        <span>Envoi en cours…</span>
+                      </>
+                    ) : (
+                      <>
+                        <LucideIcon name="Send" className="h-3.5 w-3.5 text-brand-green" />
+                        <span>Envoyer le Message</span>
+                      </>
+                    )}
                   </button>
                 </div>
 
+                {/* Message de succès */}
                 {isSubmitted && (
                   <div className="p-3.5 bg-brand-green/10 border border-brand-green/20 rounded-xl text-xs text-brand-green font-semibold flex items-center gap-2.5 animate-in fade-in slide-in-from-bottom-2">
-                    <LucideIcon name="CheckCircle2" className="h-5 w-5" strokeWidth={2.5} />
-                    <span>Merci pour votre loyauté ! Message enregistré. Nos secrétaires vous répondront promptement.</span>
+                    <LucideIcon name="CheckCircle2" className="h-5 w-5 shrink-0" strokeWidth={2.5} />
+                    <span>Merci ! Votre message a bien été transmis à notre équipe. Nous vous répondrons promptement.</span>
+                  </div>
+                )}
+
+                {/* Message d'erreur */}
+                {submitError && (
+                  <div className="p-3.5 bg-red-50 border border-red-200 rounded-xl text-xs text-red-700 font-semibold flex items-start gap-2.5">
+                    <LucideIcon name="AlertCircle" className="h-5 w-5 shrink-0 mt-0.5" strokeWidth={2.5} />
+                    <span>{submitError}</span>
                   </div>
                 )}
               </form>

@@ -28,11 +28,11 @@ export default function LeafletMap({ lat, lng, zoom = 15, title = "Capsy Service
         position: 'bottomright'
       }).addTo(mapRef.current);
 
-      // Add a clean tile layer (CartoDB Positron Light theme)
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-        subdomains: 'abcd',
-        maxZoom: 20
+      // Tuiles libres OpenStreetMap standard (100% sans clé API requise, fiables et gratuites)
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a> contributors',
+        subdomains: ['a', 'b', 'c'],
+        maxZoom: 19
       }).addTo(mapRef.current);
 
       // Custom CSS Pin to display the location beautifully
