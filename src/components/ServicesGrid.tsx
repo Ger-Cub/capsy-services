@@ -102,7 +102,7 @@ export default function ServicesGrid({ onSelectService }: ServicesGridProps) {
                     onClick={() => onSelectService(srv.id)}
                     className="py-2.5 px-4 bg-brand-confidence hover:bg-brand-confidence/90 text-brand-dark border border-brand-confidence/40 text-xs font-extrabold font-poppins rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1 shadow-xs"
                   >
-                    <span>Prendre RDV</span>
+                    <span>Demander un rendez-vous</span>
                     <LucideIcon name="ChevronDown" className="h-3 w-3 -rotate-90 text-brand-dark" />
                   </button>
                 </div>
@@ -251,7 +251,7 @@ export default function ServicesGrid({ onSelectService }: ServicesGridProps) {
                 className="flex-1 py-3 px-4 bg-brand-confidence hover:bg-brand-confidence/90 text-brand-dark border border-brand-confidence/40 rounded-xl text-xs font-bold font-poppins transition-all flex items-center justify-center gap-1.5 shadow-sm cursor-pointer"
               >
                 <LucideIcon name="Calendar" className="h-4 w-4 text-brand-dark" />
-                <span>Prendre RDV</span>
+                <span>Demander un rendez-vous</span>
               </button>
             </div>
 
