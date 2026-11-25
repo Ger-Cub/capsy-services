@@ -165,8 +165,8 @@ export const VALUES: Value[] = [
     iconName: 'Award'
   },
   {
-    name: 'Confidentialité Absolue',
-    description: 'Le secret professionnel entoure tous nos échanges. Aucune information personnelle n’est divulguée ou exploitée sans consentement formel.',
+    name: 'Confidentialité et respect de la vie privée',
+    description: 'Les échanges et informations sont traités avec confidentialité, dans le respect du secret professionnel, des obligations de protection et des limites prévues par la loi.',
     iconName: 'Lock'
   },
   {
