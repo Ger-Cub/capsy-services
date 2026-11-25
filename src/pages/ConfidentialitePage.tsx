@@ -41,7 +41,7 @@ export default function ConfidentialitePage({ onOpenBooking }: ConfidentialitePa
             </h2>
             <div className="bg-brand-gray-light p-6 rounded-2xl border border-gray-150 text-sm text-brand-gray-text leading-relaxed space-y-2">
               <p>
-                Le site internet <strong className="text-brand-dark">www.capsy-rdc.org</strong> est une vitrine publique d'information et un portail de demande de prise de contact.
+                Le site internet <strong className="text-brand-dark">www.capsy-rdc.org</strong> ne constitue pas un dossier patient et ne doit pas recevoir de récits détaillés, diagnostics, notes d'évolution ou autres données sensibles. Les informations cliniques sont conservées séparément selon les procédures internes approuvées par la Gérance, avec un accès limité aux professionnels habilités et dans le respect des règles légales applicables de confidentialité et de localisation des données.
               </p>
               <p>
                 Les dossiers, notes cliniques et informations de suivi thérapeutique sont conservés et traités dans des systèmes internes sécurisés, strictement déconnectés du portail public, et accessibles uniquement aux professionnels habilités directement impliqués dans votre accompagnement.
