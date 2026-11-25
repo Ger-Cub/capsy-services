@@ -73,19 +73,19 @@ export default function Hero({ onOpenBooking, onOpenStressTest, user, onViewAppo
             </div>
 
             {/* Quick trust metrics */}
-            <div className="pt-6 border-t border-gray-100 grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div className="sm:col-span-1">
-                <p className="text-xs sm:text-sm font-bold font-poppins text-brand-wellbeing leading-snug">Accompagnement confidentiel</p>
-                <p className="text-[10px] text-brand-gray-text font-medium leading-tight mt-0.5">et respectueux de votre vie privée</p>
+            <div className="pt-6 border-t border-gray-100 ">
+              <div className="m:col-span-1">
+                <p className="text-xs sm:text-sm font-bold font-poppins text-brand-wellbeing leading-snug">CAPSY : Centre d'Assistance Psychologique</p>
+                {/* <p className="text-[10px] text-brand-gray-text font-medium leading-tight mt-0.5">et respectueux de votre vie privée</p> */}
               </div>
-              <div>
+              {/* <div>
                 <p className="text-xl sm:text-2xl font-bold font-poppins text-brand-wellbeing">Goma</p>
-                <p className="text-[10px] text-brand-gray-text uppercase font-semibold tracking-wide">Cabinet Médical</p>
+                <p className="text-[10px] text-brand-gray-text uppercase font-semibold tracking-wide">Accompagnement psychologique</p>
               </div>
               <div>
                 <p className="text-xl sm:text-2xl font-bold font-poppins text-brand-wellbeing">Direct</p>
                 <p className="text-[10px] text-brand-gray-text uppercase font-semibold tracking-wide">Accompagnement</p>
-              </div>
+              </div> */}
             </div>
 
             {/* Aperçu des prochains rendez-vous pour les utilisateurs connectés */}
