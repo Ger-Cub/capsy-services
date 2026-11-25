@@ -357,7 +357,7 @@ export default function GovernancePage({ onOpenBooking }: GovernancePageProps) {
             <span className="text-xs uppercase tracking-widest text-brand-confidence font-bold font-poppins">Standard &amp; Éthique</span>
             <h2 className="text-2xl sm:text-4xl font-poppins font-black text-white">Qualité, Éthique &amp; Protection des personnes accompagnées</h2>
             <p className="text-sm text-white/70 leading-relaxed">
-              Nos engagements s'inscrivent rigoureusement dans les principes internationaux de bonne gouvernance (OCDE 2015) et les directives de l'OMS.
+              Nos engagements reposent sur les règles internes de gouvernance, l'éthique professionnelle, la supervision clinique et l'amélioration continue de la qualité des services.
             </p>
           </div>
 
