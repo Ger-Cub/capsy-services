@@ -355,7 +355,7 @@ export default function GovernancePage({ onOpenBooking }: GovernancePageProps) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-12">
           <div className="text-center max-w-3xl mx-auto space-y-3">
             <span className="text-xs uppercase tracking-widest text-brand-confidence font-bold font-poppins">Standard &amp; Éthique</span>
-            <h2 className="text-2xl sm:text-4xl font-poppins font-black text-white">Qualité, Éthique &amp; Protection des Bénéficiaires</h2>
+            <h2 className="text-2xl sm:text-4xl font-poppins font-black text-white">Qualité, Éthique &amp; Protection des personnes accompagnées</h2>
             <p className="text-sm text-white/70 leading-relaxed">
               Nos engagements s'inscrivent rigoureusement dans les principes internationaux de bonne gouvernance (OCDE 2015) et les directives de l'OMS.
             </p>
@@ -378,7 +378,7 @@ export default function GovernancePage({ onOpenBooking }: GovernancePageProps) {
                 </li>
                 <li className="flex items-start gap-2">
                   <LucideIcon name="Check" className="h-4 w-4 text-brand-confidence shrink-0 mt-0.5" />
-                  <span>Évaluation continue des pratiques, des retours patients et des résultats cliniques.</span>
+                  <span>Évaluation continue des pratiques, des retours des personnes accompagnées et des résultats cliniques.</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <LucideIcon name="Check" className="h-4 w-4 text-brand-confidence shrink-0 mt-0.5" />
@@ -390,7 +390,7 @@ export default function GovernancePage({ onOpenBooking }: GovernancePageProps) {
             <div className="bg-white/5 border border-white/10 rounded-3xl p-8 space-y-4 backdrop-blur-xs">
               <div className="flex items-center gap-3">
                 <LucideIcon name="Lock" className="h-6 w-6 text-brand-confidence" />
-                <h3 className="text-xl font-bold font-poppins text-white">Protection des Bénéficiaires</h3>
+                <h3 className="text-xl font-bold font-poppins text-white">Protection des personnes accompagnées</h3>
               </div>
               <ul className="space-y-3 text-xs text-white/80 leading-relaxed">
                 <li className="flex items-start gap-2">
