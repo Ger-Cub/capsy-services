@@ -1509,10 +1509,10 @@ export default function BookingModal({
                       />
                     </div>
 
-                    <div className="bg-brand-gray-light p-3 rounded-xl border border-gray-200 flex gap-2.5 text-xs text-brand-gray-text font-medium leading-relaxed">
+                    <div className="bg-brand-gray-light p-3.5 rounded-xl border border-gray-200 flex gap-2.5 text-xs text-brand-gray-text font-medium leading-relaxed">
                       <LucideIcon name="ShieldCheck" className="h-4.5 w-4.5 text-brand-green shrink-0 mt-0.5" />
                       <p>
-                        Les échanges sont traités de manière confidentielle, conformément au secret professionnel, à notre politique de confidentialité et aux limites prévues par la loi et la protection des personnes.
+                        Les coordonnées transmises servent uniquement à organiser votre rendez-vous. Elles sont traitées avec confidentialité, dans le respect du secret professionnel et des limites prévues par la loi pour la protection des personnes. Merci de ne pas décrire ici votre situation personnelle en détail.
                       </p>
                     </div>
 
